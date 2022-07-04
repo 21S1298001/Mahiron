@@ -19,7 +19,24 @@ Buffer.poolSize = 0; // disable memory pool
 import { config } from "dotenv";
 config();
 
+import { exec } from "child_process";
 import { createHash } from "crypto";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
+
+if (process.platform === "linux") {
+    if (process.getuid() === 0) {
+        try {
+            await execAsync(`renice -n -10 -p ${process.pid}`);
+            await execAsync(`ionice -c 1 -n 7 -p ${process.pid}`);
+        } catch (e) {
+            console.warn("error on modify nice: " + (e as Error).message);
+        }
+    } else {
+        console.warn("running in not root!");
+    }
+}
 
 process.title = "Mahiron: Server";
 
@@ -40,16 +57,16 @@ setEnv("PROGRAMS_DB_PATH", "/usr/local/var/db/mahiron/programs.json");
 setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mahiron/logo-data");
 
 import PromiseQueue from "promise-queue";
+import { _ } from "./Mirakurun/_.js";
 import { Channel } from "./Mirakurun/Channel.js";
 import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config.js";
 import { Event } from "./Mirakurun/Event.js";
-import { config as logConfig, log } from "./Mirakurun/log.js";
+import { log, config as logConfig } from "./Mirakurun/log.js";
 import { Program } from "./Mirakurun/Program.js";
 import { Server } from "./Mirakurun/Server.js";
 import { Service } from "./Mirakurun/Service.js";
 import { status } from "./Mirakurun/status.js";
 import { Tuner } from "./Mirakurun/Tuner.js";
-import { _ } from "./Mirakurun/_.js";
 
 _.config.server = await loadServer();
 _.config.channels = await loadChannels();

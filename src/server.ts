@@ -17,25 +17,15 @@
 Buffer.poolSize = 0; // disable memory pool
 
 require("dotenv").config();
-import { execSync } from "child_process";
 import { createHash } from "crypto";
-
-if (process.platform === "linux") {
-    if (process.getuid() === 0) {
-        execSync(`renice -n -10 -p ${ process.pid }`);
-        execSync(`ionice -c 1 -n 7 -p ${ process.pid }`);
-    } else {
-        console.warn("running in not root!");
-    }
-}
 
 process.title = "Mirakurun: Server";
 
-process.on("uncaughtException", err => {
+process.on("uncaughtException", (err) => {
     ++status.errorCount.uncaughtException;
     console.error(err.stack);
 });
-process.on("unhandledRejection", err => {
+process.on("unhandledRejection", (err) => {
     ++status.errorCount.unhandledRejection;
     console.error(err);
 });
@@ -47,27 +37,29 @@ setEnv("SERVICES_DB_PATH", "/usr/local/var/db/mirakurun/services.json");
 setEnv("PROGRAMS_DB_PATH", "/usr/local/var/db/mirakurun/programs.json");
 setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mirakurun/logo-data");
 
-import _ from "./Mirakurun/_";
-import status from "./Mirakurun/status";
-import Event from "./Mirakurun/Event";
-import Tuner from "./Mirakurun/Tuner";
 import Channel from "./Mirakurun/Channel";
-import Service from "./Mirakurun/Service";
+import * as config from "./Mirakurun/config";
+import Event from "./Mirakurun/Event";
+import * as log from "./Mirakurun/log";
 import Program from "./Mirakurun/Program";
 import Server from "./Mirakurun/Server";
-import * as config from "./Mirakurun/config";
-import * as log from "./Mirakurun/log";
+import Service from "./Mirakurun/Service";
+import status from "./Mirakurun/status";
+import Tuner from "./Mirakurun/Tuner";
+import _ from "./Mirakurun/_";
 
 _.config.server = config.loadServer();
 _.config.channels = config.loadChannels();
-_.configIntegrity.channels = createHash("sha256").update(JSON.stringify(_.config.channels)).digest("base64");
+_.configIntegrity.channels = createHash("sha256")
+    .update(JSON.stringify(_.config.channels))
+    .digest("base64");
 _.config.tuners = config.loadTuners();
 
 if (typeof _.config.server.logLevel === "number") {
-    (<any> log).logLevel = _.config.server.logLevel;
+    (<any>log).logLevel = _.config.server.logLevel;
 }
 if (typeof _.config.server.maxLogHistory === "number") {
-    (<any> log).maxLogHistory = _.config.server.maxLogHistory;
+    (<any>log).maxLogHistory = _.config.server.maxLogHistory;
 }
 
 _.event = new Event();

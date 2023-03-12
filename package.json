@@ -6,10 +6,6 @@
   "homepage": "https://github.com/21S1298001/Mahiron",
   "license": "Apache-2.0",
   "packageManager": "yarn@3.4.1",
-  "bin": {
-    "mirakurun": "bin/cli.sh",
-    "mirakurun-epgdump": "bin/epgdump.js"
-  },
   "main": "lib/client.js",
   "scripts": {
     "start": "node -r source-map-support/register lib/server.js",
@@ -25,17 +21,10 @@
     "test": "tslint --project . && mocha --exit test/*.spec.js",
     "clean": "rimraf lib/*",
     "prepublishOnly": "yarn run clean && yarn run build",
-    "preinstall": "node bin/preinstall.js",
-    "postinstall": "node bin/postinstall.js",
-    "preuninstall": "node bin/preuninstall.js",
     "docker:build": "docker-compose -f docker/docker-compose.yml build",
     "docker:run": "docker-compose -f docker/docker-compose.yml run --rm --service-ports mirakurun",
     "docker:up": "docker-compose -f docker/docker-compose.yml up -d",
     "docker:debug": "docker-compose -f docker/docker-compose.yml run --rm --service-ports -e DEBUG=true mirakurun"
-  },
-  "directories": {
-    "doc": "doc",
-    "lib": "lib"
   },
   "dependencies": {
     "@chinachu/aribts": "1.3.5-mirakurun.18",

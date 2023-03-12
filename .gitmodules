@@ -1,3 +1,0 @@
-[submodule "config/dvbconf-for-isdb"]
-	path = config/dvbconf-for-isdb
-	url = https://github.com/Chinachu/dvbconf-for-isdb.git

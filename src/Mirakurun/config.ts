@@ -14,12 +14,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { execSync } from "child_process";
-import { dirname } from "path";
-import { hostname } from "os";
 import * as fs from "fs";
-import * as yaml from "js-yaml";
 import * as ipnum from "ip-num";
+import * as yaml from "js-yaml";
+import { hostname } from "os";
+import { dirname } from "path";
 import * as common from "./common";
 import * as log from "./log";
 
@@ -43,7 +42,7 @@ const {
     DISABLE_EIT_PARSING,
     DISABLE_WEB_UI,
     ALLOW_IPV4_CIDR_RANGES,
-    ALLOW_IPV6_CIDR_RANGES
+    ALLOW_IPV6_CIDR_RANGES,
 } = process.env;
 
 const IS_DOCKER = DOCKER === "YES";
@@ -126,7 +125,6 @@ export interface Channel {
 }
 
 export function loadServer(): Server {
-
     const path = SERVER_CONFIG_PATH;
 
     // mkdir if not exists
@@ -164,7 +162,12 @@ export function loadServer(): Server {
 
     // set default
     if (!config.allowIPv4CidrRanges) {
-        config.allowIPv4CidrRanges = ["10.0.0.0/8", "127.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"];
+        config.allowIPv4CidrRanges = [
+            "10.0.0.0/8",
+            "127.0.0.0/8",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+        ];
     }
     if (!config.allowIPv6CidrRanges) {
         config.allowIPv6CidrRanges = ["fc00::/7"];
@@ -178,31 +181,59 @@ export function loadServer(): Server {
             config.disableIPv6 = true;
         }
 
-        if (!config.hostname && typeof HOSTNAME !== "undefined" && HOSTNAME.trim().length > 0) {
+        if (
+            !config.hostname &&
+            typeof HOSTNAME !== "undefined" &&
+            HOSTNAME.trim().length > 0
+        ) {
             config.hostname = HOSTNAME.trim();
         }
         if (typeof LOG_LEVEL !== "undefined" && /^-?[0123]$/.test(LOG_LEVEL)) {
             config.logLevel = parseInt(LOG_LEVEL, 10);
         }
-        if (typeof MAX_LOG_HISTORY !== "undefined" && /^[0-9]+$/.test(MAX_LOG_HISTORY)) {
+        if (
+            typeof MAX_LOG_HISTORY !== "undefined" &&
+            /^[0-9]+$/.test(MAX_LOG_HISTORY)
+        ) {
             config.maxLogHistory = parseInt(MAX_LOG_HISTORY, 10);
         }
-        if (typeof MAX_BUFFER_BYTES_BEFORE_READY !== "undefined" && /^[0-9]+$/.test(MAX_BUFFER_BYTES_BEFORE_READY)) {
-            config.maxBufferBytesBeforeReady = parseInt(MAX_BUFFER_BYTES_BEFORE_READY, 10);
+        if (
+            typeof MAX_BUFFER_BYTES_BEFORE_READY !== "undefined" &&
+            /^[0-9]+$/.test(MAX_BUFFER_BYTES_BEFORE_READY)
+        ) {
+            config.maxBufferBytesBeforeReady = parseInt(
+                MAX_BUFFER_BYTES_BEFORE_READY,
+                10
+            );
         }
-        if (typeof EVENT_END_TIMEOUT !== "undefined" && /^[0-9]+$/.test(EVENT_END_TIMEOUT)) {
+        if (
+            typeof EVENT_END_TIMEOUT !== "undefined" &&
+            /^[0-9]+$/.test(EVENT_END_TIMEOUT)
+        ) {
             config.eventEndTimeout = parseInt(EVENT_END_TIMEOUT, 10);
         }
-        if (typeof PROGRAM_GC_INTERVAL !== "undefined" && /^[0-9]+$/.test(PROGRAM_GC_INTERVAL)) {
+        if (
+            typeof PROGRAM_GC_INTERVAL !== "undefined" &&
+            /^[0-9]+$/.test(PROGRAM_GC_INTERVAL)
+        ) {
             config.programGCInterval = parseInt(PROGRAM_GC_INTERVAL, 10);
         }
-        if (typeof EPG_GATHERING_INTERVAL !== "undefined" && /^[0-9]+$/.test(EPG_GATHERING_INTERVAL)) {
+        if (
+            typeof EPG_GATHERING_INTERVAL !== "undefined" &&
+            /^[0-9]+$/.test(EPG_GATHERING_INTERVAL)
+        ) {
             config.epgGatheringInterval = parseInt(EPG_GATHERING_INTERVAL, 10);
         }
-        if (typeof EPG_RETRIEVAL_TIME !== "undefined" && /^[0-9]+$/.test(EPG_RETRIEVAL_TIME)) {
+        if (
+            typeof EPG_RETRIEVAL_TIME !== "undefined" &&
+            /^[0-9]+$/.test(EPG_RETRIEVAL_TIME)
+        ) {
             config.epgRetrievalTime = parseInt(EPG_RETRIEVAL_TIME, 10);
         }
-        if (typeof LOGO_DATA_INTERVAL !== "undefined" && /^[0-9]+$/.test(LOGO_DATA_INTERVAL)) {
+        if (
+            typeof LOGO_DATA_INTERVAL !== "undefined" &&
+            /^[0-9]+$/.test(LOGO_DATA_INTERVAL)
+        ) {
             config.logoDataInterval = parseInt(LOGO_DATA_INTERVAL, 10);
         }
         if (DISABLE_EIT_PARSING === "true") {
@@ -211,14 +242,23 @@ export function loadServer(): Server {
         if (DISABLE_WEB_UI === "true") {
             config.disableWebUI = true;
         }
-        if (typeof ALLOW_IPV4_CIDR_RANGES !== "undefined" && ALLOW_IPV4_CIDR_RANGES.trim().length > 0) {
+        if (
+            typeof ALLOW_IPV4_CIDR_RANGES !== "undefined" &&
+            ALLOW_IPV4_CIDR_RANGES.trim().length > 0
+        ) {
             config.allowIPv4CidrRanges = ALLOW_IPV4_CIDR_RANGES.split(",");
         }
-        if (typeof ALLOW_IPV6_CIDR_RANGES !== "undefined" && ALLOW_IPV6_CIDR_RANGES.trim().length > 0) {
+        if (
+            typeof ALLOW_IPV6_CIDR_RANGES !== "undefined" &&
+            ALLOW_IPV6_CIDR_RANGES.trim().length > 0
+        ) {
             config.allowIPv6CidrRanges = ALLOW_IPV6_CIDR_RANGES.split(",");
         }
 
-        log.info("load server config (merged w/ env): %s", JSON.stringify(config));
+        log.info(
+            "load server config (merged w/ env): %s",
+            JSON.stringify(config)
+        );
     }
 
     if (!config.hostname) {
@@ -237,7 +277,11 @@ export function loadServer(): Server {
                 continue;
             }
             for (const error of errors) {
-                log.error("invalid server config property `allowIPv4CidrRanges`: %s - %s", range, error);
+                log.error(
+                    "invalid server config property `allowIPv4CidrRanges`: %s - %s",
+                    range,
+                    error
+                );
             }
         }
 
@@ -255,7 +299,11 @@ export function loadServer(): Server {
                 continue;
             }
             for (const error of errors) {
-                log.error("invalid server config property `allowIPv6CidrRanges`: %s - %s", range, error);
+                log.error(
+                    "invalid server config property `allowIPv6CidrRanges`: %s - %s",
+                    range,
+                    error
+                );
             }
         }
 
@@ -270,7 +318,6 @@ export function saveServer(data: Server): Promise<void> {
 }
 
 export function loadTuners(): Tuner[] {
-
     const path = TUNERS_CONFIG_PATH;
 
     // mkdir if not exists
@@ -284,69 +331,6 @@ export function loadTuners(): Tuner[] {
             log.fatal("failed to make directory `%s`", dirPath);
             console.error(e);
             process.exit(1);
-        }
-    }
-
-    // auto
-    if (process.platform === "linux" && fs.existsSync(path) === false) {
-        log.info("missing tuners config `%s`", path);
-        log.info("trying to detect tuners...");
-        const tuners: Tuner[] = [];
-
-        // detect dvbdev
-        try {
-            execSync("which dvb-fe-tool");
-
-            const adapters = fs.readdirSync("/dev/dvb").filter(name => /^adapter[0-9]+$/.test(name));
-            for (let i = 0; i < adapters.length; i++) {
-                log.info("detected DVB device: %s", adapters[i]);
-
-                execSync("sleep 1");
-                const properties = execSync(`dvb-fe-tool -a ${i} 2>&1 || true`, { encoding: "utf8" });
-                const isISDBT = properties.includes("[ISDBT]");
-                const isISDBS = properties.includes("[ISDBS]");
-                if (!isISDBT && !isISDBS) {
-                    continue;
-                }
-
-                const tuner: Writable<Tuner> = {
-                    name: adapters[i],
-                    types: undefined,
-                    dvbDevicePath: `/dev/dvb/adapter${i}/dvr0`,
-                    decoder: "arib-b25-stream-test"
-                };
-
-                if (isISDBT) {
-                    tuner.types = ["GR"];
-                    tuner.command = `dvbv5-zap -a ${i} -c ./config/dvbconf-for-isdb/conf/dvbv5_channels_isdbt.conf -r -P <channel>`;
-                } else if (isISDBS) {
-                    tuner.types = ["BS", "CS"];
-                    tuner.command = `dvbv5-zap -a ${i} -c ./config/dvbconf-for-isdb/conf/dvbv5_channels_isdbs.conf -r -P <channel>`;
-                }
-
-                tuners.push(tuner);
-
-                log.info("added tuner config (generated): %s", JSON.stringify(tuner));
-            }
-        } catch (e) {
-            if (/which dvb-fe-tool/.test(e.message)) {
-                log.warn("`dvb-fe-tool` is required to detect DVB devices. (%s)", e.message);
-            } else {
-                console.error(e);
-            }
-        }
-
-        log.info("detected %d tuners!", tuners.length);
-
-        if (tuners.length > 0) {
-            try {
-                log.info("writing auto generated tuners config to `%s`", path);
-                fs.writeFileSync(path, yaml.dump(tuners));
-            } catch (e) {
-                log.fatal("failed to write tuners config to `%s`", path);
-                console.error(e);
-                process.exit(1);
-            }
         }
     }
 
@@ -375,7 +359,6 @@ export function saveTuners(data: Tuner[]): Promise<void> {
 }
 
 export function loadChannels(): Channel[] {
-
     const path = CHANNELS_CONFIG_PATH;
 
     // mkdir if not exists
@@ -420,7 +403,6 @@ function load(name: "server", path: string): Server;
 function load(name: "tuners", path: string): Tuner[];
 function load(name: "channels", path: string): Channel[];
 function load(name: string, path: string) {
-
     log.info("load %s config `%s`", name, path);
 
     return yaml.load(fs.readFileSync(path, "utf8"));
@@ -430,13 +412,10 @@ function save(name: "server", path: string, data: Server): Promise<void>;
 function save(name: "tuners", path: string, data: Tuner[]): Promise<void>;
 function save(name: "channels", path: string, data: Channel[]): Promise<void>;
 function save(name: string, path: string, data: object): Promise<void> {
-
     log.info("save %s config `%s`", name, path);
 
     return new Promise<void>((resolve, reject) => {
-
-        fs.writeFile(path, yaml.dump(data), err => {
-
+        fs.writeFile(path, yaml.dump(data), (err) => {
             if (err) {
                 return reject(err);
             }

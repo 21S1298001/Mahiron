@@ -1,6 +1,6 @@
-# Mirakurun ChangeLog
+# Mahiron ChangeLog
 
-see [Commit Logs](https://github.com/Chinachu/Mirakurun/commits/master) to check all.
+see [Commit Logs](https://github.com/21S1298001/Mahiron/commits/master) to check all.
 
 ## 3.9.0 (2022-xx-xx)
 
@@ -17,7 +17,7 @@ Performance improvements, fixes for memory leaks and bugs related to EPG process
 - **config/server**: Remove `overflowTimeLimit`.
 - **ts-filter**: Remove own overflow handling as it no longer makes sense.
 - **ts-filter**: Fix memory leak when comparing CRC of broken PAT packet processing. (bug)
-- **ts-filter**: Fix a problem in which the _close() function sometimes didn't call properly when the tuner was intercepted. (bug)
+- **ts-filter**: Fix a problem in which the \_close() function sometimes didn't call properly when the tuner was intercepted. (bug)
 - **ts-filter**: Change EIT\[p/f\] information to use in EPG.
 - **tuner-device**: Fixed a problem which the command didn't respawn ​correctly when it terminated unexpectedly. (bug)
 - **epg**: Add support for multiple EIT types.
@@ -417,7 +417,7 @@ Improved startup stability. fixed stack trace for TypeScript codes.
 - **db**: improve error handling. [#48](https://github.com/Chinachu/Mirakurun/issues/48)
 - **db**: added integrity check. [#35](https://github.com/Chinachu/Mirakurun/issues/35)
 - **tuner**: fix EPIPE error occurred by decoder.kill [#46](https://github.com/Chinachu/Mirakurun/pull/46)
-- **tuner-device**: fix duplicate function call of _kill() [#47](https://github.com/Chinachu/Mirakurun/pull/47)
+- **tuner-device**: fix duplicate function call of \_kill() [#47](https://github.com/Chinachu/Mirakurun/pull/47)
 
 ### Dependencies
 
@@ -477,7 +477,7 @@ Improved startup stability. fixed stack trace for TypeScript codes.
 
 ### Server Changes
 
-- **log**: fix comply http logs to log level setting.  [#41](https://github.com/Chinachu/Mirakurun/issues/41)
+- **log**: fix comply http logs to log level setting. [#41](https://github.com/Chinachu/Mirakurun/issues/41)
 
 ## 2.7.6 (2019-01-02)
 

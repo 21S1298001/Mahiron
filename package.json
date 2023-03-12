@@ -1,34 +1,9 @@
 {
-  "name": "mirakurun",
+  "name": "mahiron",
   "preferGlobal": true,
   "description": "DVR Tuner Server for Japanese TV.",
   "version": "3.9.0-rc.2",
-  "homepage": "https://github.com/Chinachu/Mirakurun",
-  "keywords": [
-    "mirakurun",
-    "chinachu",
-    "rivarun",
-    "arib",
-    "isdb",
-    "dvb",
-    "dvr",
-    "dtv",
-    "tv"
-  ],
-  "author": {
-    "name": "kanreisa",
-    "url": "https://github.com/kanreisa"
-  },
-  "contributors": [
-    "rndomhack"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Chinachu/Mirakurun.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Chinachu/Mirakurun/issues"
-  },
+  "homepage": "https://github.com/21S1298001/Mahiron",
   "license": "Apache-2.0",
   "bin": {
     "mirakurun": "bin/cli.sh",
@@ -120,13 +95,5 @@
     "linux",
     "darwin",
     "win32"
-  ],
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/Mirakurun"
-  },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/Mirakurun"
-  }
+  ]
 }

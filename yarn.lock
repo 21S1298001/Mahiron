@@ -2909,6 +2909,7 @@ __metadata:
     latest-version: 7.0.0
     mocha: 10.2.0
     morgan: 1.10.0
+    office-ui-fabric-core: 11.1.0
     openapi-types: 12.1.0
     process: 0.11.10
     promise-queue: 2.2.5
@@ -3365,6 +3366,13 @@ __metadata:
   version: 1.12.3
   resolution: "object-inspect@npm:1.12.3"
   checksum: dabfd824d97a5f407e6d5d24810d888859f6be394d8b733a77442b277e0808860555176719c5905e765e3743a7cada6b8b0a3b85e5331c530fd418cc8ae991db
+  languageName: node
+  linkType: hard
+
+"office-ui-fabric-core@npm:11.1.0":
+  version: 11.1.0
+  resolution: "office-ui-fabric-core@npm:11.1.0"
+  checksum: aa488e8b9d4692125ec37675b737bf8be53a40ad96b6076f2e2a31eb84005dbcaa4ed3d9009e8e0f49f44b916edc2027038d313c0fa06aa0d3ecea74d18352ae
   languageName: node
   linkType: hard
 

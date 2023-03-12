@@ -11,7 +11,8 @@
     "module": "commonjs",
     "sourceMap": true,
     "incremental": true,
-    "outDir": "lib"
+    "outDir": "lib",
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",

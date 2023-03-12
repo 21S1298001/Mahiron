@@ -17,7 +17,7 @@
 import * as child_process from "child_process";
 import * as stream from "stream";
 import * as util from "util";
-import EventEmitter = require("eventemitter3");
+import { EventEmitter } from "eventemitter3";
 import * as common from "./common";
 import * as log from "./log";
 import * as config from "./config";

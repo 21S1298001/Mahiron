@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Writable } from "stream";
-import EventEmitter = require("eventemitter3");
+import { EventEmitter } from "eventemitter3";
 import { TsStreamLite, TsCrc32, TsChar, TsLogo, tsDataModule } from "@chinachu/aribts";
 import { StreamInfo, getTimeFromMJD } from "./common";
 import * as log from "./log";

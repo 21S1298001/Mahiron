@@ -14,54 +14,53 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../api";
-import _ from "../../_";
+import { Operation } from 'express-openapi'
+import * as api from '../../api'
+import _ from '../../_'
 
 export const parameters = [
-    {
-        in: "path",
-        name: "id",
-        type: "integer",
-        minimum: 10000000000,
-        maximum: 655356553565535,
-        required: true
-    }
-];
+  {
+    in: 'path',
+    name: 'id',
+    type: 'integer',
+    minimum: 10000000000,
+    maximum: 655356553565535,
+    required: true,
+  },
+]
 
 export const get: Operation = (req, res) => {
+  const program = _.program.get(req.params.id as any as number)
 
-    const program = _.program.get(req.params.id as any as number);
+  if (program === null) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (program === null) {
-        api.responseError(res, 404);
-        return;
-    }
-
-    res.json(program);
-};
+  res.json(program)
+}
 
 get.apiDoc = {
-    tags: ["programs"],
-    operationId: "getProgram",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/Program"
-            }
-        },
-        404: {
-            description: "Not Found",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['programs'],
+  operationId: 'getProgram',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/Program',
+      },
+    },
+    404: {
+      description: 'Not Found',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

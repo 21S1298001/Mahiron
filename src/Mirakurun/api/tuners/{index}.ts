@@ -14,53 +14,52 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../api";
-import _ from "../../_";
+import { Operation } from 'express-openapi'
+import * as api from '../../api'
+import _ from '../../_'
 
 export const parameters = [
-    {
-        in: "path",
-        name: "index",
-        type: "integer",
-        minimum: 0,
-        required: true
-    }
-];
+  {
+    in: 'path',
+    name: 'index',
+    type: 'integer',
+    minimum: 0,
+    required: true,
+  },
+]
 
 export const get: Operation = (req, res) => {
+  const tuner = _.tuner.get(req.params.index as any as number)
 
-    const tuner = _.tuner.get(req.params.index as any as number);
+  if (tuner === null) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (tuner === null) {
-        api.responseError(res, 404);
-        return;
-    }
-
-    api.responseJSON(res, tuner);
-};
+  api.responseJSON(res, tuner)
+}
 
 get.apiDoc = {
-    tags: ["tuners"],
-    operationId: "getTuner",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/TunerDevice"
-            }
-        },
-        404: {
-            description: "Not Found",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['tuners'],
+  operationId: 'getTuner',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/TunerDevice',
+      },
+    },
+    404: {
+      description: 'Not Found',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

@@ -14,34 +14,32 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../api";
-import { event } from "../log";
+import { Operation } from 'express-openapi'
+import { event } from '../log'
 
 export const get: Operation = (req, res) => {
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.status(200)
 
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.status(200);
+  const logs = event.logs
+  const len = logs.length
+  for (let i = 0; i < len; i++) {
+    res.write(logs[i] + '\n')
+  }
 
-    const logs = event.logs;
-    const len = logs.length;
-    for (let i = 0; i < len; i++) {
-        res.write(logs[i] + "\n");
-    }
-
-    res.end();
-};
+  res.end()
+}
 
 get.apiDoc = {
-    tags: ["log"],
-    operationId: "getLog",
-    produces: ["text/plain"],
-    responses: {
-        200: {
-            description: "OK"
-        },
-        default: {
-            description: "Unexpected Error"
-        }
-    }
-};
+  tags: ['log'],
+  operationId: 'getLog',
+  produces: ['text/plain'],
+  responses: {
+    200: {
+      description: 'OK',
+    },
+    default: {
+      description: 'Unexpected Error',
+    },
+  },
+}

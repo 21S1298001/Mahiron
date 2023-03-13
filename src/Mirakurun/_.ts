@@ -14,36 +14,36 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as config from "./config";
-import Event from "./Event";
-import Tuner from "./Tuner";
-import Channel from "./Channel";
-import Service from "./Service";
-import Program from "./Program";
-import Server from "./Server";
+import * as config from './config'
+import Event from './Event'
+import Tuner from './Tuner'
+import Channel from './Channel'
+import Service from './Service'
+import Program from './Program'
+import Server from './Server'
 
 interface Shared {
-    readonly config: {
-        server?: config.Server;
-        channels?: config.Channel[];
-        tuners?: config.Tuner[];
-    };
-    readonly configIntegrity: {
-        channels: string;
-    };
-    event?: Event;
-    tuner?: Tuner;
-    channel?: Channel;
-    service?: Service;
-    program?: Program;
-    server?: Server;
+  readonly config: {
+    server?: config.Server
+    channels?: config.Channel[]
+    tuners?: config.Tuner[]
+  }
+  readonly configIntegrity: {
+    channels: string
+  }
+  event?: Event
+  tuner?: Tuner
+  channel?: Channel
+  service?: Service
+  program?: Program
+  server?: Server
 }
 
 const _: Shared = {
-    config: {},
-    configIntegrity: {
-        channels: ""
-    }
-};
+  config: {},
+  configIntegrity: {
+    channels: '',
+  },
+}
 
-export default _;
+export default _

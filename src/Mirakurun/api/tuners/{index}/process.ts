@@ -14,99 +14,98 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../../api";
-import _ from "../../../_";
+import { Operation } from 'express-openapi'
+import * as api from '../../../api'
+import _ from '../../../_'
 
 export const parameters = [
-    {
-        in: "path",
-        name: "index",
-        type: "integer",
-        minimum: 0,
-        required: true
-    }
-];
+  {
+    in: 'path',
+    name: 'index',
+    type: 'integer',
+    minimum: 0,
+    required: true,
+  },
+]
 
 export const get: Operation = (req, res) => {
+  const tuner = _.tuner.get(req.params.index as any as number)
 
-    const tuner = _.tuner.get(req.params.index as any as number);
+  if (tuner === null || Number.isInteger(tuner.pid) === false) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (tuner === null || Number.isInteger(tuner.pid) === false) {
-        api.responseError(res, 404);
-        return;
-    }
-
-    api.responseJSON(res, { pid: tuner.pid });
-};
+  api.responseJSON(res, { pid: tuner.pid })
+}
 
 get.apiDoc = {
-    tags: ["tuners"],
-    summary: "Get Tuner Process Info",
-    operationId: "getTunerProcess",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/TunerProcess"
-            }
-        },
-        404: {
-            description: "Not Found",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['tuners'],
+  summary: 'Get Tuner Process Info',
+  operationId: 'getTunerProcess',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/TunerProcess',
+      },
+    },
+    404: {
+      description: 'Not Found',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}
 
 export const del: Operation = (req, res) => {
+  const tuner = _.tuner.get(req.params.index as any as number)
 
-    const tuner = _.tuner.get(req.params.index as any as number);
+  if (tuner === null || Number.isInteger(tuner.pid) === false) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (tuner === null || Number.isInteger(tuner.pid) === false) {
-        api.responseError(res, 404);
-        return;
-    }
-
-    tuner.kill()
-        .then(() => api.responseJSON(res, {pid: null}))
-        .catch((error: Error) => api.responseError(res, 500, error.message));
-};
+  tuner
+    .kill()
+    .then(() => api.responseJSON(res, { pid: null }))
+    .catch((error: Error) => api.responseError(res, 500, error.message))
+}
 
 del.apiDoc = {
-    tags: ["tuners"],
-    summary: "Kill Tuner Process",
-    operationId: "killTunerProcess",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                type: "object",
-                properties: {
-                    pid: {
-                        type: "null"
-                    }
-                }
-            }
+  tags: ['tuners'],
+  summary: 'Kill Tuner Process',
+  operationId: 'killTunerProcess',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        type: 'object',
+        properties: {
+          pid: {
+            type: 'null',
+          },
         },
-        404: {
-            description: "Not Found",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+      },
+    },
+    404: {
+      description: 'Not Found',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

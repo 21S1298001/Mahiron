@@ -14,36 +14,32 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../api";
-import _ from "../_";
+import { Operation } from 'express-openapi'
+import * as api from '../api'
+import _ from '../_'
 
 export const get: Operation = (req, res) => {
-
-    api.responseJSON(
-        res,
-        _.tuner.devices
-    );
-};
+  api.responseJSON(res, _.tuner.devices)
+}
 
 get.apiDoc = {
-    tags: ["tuners"],
-    operationId: "getTuners",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                type: "array",
-                items: {
-                    $ref: "#/definitions/TunerDevice"
-                }
-            }
+  tags: ['tuners'],
+  operationId: 'getTuners',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        type: 'array',
+        items: {
+          $ref: '#/definitions/TunerDevice',
         },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

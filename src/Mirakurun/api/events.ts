@@ -14,33 +14,32 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../api";
-import Event from "../Event";
+import { Operation } from 'express-openapi'
+import * as api from '../api'
+import Event from '../Event'
 
 export const get: Operation = (req, res) => {
-
-    api.responseJSON(res, Event.log);
-};
+  api.responseJSON(res, Event.log)
+}
 
 get.apiDoc = {
-    tags: ["events"],
-    operationId: "getEvents",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                type: "array",
-                items: {
-                    $ref: "#/definitions/Event"
-                }
-            }
+  tags: ['events'],
+  operationId: 'getEvents',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        type: 'array',
+        items: {
+          $ref: '#/definitions/Event',
         },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

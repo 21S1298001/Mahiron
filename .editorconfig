@@ -4,13 +4,10 @@ root = true
 
 [*]
 charset = utf-8
-end_of_line = crlf
+end_of_line = lf
 indent_style = space
 indent_size = 2
 insert_final_newline = true
 
-[*.sh]
-end_of_line = lf
-
-[package.json]
-end_of_line = lf
+[*.win32.*]
+end_of_line = crlf

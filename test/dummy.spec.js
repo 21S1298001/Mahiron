@@ -1,8 +1,7 @@
-const assert = require("assert");
-const http = require("http");
+const assert = require('assert')
 
-describe("Dummy", () => {
-    it("NO TEST YET", () => {
-        assert.ok(true);
-    });
-});
+describe('Dummy', function () {
+  it('NO TEST YET', function () {
+    assert.ok(true)
+  })
+})

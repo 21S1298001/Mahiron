@@ -14,52 +14,59 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as express from "express";
+import * as express from 'express'
 
 export interface Error {
-    readonly code: number;
-    readonly reason: string;
-    readonly errors: any[];
+  readonly code: number
+  readonly reason: string
+  readonly errors: any[]
 }
 
-export function responseError(res: express.Response, code: number, reason?: string): express.Response {
+export function responseError(
+  res: express.Response,
+  code: number,
+  reason?: string
+): express.Response {
+  if (reason) {
+    res.writeHead(code, reason, {
+      'Content-Type': 'application/json',
+    })
+  } else {
+    res.writeHead(code, {
+      'Content-Type': 'application/json',
+    })
+  }
 
-    if (reason) {
-        res.writeHead(code, reason, {
-            "Content-Type": "application/json"
-        });
-    } else {
-        res.writeHead(code, {
-            "Content-Type": "application/json"
-        });
-    }
+  const error: Error = {
+    code: code,
+    reason: reason || null,
+    errors: [],
+  }
 
-    const error: Error = {
-        code: code,
-        reason: reason || null,
-        errors: []
-    };
+  res.end(JSON.stringify(error))
 
-    res.end(JSON.stringify(error));
-
-    return res;
+  return res
 }
 
-export function responseStreamErrorHandler(res: express.Response, err: NodeJS.ErrnoException): express.Response {
+export function responseStreamErrorHandler(
+  res: express.Response,
+  err: NodeJS.ErrnoException
+): express.Response {
+  if (err.message === 'no available tuners') {
+    return responseError(res, 503, 'Tuner Resource Unavailable')
+  }
 
-    if (err.message === "no available tuners") {
-        return responseError(res, 503, "Tuner Resource Unavailable");
-    }
-
-    return responseError(res, 500, err.message);
+  return responseError(res, 500, err.message)
 }
 
-export function responseJSON(res: express.Response, body: any): express.Response {
+export function responseJSON(
+  res: express.Response,
+  body: any
+): express.Response {
+  // this is lighter than res.json()
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
+  res.status(200)
+  res.end(JSON.stringify(body))
 
-    // this is lighter than res.json()
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
-    res.status(200);
-    res.end(JSON.stringify(body));
-
-    return res;
+  return res
 }

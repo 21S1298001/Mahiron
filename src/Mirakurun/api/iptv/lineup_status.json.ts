@@ -14,31 +14,30 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../api";
+import { Operation } from 'express-openapi'
+import * as api from '../../api'
 
 export const get: Operation = (req, res) => {
-
-    api.responseJSON(res, {
-        ScanInProgress: 0,
-        ScanPossible: 0,
-        Source: "Antenna",
-        SourceList: ["Antenna"]
-    });
-};
+  api.responseJSON(res, {
+    ScanInProgress: 0,
+    ScanPossible: 0,
+    Source: 'Antenna',
+    SourceList: ['Antenna'],
+  })
+}
 
 get.apiDoc = {
-    tags: ["iptv"],
-    summary: "IPTV - Media Server Support",
-    responses: {
-        200: {
-            description: "OK"
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['iptv'],
+  summary: 'IPTV - Media Server Support',
+  responses: {
+    200: {
+      description: 'OK',
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

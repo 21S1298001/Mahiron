@@ -14,99 +14,108 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import {Operation} from "express-openapi";
-import * as api from "../../../../api";
-import _ from "../../../../_";
-import { ChannelType, ChannelTypes } from "../../../../common";
+import { Operation } from 'express-openapi'
+import * as api from '../../../../api'
+import _ from '../../../../_'
+import { ChannelType, ChannelTypes } from '../../../../common'
 
 export const parameters = [
-    {
-        in: "path",
-        name: "type",
-        type: "string",
-        enum: Object.keys(ChannelTypes),
-        required: true
-    },
-    {
-        in: "path",
-        name: "channel",
-        type: "string",
-        required: true
-    },
-    {
-        in: "header",
-        name: "X-Mirakurun-Priority",
-        type: "integer",
-        minimum: 0
-    },
-    {
-        in: "query",
-        name: "decode",
-        type: "integer",
-        minimum: 0,
-        maximum: 1
-    }
-];
+  {
+    in: 'path',
+    name: 'type',
+    type: 'string',
+    enum: Object.keys(ChannelTypes),
+    required: true,
+  },
+  {
+    in: 'path',
+    name: 'channel',
+    type: 'string',
+    required: true,
+  },
+  {
+    in: 'header',
+    name: 'X-Mirakurun-Priority',
+    type: 'integer',
+    minimum: 0,
+  },
+  {
+    in: 'query',
+    name: 'decode',
+    type: 'integer',
+    minimum: 0,
+    maximum: 1,
+  },
+]
 
 export const get: Operation = (req, res) => {
+  const channel = _.channel.get(
+    req.params.type as ChannelType,
+    req.params.channel
+  )
 
-    const channel = _.channel.get(req.params.type as ChannelType, req.params.channel);
+  if (channel === null) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (channel === null) {
-        api.responseError(res, 404);
-        return;
-    }
+  let requestAborted = false
+  req.once('close', () => (requestAborted = true))
+  ;(<any>res.socket)._writableState.highWaterMark = Math.max(
+    res.writableHighWaterMark,
+    1024 * 1024 * 16
+  )
+  res.socket.setNoDelay(true)
 
-    let requestAborted = false;
-    req.once("close", () => requestAborted = true);
+  const userId =
+    (req.ip || 'unix') + ':' + (req.socket.remotePort || Date.now())
 
-    (<any> res.socket)._writableState.highWaterMark = Math.max(res.writableHighWaterMark, 1024 * 1024 * 16);
-    res.socket.setNoDelay(true);
-
-    const userId = (req.ip || "unix") + ":" + (req.socket.remotePort || Date.now());
-
-    channel.getStream({
+  channel
+    .getStream(
+      {
         id: userId,
-        priority: parseInt(req.get("X-Mirakurun-Priority"), 10) || 0,
-        agent: req.get("User-Agent"),
+        priority: parseInt(req.get('X-Mirakurun-Priority'), 10) || 0,
+        agent: req.get('User-Agent'),
         url: req.url,
-        disableDecoder: (<number> <any> req.query.decode === 0)
-    }, res)
-        .then(tsFilter => {
-            if (requestAborted === true || req.aborted === true) {
-                return tsFilter.close();
-            }
+        disableDecoder: <number>(<any>req.query.decode) === 0,
+      },
+      res
+    )
+    .then((tsFilter) => {
+      if (requestAborted === true || req.aborted === true) {
+        return tsFilter.close()
+      }
 
-            req.once("close", () => tsFilter.close());
+      req.once('close', () => tsFilter.close())
 
-            res.setHeader("Content-Type", "video/MP2T");
-            res.setHeader("X-Mirakurun-Tuner-User-ID", userId);
-            res.status(200);
-        })
-        .catch((err) => api.responseStreamErrorHandler(res, err));
-};
+      res.setHeader('Content-Type', 'video/MP2T')
+      res.setHeader('X-Mirakurun-Tuner-User-ID', userId)
+      res.status(200)
+    })
+    .catch((err) => api.responseStreamErrorHandler(res, err))
+}
 
 get.apiDoc = {
-    tags: ["channels", "stream"],
-    operationId: "getChannelStream",
-    produces: ["video/MP2T"],
-    responses: {
-        200: {
-            description: "OK",
-            headers: {
-                "X-Mirakurun-Tuner-User-ID": {
-                    type: "string"
-                }
-            }
+  tags: ['channels', 'stream'],
+  operationId: 'getChannelStream',
+  produces: ['video/MP2T'],
+  responses: {
+    200: {
+      description: 'OK',
+      headers: {
+        'X-Mirakurun-Tuner-User-ID': {
+          type: 'string',
         },
-        404: {
-            description: "Not Found"
-        },
-        503: {
-            description: "Tuner Resource Unavailable"
-        },
-        default: {
-            description: "Unexpected Error"
-        }
-    }
-};
+      },
+    },
+    404: {
+      description: 'Not Found',
+    },
+    503: {
+      description: 'Tuner Resource Unavailable',
+    },
+    default: {
+      description: 'Unexpected Error',
+    },
+  },
+}

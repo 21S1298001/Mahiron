@@ -14,59 +14,61 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../api";
-import * as apid from "../../../../api";
-import _ from "../../_";
-import Service from "../../Service";
+import { Operation } from 'express-openapi'
+import * as api from '../../api'
+import * as apid from '../../../../api'
+import _ from '../../_'
+import Service from '../../Service'
 
 export const parameters = [
-    {
-        in: "path",
-        name: "id",
-        type: "integer",
-        maximum: 6553565535,
-        required: true
-    }
-];
+  {
+    in: 'path',
+    name: 'id',
+    type: 'integer',
+    maximum: 6553565535,
+    required: true,
+  },
+]
 
 export const get: Operation = async (req, res) => {
+  const serviceItem = _.service.get(req.params.id as any as number)
 
-    const serviceItem = _.service.get(req.params.id as any as number);
+  if (serviceItem === null || serviceItem === undefined) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (serviceItem === null || serviceItem === undefined) {
-        api.responseError(res, 404);
-        return;
-    }
-
-    const service: apid.Service = {
-        ...serviceItem.export(),
-        hasLogoData: await Service.isLogoDataExists(serviceItem.networkId, serviceItem.logoId)
-    };
-    res.json(service);
-};
+  const service: apid.Service = {
+    ...serviceItem.export(),
+    hasLogoData: await Service.isLogoDataExists(
+      serviceItem.networkId,
+      serviceItem.logoId
+    ),
+  }
+  res.json(service)
+}
 
 get.apiDoc = {
-    tags: ["services"],
-    operationId: "getService",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/Service"
-            }
-        },
-        404: {
-            description: "Not Found",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['services'],
+  operationId: 'getService',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/Service',
+      },
+    },
+    404: {
+      description: 'Not Found',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

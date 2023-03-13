@@ -15,8 +15,8 @@
    limitations under the License.
 */
 const regexp = {
-    windowsNamedPipe: /^\\\\\.\\pipe\\.+/,
-    unixDomainSocket: /^\/.+/
-};
+  windowsNamedPipe: /^\\\\\.\\pipe\\.+/,
+  unixDomainSocket: /^\/.+/,
+}
 
-export default regexp;
+export default regexp

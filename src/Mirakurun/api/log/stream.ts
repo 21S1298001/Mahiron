@@ -14,35 +14,34 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import { event } from "../../log";
+import { Operation } from 'express-openapi'
+import { event } from '../../log'
 
 export const get: Operation = (req, res) => {
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.status(200)
 
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.status(200);
+  req.setTimeout(1000 * 60 * 60) // 60 minutes
+  req.once('close', () => {
+    event.removeListener('data', _listener)
+  })
 
-    req.setTimeout(1000 * 60 * 60); // 60 minutes
-    req.once("close", () => {
-        event.removeListener("data", _listener);
-    });
+  event.on('data', _listener)
 
-    event.on("data", _listener);
-
-    function _listener(data: string) {
-        res.write(data + "\n");
-    }
-};
+  function _listener(data: string) {
+    res.write(data + '\n')
+  }
+}
 
 get.apiDoc = {
-    tags: ["log", "stream"],
-    operationId: "getLogStream",
-    responses: {
-        200: {
-            description: "OK"
-        },
-        default: {
-            description: "Unexpected Error"
-        }
-    }
-};
+  tags: ['log', 'stream'],
+  operationId: 'getLogStream',
+  responses: {
+    200: {
+      description: 'OK',
+    },
+    default: {
+      description: 'Unexpected Error',
+    },
+  },
+}

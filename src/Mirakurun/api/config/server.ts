@@ -14,68 +14,66 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as config from "../../config";
+import { Operation } from 'express-openapi'
+import * as config from '../../config'
 
 export const get: Operation = (req, res) => {
-
-    res.status(200);
-    res.json(config.loadServer());
-};
+  res.status(200)
+  res.json(config.loadServer())
+}
 
 get.apiDoc = {
-    tags: ["config"],
-    operationId: "getServerConfig",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/ConfigServer"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['config'],
+  operationId: 'getServerConfig',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/ConfigServer',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}
 
 export const put: Operation = (req, res) => {
+  const server: config.Server = req.body
 
-    const server: config.Server = req.body;
+  config.saveServer(server)
 
-    config.saveServer(server);
-
-    res.status(200);
-    res.json(server);
-};
+  res.status(200)
+  res.json(server)
+}
 
 put.apiDoc = {
-    tags: ["config"],
-    operationId: "updateServerConfig",
-    parameters: [
-        {
-            in: "body",
-            name: "body",
-            schema: {
-                $ref: "#/definitions/ConfigServer"
-            }
-        }
-    ],
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/ConfigServer"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['config'],
+  operationId: 'updateServerConfig',
+  parameters: [
+    {
+      in: 'body',
+      name: 'body',
+      schema: {
+        $ref: '#/definitions/ConfigServer',
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/ConfigServer',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

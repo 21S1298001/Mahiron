@@ -14,57 +14,62 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../../../api";
-import _ from "../../../../_";
-import { ChannelType, ChannelTypes } from "../../../../common";
+import { Operation } from 'express-openapi'
+import * as api from '../../../../api'
+import _ from '../../../../_'
+import { ChannelType, ChannelTypes } from '../../../../common'
 
 export const parameters = [
-    {
-        in: "path",
-        name: "type",
-        type: "string",
-        enum: Object.keys(ChannelTypes),
-        required: true
-    },
-    {
-        in: "path",
-        name: "channel",
-        type: "string",
-        required: true
-    }
-];
+  {
+    in: 'path',
+    name: 'type',
+    type: 'string',
+    enum: Object.keys(ChannelTypes),
+    required: true,
+  },
+  {
+    in: 'path',
+    name: 'channel',
+    type: 'string',
+    required: true,
+  },
+]
 
 export const get: Operation = (req, res) => {
+  const channel = _.channel.get(
+    req.params.type as ChannelType,
+    req.params.channel
+  )
 
-    const channel = _.channel.get(req.params.type as ChannelType, req.params.channel);
+  if (channel === null) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (channel === null) {
-        api.responseError(res, 404);
-        return;
-    }
-
-    res.redirect(307, `/api/services?channel.type=${channel.type}&channel.channel=${channel.channel}`);
-};
+  res.redirect(
+    307,
+    `/api/services?channel.type=${channel.type}&channel.channel=${channel.channel}`
+  )
+}
 
 get.apiDoc = {
-    tags: ["channels", "services"],
-    operationId: "getServicesByChannel",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                type: "array",
-                items: {
-                    $ref: "#/definitions/Service"
-                }
-            }
+  tags: ['channels', 'services'],
+  operationId: 'getServicesByChannel',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        type: 'array',
+        items: {
+          $ref: '#/definitions/Service',
         },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

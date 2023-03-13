@@ -14,70 +14,70 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import sift from "sift";
-import * as api from "../api";
-import _ from "../_";
-import { ChannelTypes } from "../common";
+import { Operation } from 'express-openapi'
+import sift from 'sift'
+import * as api from '../api'
+import _ from '../_'
+import { ChannelTypes } from '../common'
 
 export const get: Operation = (req, res) => {
+  const channels = _.channel.items
+    .map((channel) => {
+      const ch: any = channel.toJSON()
 
-    const channels = _.channel.items.map(channel => {
+      ch.services = channel.getServices().map((service) => ({
+        id: service.id,
+        serviceId: service.serviceId,
+        networkId: service.networkId,
+        name: service.name,
+      }))
 
-        const ch: any = channel.toJSON();
+      return ch
+    })
+    .filter(sift(req.query))
 
-        ch.services = channel.getServices().map(service => ({
-            id: service.id,
-            serviceId: service.serviceId,
-            networkId: service.networkId,
-            name: service.name
-        }));
-
-        return ch;
-    }).filter(sift(req.query));
-
-    api.responseJSON(res, channels);
-};
+  api.responseJSON(res, channels)
+}
 
 get.apiDoc = {
-    tags: ["channels"],
-    operationId: "getChannels",
-    parameters: [
-        {
-            in: "query",
-            name: "type",
-            type: "string",
-            enum: Object.keys(ChannelTypes),
-            required: false
+  tags: ['channels'],
+  operationId: 'getChannels',
+  parameters: [
+    {
+      in: 'query',
+      name: 'type',
+      type: 'string',
+      enum: Object.keys(ChannelTypes),
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'channel',
+      type: 'string',
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'name',
+      type: 'string',
+      required: false,
+    },
+  ],
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        type: 'array',
+        items: {
+          $ref: '#/definitions/Channel',
         },
-        {
-            in: "query",
-            name: "channel",
-            type: "string",
-            required: false
-        },
-        {
-            in: "query",
-            name: "name",
-            type: "string",
-            required: false
-        }
-    ],
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                type: "array",
-                items: {
-                    $ref: "#/definitions/Channel"
-                }
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

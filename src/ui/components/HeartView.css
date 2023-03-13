@@ -15,15 +15,15 @@
    limitations under the License.
 */
 .heart-view > div.consent {
-    margin: 16px 32px;
-    max-width: 450px;
+  margin: 16px 32px;
+  max-width: 450px;
 }
 
 .heart-view > .ms-Stack > span,
 .heart-view > .ms-Stack img {
-    margin: 8px 16px;
+  margin: 8px 16px;
 }
 
 .heart-view img {
-    display: inline-block;
+  display: inline-block;
 }

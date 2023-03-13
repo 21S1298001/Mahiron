@@ -14,37 +14,36 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import latestVersion from "latest-version";
-import * as api from "../api";
-import { Version } from "../../../api";
-const pkg = require("../../../package.json");
+import { Operation } from 'express-openapi'
+import latestVersion from 'latest-version'
+import * as api from '../api'
+import { Version } from '../../../api'
+import pkg from '../../../package.json'
 
 export const get: Operation = async (req, res) => {
+  const version: Version = {
+    current: pkg.version,
+    latest: await latestVersion('mirakurun'),
+  }
 
-    const version: Version = {
-        current: pkg.version,
-        latest: await latestVersion("mirakurun")
-    };
-
-    api.responseJSON(res, version);
-};
+  api.responseJSON(res, version)
+}
 
 get.apiDoc = {
-    tags: ["version"],
-    operationId: "checkVersion",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/Version"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['version'],
+  operationId: 'checkVersion',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/Version',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

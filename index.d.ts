@@ -15,5 +15,5 @@
    limitations under the License.
 */
 
-import Client from "./lib/client";
-export default Client;
+import Client from './lib/client'
+export default Client

@@ -14,63 +14,61 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../api";
-import * as db from "../db";
-import _ from "../_";
+import { Operation } from 'express-openapi'
+import * as api from '../api'
+import * as db from '../db'
+import _ from '../_'
 
 export const get: Operation = (req, res) => {
+  let programs: db.Program[]
 
-    let programs: db.Program[];
+  if (Object.keys(req.query).length !== 0) {
+    programs = _.program.findByQuery(req.query)
+  } else {
+    programs = Array.from(_.program.itemMap.values())
+  }
 
-    // tslint:disable-next-line:prefer-conditional-expression
-    if (Object.keys(req.query).length !== 0) {
-        programs = _.program.findByQuery(req.query);
-    } else {
-        programs = Array.from(_.program.itemMap.values());
-    }
-
-    api.responseJSON(res, programs);
-};
+  api.responseJSON(res, programs)
+}
 
 get.apiDoc = {
-    tags: ["programs"],
-    operationId: "getPrograms",
-    parameters: [
-        {
-            in: "query",
-            name: "networkId",
-            type: "integer",
-            required: false
+  tags: ['programs'],
+  operationId: 'getPrograms',
+  parameters: [
+    {
+      in: 'query',
+      name: 'networkId',
+      type: 'integer',
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'serviceId',
+      type: 'integer',
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'eventId',
+      type: 'integer',
+      required: false,
+    },
+  ],
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        type: 'array',
+        items: {
+          $ref: '#/definitions/Program',
         },
-        {
-            in: "query",
-            name: "serviceId",
-            type: "integer",
-            required: false
-        },
-        {
-            in: "query",
-            name: "eventId",
-            type: "integer",
-            required: false
-        }
-    ],
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                type: "array",
-                items: {
-                    $ref: "#/definitions/Program"
-                }
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

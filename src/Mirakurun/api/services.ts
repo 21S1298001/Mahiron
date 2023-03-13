@@ -14,88 +14,90 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import sift from "sift";
-import * as api from "../api";
-import * as apid from "../../../api";
-import _ from "../_";
-import Service from "../Service";
-import { ChannelTypes } from "../common";
+import { Operation } from 'express-openapi'
+import sift from 'sift'
+import * as api from '../api'
+import * as apid from '../../../api'
+import _ from '../_'
+import Service from '../Service'
+import { ChannelTypes } from '../common'
 
 export const get: Operation = async (req, res) => {
+  const serviceItems = [..._.service.items] // shallow copy
+  serviceItems.sort((a, b) => a.getOrder() - b.getOrder())
 
-    const serviceItems = [..._.service.items]; // shallow copy
-    serviceItems.sort((a, b) => a.getOrder() - b.getOrder());
+  const services: apid.Service[] = []
 
-    const services: apid.Service[] = [];
+  for (const serviceItem of serviceItems.filter(sift(req.query))) {
+    services.push({
+      ...serviceItem.export(),
+      hasLogoData: await Service.isLogoDataExists(
+        serviceItem.networkId,
+        serviceItem.logoId
+      ),
+    })
+  }
 
-    for (const serviceItem of serviceItems.filter(sift(req.query))) {
-        services.push({
-            ...serviceItem.export(),
-            hasLogoData: await Service.isLogoDataExists(serviceItem.networkId, serviceItem.logoId)
-        });
-    }
-
-    api.responseJSON(res, services);
-};
+  api.responseJSON(res, services)
+}
 
 get.apiDoc = {
-    tags: ["services"],
-    operationId: "getServices",
-    parameters: [
-        {
-            in: "query",
-            name: "serviceId",
-            type: "integer",
-            required: false
+  tags: ['services'],
+  operationId: 'getServices',
+  parameters: [
+    {
+      in: 'query',
+      name: 'serviceId',
+      type: 'integer',
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'networkId',
+      type: 'integer',
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'name',
+      type: 'string',
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'type',
+      type: 'integer',
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'channel.type',
+      type: 'string',
+      enum: Object.keys(ChannelTypes),
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'channel.channel',
+      type: 'string',
+      required: false,
+    },
+  ],
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        type: 'array',
+        items: {
+          $ref: '#/definitions/Service',
         },
-        {
-            in: "query",
-            name: "networkId",
-            type: "integer",
-            required: false
-        },
-        {
-            in: "query",
-            name: "name",
-            type: "string",
-            required: false
-        },
-        {
-            in: "query",
-            name: "type",
-            type: "integer",
-            required: false
-        },
-        {
-            in: "query",
-            name: "channel.type",
-            type: "string",
-            enum: Object.keys(ChannelTypes),
-            required: false
-        },
-        {
-            in: "query",
-            name: "channel.channel",
-            type: "string",
-            required: false
-        }
-    ],
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                type: "array",
-                items: {
-                    $ref: "#/definitions/Service"
-                }
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

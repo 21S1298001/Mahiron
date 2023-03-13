@@ -14,68 +14,65 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { EventEmitter } from "eventemitter3";
-import rfdc = require("rfdc");
-const clone = rfdc();
-import _ from "./_";
+import { EventEmitter } from 'eventemitter3'
+import rfdc = require('rfdc')
+const clone = rfdc()
+import _ from './_'
 
 export interface EventMessage<T = any> {
-    readonly resource: EventResource;
-    readonly type: EventType;
-    readonly data: T;
-    readonly time: number;
+  readonly resource: EventResource
+  readonly type: EventType
+  readonly data: T
+  readonly time: number
 }
 
-export type EventResource = "program" | "service" | "tuner";
-export type EventType = "create" | "update" | "remove";
+export type EventResource = 'program' | 'service' | 'tuner'
+export type EventType = 'create' | 'update' | 'remove'
 
 export default class Event extends EventEmitter {
+  static get log(): EventMessage[] {
+    return _.event.log
+  }
 
-    static get log(): EventMessage[] {
-        return _.event.log;
+  static onEvent(listener: (message: EventMessage) => void): void {
+    _.event.on('event', listener)
+  }
+
+  static onceEvent(listener: (message: EventMessage) => void): void {
+    _.event.once('event', listener)
+  }
+
+  static removeListener(listener: (...args: any[]) => void): void {
+    _.event.removeListener('event', listener)
+  }
+
+  static emit(resource: EventResource, type: EventType, data: any): boolean {
+    const message: EventMessage = {
+      resource: resource,
+      type: type,
+      data: clone(data),
+      time: Date.now(),
     }
 
-    static onEvent(listener: (message: EventMessage) => void): void {
-        _.event.on("event", listener);
-    }
+    return _.event.emit('event', message)
+  }
 
-    static onceEvent(listener: (message: EventMessage) => void): void {
-        _.event.once("event", listener);
-    }
+  private _log: EventMessage[] = []
 
-    static removeListener(listener: (...args: any[]) => void): void {
-        _.event.removeListener("event", listener);
-    }
+  constructor() {
+    super()
 
-    static emit(resource: EventResource, type: EventType, data: any): boolean {
+    this.on('event', (message) => {
+      this._log.push(message)
 
-        const message: EventMessage = {
-            resource: resource,
-            type: type,
-            data: clone(data),
-            time: Date.now()
-        };
+      // testing
+      if (this._log.length > 100) {
+        this._log.shift()
+      }
+    })
+  }
 
-        return _.event.emit("event", message);
-    }
-
-    private _log: EventMessage[] = [];
-
-    constructor() {
-        super();
-
-        this.on("event", message => {
-
-            this._log.push(message);
-
-            // testing
-            if (this._log.length > 100) {
-                this._log.shift();
-            }
-        });
-    }
-
-    get log(): EventMessage[] {
-        return this._log;
-    }
+  get log(): EventMessage[] {
+    return this._log
+  }
 }

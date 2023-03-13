@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 services:
   mirakurun:
     build:
@@ -41,5 +41,5 @@ services:
     logging:
       driver: json-file
       options:
-        max-file: "1"
+        max-file: '1'
         max-size: 10m

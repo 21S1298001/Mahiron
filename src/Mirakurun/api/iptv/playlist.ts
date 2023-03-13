@@ -14,50 +14,49 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import _ from "../../_";
-import Service from "../../Service";
+import { Operation } from 'express-openapi'
+import _ from '../../_'
+import Service from '../../Service'
 
 export const get: Operation = async (req, res) => {
+  const apiRoot = `${req.protocol}://${req.headers.host}/api`
 
-    const apiRoot = `${req.protocol}://${req.headers.host}/api`;
+  const services = [..._.service.items] // shallow copy
+  services.sort((a, b) => a.getOrder() - b.getOrder())
 
-    const services = [..._.service.items]; // shallow copy
-    services.sort((a, b) => a.getOrder() - b.getOrder());
-
-    let m = `#EXTM3U url-tvg="${apiRoot}/iptv/xmltv"\n`;
-    for (const service of services) {
-        if (service.type !== 1 && service.type !== 173) {
-            continue;
-        }
-
-        m += `#KODIPROP:mimetype=video/mp2t\n`;
-        m += `#EXTINF:-1 tvg-id="${service.id}"`;
-        if (await Service.isLogoDataExists(service.networkId, service.logoId)) {
-            m += ` tvg-logo="${apiRoot}/services/${service.id}/logo"`;
-        }
-        m += ` group-title="${service.channel.type}",${service.name}\n`;
-        m += `${apiRoot}/services/${service.id}/stream\n`;
+  let m = `#EXTM3U url-tvg="${apiRoot}/iptv/xmltv"\n`
+  for (const service of services) {
+    if (service.type !== 1 && service.type !== 173) {
+      continue
     }
 
-    res.setHeader("Content-Type", "application/x-mpegURL; charset=utf-8");
-    res.status(200);
-    res.end(m);
-};
+    m += `#KODIPROP:mimetype=video/mp2t\n`
+    m += `#EXTINF:-1 tvg-id="${service.id}"`
+    if (await Service.isLogoDataExists(service.networkId, service.logoId)) {
+      m += ` tvg-logo="${apiRoot}/services/${service.id}/logo"`
+    }
+    m += ` group-title="${service.channel.type}",${service.name}\n`
+    m += `${apiRoot}/services/${service.id}/stream\n`
+  }
+
+  res.setHeader('Content-Type', 'application/x-mpegURL; charset=utf-8')
+  res.status(200)
+  res.end(m)
+}
 
 get.apiDoc = {
-    tags: ["iptv"],
-    summary: "IPTV - M3U Playlist",
-    produces: ["application/x-mpegURL"],
-    responses: {
-        200: {
-            description: "OK"
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['iptv'],
+  summary: 'IPTV - M3U Playlist',
+  produces: ['application/x-mpegURL'],
+  responses: {
+    200: {
+      description: 'OK',
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

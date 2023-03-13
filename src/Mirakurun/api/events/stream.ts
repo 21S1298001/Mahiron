@@ -14,68 +14,65 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../api";
-import Event, { EventMessage } from "../../Event";
+import { Operation } from 'express-openapi'
+import Event, { EventMessage } from '../../Event'
 
 export const get: Operation = (req, res) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
+  res.status(200)
+  res.write('[\n')
 
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
-    res.status(200);
-    res.write("[\n");
+  req.setTimeout(1000 * 60 * 60) // 60 minutes
+  req.once('close', () => Event.removeListener(_listener))
 
-    req.setTimeout(1000 * 60 * 60); // 60 minutes
-    req.once("close", () => Event.removeListener(_listener));
+  Event.onEvent(_listener)
 
-    Event.onEvent(_listener);
-
-    function _listener(message: EventMessage) {
-
-        if (req.query.resource && req.query.resource !== message.resource) {
-            return;
-        }
-        if (req.query.type && req.query.type !== message.type) {
-            return;
-        }
-
-        res.write(JSON.stringify(message) + "\n,\n");
+  function _listener(message: EventMessage) {
+    if (req.query.resource && req.query.resource !== message.resource) {
+      return
     }
-};
+    if (req.query.type && req.query.type !== message.type) {
+      return
+    }
+
+    res.write(JSON.stringify(message) + '\n,\n')
+  }
+}
 
 get.apiDoc = {
-    tags: ["events", "stream"],
-    operationId: "getEventsStream",
-    parameters: [
-        {
-            in: "query",
-            name: "resource",
-            type: "string",
-            enum: ["program", "service", "tuner"],
-            required: false
+  tags: ['events', 'stream'],
+  operationId: 'getEventsStream',
+  parameters: [
+    {
+      in: 'query',
+      name: 'resource',
+      type: 'string',
+      enum: ['program', 'service', 'tuner'],
+      required: false,
+    },
+    {
+      in: 'query',
+      name: 'type',
+      type: 'string',
+      enum: ['create', 'update', 'remove'],
+      required: false,
+    },
+  ],
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        type: 'array',
+        items: {
+          $ref: '#/definitions/Event',
         },
-        {
-            in: "query",
-            name: "type",
-            type: "string",
-            enum: ["create", "update", "remove"],
-            required: false
-        }
-    ],
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                type: "array",
-                items: {
-                    $ref: "#/definitions/Event"
-                }
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

@@ -14,68 +14,66 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as config from "../../config";
+import { Operation } from 'express-openapi'
+import * as config from '../../config'
 
 export const get: Operation = (req, res) => {
-
-    res.status(200);
-    res.json(config.loadChannels());
-};
+  res.status(200)
+  res.json(config.loadChannels())
+}
 
 get.apiDoc = {
-    tags: ["config"],
-    operationId: "getChannelsConfig",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/ConfigChannels"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['config'],
+  operationId: 'getChannelsConfig',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/ConfigChannels',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}
 
 export const put: Operation = (req, res) => {
+  const channels: config.Channel[] = req.body
 
-    const channels: config.Channel[] = req.body;
+  config.saveChannels(channels)
 
-    config.saveChannels(channels);
-
-    res.status(200);
-    res.json(channels);
-};
+  res.status(200)
+  res.json(channels)
+}
 
 put.apiDoc = {
-    tags: ["config"],
-    operationId: "updateChannelsConfig",
-    parameters: [
-        {
-            in: "body",
-            name: "body",
-            schema: {
-                $ref: "#/definitions/ConfigChannels"
-            }
-        }
-    ],
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/ConfigChannels"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['config'],
+  operationId: 'updateChannelsConfig',
+  parameters: [
+    {
+      in: 'body',
+      name: 'body',
+      schema: {
+        $ref: '#/definitions/ConfigChannels',
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/ConfigChannels',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

@@ -14,41 +14,40 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../api";
-import _ from "../../_";
-const pkg = require("../../../../package.json");
+import { Operation } from 'express-openapi'
+import * as api from '../../api'
+import _ from '../../_'
+import pkg from '../../../../package.json'
 
 export const get: Operation = (req, res) => {
+  const apiRoot = `${req.protocol}://${req.headers.host}/api`
 
-    const apiRoot = `${req.protocol}://${req.headers.host}/api`;
-
-    api.responseJSON(res, {
-        FriendlyName: `Mirakurun`,
-        ModelNumber: `MIRAKURUN`,
-        FirmwareName: `mirakurun_${process.arch}_${process.platform}`,
-        FirmwareVersion: pkg.version,
-        Manufacturer: "Chinachu Project",
-        DeviceID: req.headers.host.replace(/[\[\].:]/g, ""),
-        DeviceAuth: "MIRAKURUN",
-        TunerCount: _.tuner.devices.length,
-        BaseURL: `${apiRoot}/iptv`,
-        LineupURL: `${apiRoot}/iptv/lineup.json`
-    });
-};
+  api.responseJSON(res, {
+    FriendlyName: `Mirakurun`,
+    ModelNumber: `MIRAKURUN`,
+    FirmwareName: `mirakurun_${process.arch}_${process.platform}`,
+    FirmwareVersion: pkg.version,
+    Manufacturer: 'Chinachu Project',
+    DeviceID: req.headers.host.replace(/[[\].:]/g, ''),
+    DeviceAuth: 'MIRAKURUN',
+    TunerCount: _.tuner.devices.length,
+    BaseURL: `${apiRoot}/iptv`,
+    LineupURL: `${apiRoot}/iptv/lineup.json`,
+  })
+}
 
 get.apiDoc = {
-    tags: ["iptv"],
-    summary: "IPTV - Media Server Support",
-    responses: {
-        200: {
-            description: "OK"
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['iptv'],
+  summary: 'IPTV - Media Server Support',
+  responses: {
+    200: {
+      description: 'OK',
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

@@ -14,69 +14,71 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../../api";
-import _ from "../../../_";
-import { ChannelTypes, ChannelType } from "../../../common";
+import { Operation } from 'express-openapi'
+import * as api from '../../../api'
+import _ from '../../../_'
+import { ChannelTypes, ChannelType } from '../../../common'
 
 export const parameters = [
-    {
-        in: "path",
-        name: "type",
-        type: "string",
-        enum: Object.keys(ChannelTypes),
-        required: true
-    },
-    {
-        in: "path",
-        name: "channel",
-        type: "string",
-        required: true
-    }
-];
+  {
+    in: 'path',
+    name: 'type',
+    type: 'string',
+    enum: Object.keys(ChannelTypes),
+    required: true,
+  },
+  {
+    in: 'path',
+    name: 'channel',
+    type: 'string',
+    required: true,
+  },
+]
 
 export const get: Operation = (req, res) => {
+  const channel = _.channel.get(
+    req.params.type as ChannelType,
+    req.params.channel
+  )
 
-    const channel = _.channel.get(req.params.type as ChannelType, req.params.channel);
+  if (channel === null) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (channel === null) {
-        api.responseError(res, 404);
-        return;
-    }
+  const body: any = channel.toJSON()
 
-    const body: any = channel.toJSON();
+  body.services = channel.getServices().map((service) => ({
+    id: service.id,
+    serviceId: service.serviceId,
+    networkId: service.networkId,
+    name: service.name,
+  }))
 
-    body.services = channel.getServices().map(service => ({
-        id: service.id,
-        serviceId: service.serviceId,
-        networkId: service.networkId,
-        name: service.name
-    }));
-
-    res.json(body);
-};
+  res.json(body)
+}
 
 get.apiDoc = {
-    tags: ["channels"],
-    operationId: "getChannel",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/Channel"
-            }
-        },
-        404: {
-            description: "Not Found",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['channels'],
+  operationId: 'getChannel',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/Channel',
+      },
+    },
+    404: {
+      description: 'Not Found',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

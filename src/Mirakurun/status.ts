@@ -15,69 +15,69 @@
    limitations under the License.
 */
 interface Status {
-    epg: { [networkId: number]: boolean };
-    rpcCount: number;
-    streamCount: {
-        tsFilter: number;
-        decoder: number;
-    };
-    errorCount: {
-        uncaughtException: number;
-        unhandledRejection: number;
-        bufferOverflow: number;
-        tunerDeviceRespawn: number;
-        decoderRespawn: number;
-    };
-    timerAccuracy: {
-        last: number;
-        m1: number[];
-        m5: number[];
-        m15: number[];
-    };
+  epg: { [networkId: number]: boolean }
+  rpcCount: number
+  streamCount: {
+    tsFilter: number
+    decoder: number
+  }
+  errorCount: {
+    uncaughtException: number
+    unhandledRejection: number
+    bufferOverflow: number
+    tunerDeviceRespawn: number
+    decoderRespawn: number
+  }
+  timerAccuracy: {
+    last: number
+    m1: number[]
+    m5: number[]
+    m15: number[]
+  }
 }
 
 const status: Status = {
-    epg: {},
-    rpcCount: 0,
-    streamCount: {
-        tsFilter: 0,
-        decoder: 0
-    },
-    errorCount: {
-        uncaughtException: 0,
-        unhandledRejection: 0,
-        bufferOverflow: 0,
-        tunerDeviceRespawn: 0,
-        decoderRespawn: 0
-    },
-    timerAccuracy: {
-        last: 0,
-        m1: Array.apply(null, new Array(60)).map(Number.prototype.valueOf, 0),
-        m5: Array.apply(null, new Array(60 * 5)).map(Number.prototype.valueOf, 0),
-        m15: Array.apply(null, new Array(60 * 15)).map(Number.prototype.valueOf, 0)
-    }
-};
+  epg: {},
+  rpcCount: 0,
+  streamCount: {
+    tsFilter: 0,
+    decoder: 0,
+  },
+  errorCount: {
+    uncaughtException: 0,
+    unhandledRejection: 0,
+    bufferOverflow: 0,
+    tunerDeviceRespawn: 0,
+    decoderRespawn: 0,
+  },
+  timerAccuracy: {
+    last: 0,
+    m1: new Array(60).fill(0),
+    m5: new Array(60 * 5).fill(0),
+    m15: new Array(60 * 15).fill(0),
+  },
+}
 
-const tl = status.timerAccuracy;
-let last: [number, number];
+const tl = status.timerAccuracy
+let last: [number, number]
 
 function tick() {
-    // main loop
-    const diff = process.hrtime(last); // nanoseconds
-    tl.last = diff[0] * 1e9 + diff[1] - 1000000000;
+  // main loop
+  const diff = process.hrtime(last) // nanoseconds
+  tl.last = diff[0] * 1e9 + diff[1] - 1000000000
 
-    tl.m1.push(tl.last);
-    tl.m5.push(tl.last);
-    tl.m15.push(tl.last);
+  tl.m1.push(tl.last)
+  tl.m5.push(tl.last)
+  tl.m15.push(tl.last)
 
-    tl.m1.shift();
-    tl.m5.shift();
-    tl.m15.shift();
+  tl.m1.shift()
+  tl.m5.shift()
+  tl.m15.shift()
 
-    last = process.hrtime();
-    setTimeout(tick, 1000);
+  last = process.hrtime()
+  setTimeout(tick, 1000)
 }
-setTimeout(() => last = process.hrtime(), 1000 * 9);
-setTimeout(tick, 1000 * 10);
+setTimeout(() => (last = process.hrtime()), 1000 * 9)
+setTimeout(tick, 1000 * 10)
 
-export default status;
+export default status

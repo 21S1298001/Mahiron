@@ -14,68 +14,66 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as config from "../../config";
+import { Operation } from 'express-openapi'
+import * as config from '../../config'
 
 export const get: Operation = (req, res) => {
-
-    res.status(200);
-    res.json(config.loadTuners());
-};
+  res.status(200)
+  res.json(config.loadTuners())
+}
 
 get.apiDoc = {
-    tags: ["config"],
-    operationId: "getTunersConfig",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/ConfigTuners"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['config'],
+  operationId: 'getTunersConfig',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/ConfigTuners',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}
 
 export const put: Operation = (req, res) => {
+  const tuners: config.Tuner[] = req.body
 
-    const tuners: config.Tuner[] = req.body;
+  config.saveTuners(tuners)
 
-    config.saveTuners(tuners);
-
-    res.status(200);
-    res.json(tuners);
-};
+  res.status(200)
+  res.json(tuners)
+}
 
 put.apiDoc = {
-    tags: ["config"],
-    operationId: "updateTunersConfig",
-    parameters: [
-        {
-            in: "body",
-            name: "body",
-            schema: {
-                $ref: "#/definitions/ConfigTuners"
-            }
-        }
-    ],
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                $ref: "#/definitions/ConfigTuners"
-            }
-        },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+  tags: ['config'],
+  operationId: 'updateTunersConfig',
+  parameters: [
+    {
+      in: 'body',
+      name: 'body',
+      schema: {
+        $ref: '#/definitions/ConfigTuners',
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        $ref: '#/definitions/ConfigTuners',
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

@@ -14,20 +14,20 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-@import "office-ui-fabric-core/dist/css/fabric.min.css";
+@import 'office-ui-fabric-core/dist/css/fabric.min.css';
 
 body {
-    background: #25272e;
+  background: #25272e;
 }
 
 .ms-Fabric {
-    color: #ebebeb;
+  color: #ebebeb;
 }
 
 .ms-layer {
-    display: none;
+  display: none;
 }
 
 input::placeholder {
-    color: #686b77 !important;
+  color: #686b77 !important;
 }

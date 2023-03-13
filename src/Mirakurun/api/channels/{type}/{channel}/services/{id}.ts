@@ -14,72 +14,76 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
-import * as api from "../../../../../api";
-import _ from "../../../../../_";
-import { ChannelTypes, ChannelType } from "../../../../../common";
+import { Operation } from 'express-openapi'
+import * as api from '../../../../../api'
+import _ from '../../../../../_'
+import { ChannelTypes, ChannelType } from '../../../../../common'
 
 export const parameters = [
-    {
-        in: "path",
-        name: "type",
-        type: "string",
-        enum: Object.keys(ChannelTypes),
-        required: true
-    },
-    {
-        in: "path",
-        name: "channel",
-        type: "string",
-        required: true
-    },
-    {
-        in: "path",
-        name: "id",
-        type: "integer",
-        maximum: 6553565535,
-        required: true
-    }
-];
+  {
+    in: 'path',
+    name: 'type',
+    type: 'string',
+    enum: Object.keys(ChannelTypes),
+    required: true,
+  },
+  {
+    in: 'path',
+    name: 'channel',
+    type: 'string',
+    required: true,
+  },
+  {
+    in: 'path',
+    name: 'id',
+    type: 'integer',
+    maximum: 6553565535,
+    required: true,
+  },
+]
 
 export const get: Operation = (req, res) => {
+  const channel = _.channel.get(
+    req.params.type as ChannelType,
+    req.params.channel
+  )
 
-    const channel = _.channel.get(req.params.type as ChannelType, req.params.channel);
+  if (channel === null) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (channel === null) {
-        api.responseError(res, 404);
-        return;
-    }
+  const reqId = req.params.id as any as number
+  const service = _.service
+    .findByChannel(channel)
+    .find((sv) => sv.id === reqId || sv.serviceId === reqId)
 
-    const reqId = req.params.id as any as number;
-    const service = _.service.findByChannel(channel).find(sv => (sv.id === reqId || sv.serviceId === reqId));
+  if (!service) {
+    api.responseError(res, 404)
+    return
+  }
 
-    if (!service) {
-        api.responseError(res, 404);
-        return;
-    }
-
-    res.redirect(307, `/api/services/${service.id}`);
-};
+  res.redirect(307, `/api/services/${service.id}`)
+}
 
 get.apiDoc = {
-    tags: ["channels", "services"],
-    operationId: "getServiceByChannel",
-    responses: {
-        200: {
-            description: "OK",
-            schema: {
-                type: "array",
-                items: {
-                    $ref: "#/definitions/Service"
-                }
-            }
+  tags: ['channels', 'services'],
+  operationId: 'getServiceByChannel',
+  responses: {
+    200: {
+      description: 'OK',
+      schema: {
+        type: 'array',
+        items: {
+          $ref: '#/definitions/Service',
         },
-        default: {
-            description: "Unexpected Error",
-            schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
-};
+      },
+    },
+    default: {
+      description: 'Unexpected Error',
+      schema: {
+        $ref: '#/definitions/Error',
+      },
+    },
+  },
+}

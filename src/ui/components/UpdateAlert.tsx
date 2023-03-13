@@ -14,60 +14,62 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as React from "react";
-import { useState, useEffect } from "react";
+import * as React from 'react'
+import { useState, useEffect } from 'react'
 import {
-    MessageBar,
-    MessageBarType,
-    MessageBarButton,
-    Link
-} from "@fluentui/react";
-import { Version } from "../../../api";
+  MessageBar,
+  MessageBarType,
+  MessageBarButton,
+  Link,
+} from '@fluentui/react'
+import { Version } from '../../../api'
 
 const UpdateAlert: React.FC = () => {
+  const [updateAvailable, setUpdateAvailable] = useState<boolean>(false)
+  const [version, setVersion] = useState<Version>(null)
 
-    const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
-    const [version, setVersion] = useState<Version>(null);
+  useEffect(() => {
+    setTimeout(async () => {
+      console.log('UpdateAlert', 'checking update', '...')
+      const version: Version = await (await fetch('/api/version')).json()
+      setVersion(version)
+      if (version.current !== version.latest) {
+        setUpdateAvailable(true)
+      }
+      console.log('UpdateAlert', 'checking update', 'done.')
+    }, 1000 * 5)
+  }, [])
 
-    useEffect(() => {
-        setTimeout(async () => {
-            console.log("UpdateAlert", "checking update", "...");
-            const version: Version = await (await fetch("/api/version")).json();
-            setVersion(version);
-            if (version.current !== version.latest) {
-                setUpdateAvailable(true);
-            }
-            console.log("UpdateAlert", "checking update", "done.");
-        }, 1000 * 5);
-    }, []);
+  return (
+    <>
+      {updateAvailable === true && (
+        <MessageBar
+          messageBarType={MessageBarType.warning}
+          isMultiline={false}
+          onDismiss={() => setUpdateAvailable(false)}
+          dismissButtonAriaLabel="Close"
+          actions={
+            <div>
+              <MessageBarButton
+                href="https://github.com/Chinachu/Mirakurun/blob/master/doc/Platforms.md"
+                target="_blank"
+              >
+                How to Update
+              </MessageBarButton>
+            </div>
+          }
+        >
+          Update ({version.latest}) Available!
+          <Link
+            href="https://github.com/Chinachu/Mirakurun/blob/master/CHANGELOG.md"
+            target="_blank"
+          >
+            CHANGELOG
+          </Link>
+        </MessageBar>
+      )}
+    </>
+  )
+}
 
-    return (
-        <>
-            {updateAvailable === true && (
-                <MessageBar
-                    messageBarType={MessageBarType.warning}
-                    isMultiline={false}
-                    onDismiss={() => setUpdateAvailable(false)}
-                    dismissButtonAriaLabel="Close"
-                    actions={
-                        <div>
-                            <MessageBarButton
-                                href="https://github.com/Chinachu/Mirakurun/blob/master/doc/Platforms.md"
-                                target="_blank"
-                            >
-                                How to Update
-                            </MessageBarButton>
-                        </div>
-                    }
-                >
-                    Update ({version.latest}) Available!
-                    <Link href="https://github.com/Chinachu/Mirakurun/blob/master/CHANGELOG.md" target="_blank">
-                        CHANGELOG
-                    </Link>
-                </MessageBar>
-            )}
-        </>
-    );
-};
-
-export default UpdateAlert;
+export default UpdateAlert

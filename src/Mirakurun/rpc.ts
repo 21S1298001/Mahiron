@@ -14,25 +14,25 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as net from "net";
-import * as http from "http";
-import RPCServer, { Socket } from "jsonrpc2-ws/lib/server";
-import * as log from "./log";
-import _ from "./_";
-import status from "./status";
-import Event from "./Event";
-import { EventMessage } from "./Event";
-import { event as logEvent } from "./log";
-import { isPermittedHost, isPermittedIPAddress } from "./system";
-import { getStatus } from "./api/status";
-import { sleep } from "./common";
+import * as net from 'net'
+import * as http from 'http'
+import RPCServer, { Socket } from 'jsonrpc2-ws/lib/server'
+import * as log from './log'
+import _ from './_'
+import status from './status'
+import Event from './Event'
+import { EventMessage } from './Event'
+import { event as logEvent } from './log'
+import { isPermittedHost, isPermittedIPAddress } from './system'
+import { getStatus } from './api/status'
+import { sleep } from './common'
 
 export interface JoinParams {
-    rooms: string[];
+  rooms: string[]
 }
 
 export interface NotifyParams<T> {
-    array: T[];
+  array: T[]
 }
 
 /**
@@ -47,141 +47,154 @@ export interface NotifyParams<T> {
  * @experimental
  */
 export function createRPCServer(server: http.Server): RPCServer {
+  const rpc = new RPCServer({
+    pingInterval: 1000 * 30,
+    wss: {
+      path: '/rpc',
+      perMessageDeflate: false,
+      clientTracking: false,
+      noServer: true,
+    },
+  })
 
-    const rpc = new RPCServer({
-        pingInterval: 1000 * 30,
-        wss: {
-            path: "/rpc",
-            perMessageDeflate: false,
-            clientTracking: false,
-            noServer: true
-        }
-    });
+  server.on('upgrade', serverOnUpgrade.bind(rpc.wss))
 
-    server.on("upgrade", serverOnUpgrade.bind(rpc.wss));
+  rpc.on('connection', rpcConnection)
 
-    rpc.on("connection", rpcConnection);
+  rpc.methods.set('join', onJoin)
+  rpc.methods.set('leave', onLeave)
+  rpc.methods.set('getStatus', getStatus)
+  rpc.methods.set('getTuners', getTuners)
 
-    rpc.methods.set("join", onJoin);
-    rpc.methods.set("leave", onLeave);
-    rpc.methods.set("getStatus", getStatus);
-    rpc.methods.set("getTuners", getTuners);
-
-    return rpc;
+  return rpc
 }
 
-const _notifierListeners = new Map<Set<RPCServer>, [Function, Function]>();
+const _notifierListeners = new Map<
+  Set<RPCServer>,
+  [(event: EventMessage) => void, (log: string) => void]
+>()
 export function initRPCNotifier(rpcs: Set<RPCServer>): void {
+  const eventsNMDict = {
+    program: new NotifyManager<EventMessage>('events:program', 'events', rpcs),
+    service: new NotifyManager<EventMessage>('events:service', 'events', rpcs),
+    tuner: new NotifyManager<EventMessage>('events:tuner', 'events', rpcs),
+  }
+  function onEventListener(event: EventMessage) {
+    eventsNMDict[event.resource].notify(event)
+  }
 
-    const eventsNMDict = {
-        program: new NotifyManager<EventMessage>("events:program", "events", rpcs),
-        service: new NotifyManager<EventMessage>("events:service", "events", rpcs),
-        tuner: new NotifyManager<EventMessage>("events:tuner", "events", rpcs)
-    };
-    function onEventListener(event: EventMessage) {
-        eventsNMDict[event.resource].notify(event);
-    }
+  const logsNM = new NotifyManager<string>('logs', 'logs', rpcs)
+  function onLogDataListener(log: string) {
+    logsNM.notify(log)
+  }
 
-    const logsNM = new NotifyManager<string>("logs", "logs", rpcs);
-    function onLogDataListener(log: string) {
-        logsNM.notify(log);
-    }
+  Event.onEvent(onEventListener)
+  logEvent.on('data', onLogDataListener)
 
-    Event.onEvent(onEventListener);
-    logEvent.on("data", onLogDataListener);
-
-    _notifierListeners.set(rpcs, [
-        onEventListener,
-        onLogDataListener
-    ]);
+  _notifierListeners.set(rpcs, [onEventListener, onLogDataListener])
 }
 
 class NotifyManager<T> {
-    private _items = new Set<T>();
-    private _active = false;
-    constructor(private _room: string, private _method: string, private _rpcs: Set<RPCServer>) {}
-    async notify(item: T) {
-        this._items.add(item);
-        if (this._active) {
-            return;
-        }
-        this._active = true;
-        await sleep(100);
-        if (status.rpcCount > 0) {
-            const params: NotifyParams<T> = {
-                array: [...this._items.values()]
-            };
-            for (const rpc of this._rpcs) {
-                if (rpc.sockets.size > 0) {
-                    rpc.notifyTo(this._room, this._method, params);
-                }
-            }
-        }
-        this._items.clear();
-        this._active = false;
+  private _items = new Set<T>()
+  private _active = false
+  constructor(
+    private _room: string,
+    private _method: string,
+    private _rpcs: Set<RPCServer>
+  ) {}
+  async notify(item: T) {
+    this._items.add(item)
+    if (this._active) {
+      return
     }
+    this._active = true
+    await sleep(100)
+    if (status.rpcCount > 0) {
+      const params: NotifyParams<T> = {
+        array: [...this._items.values()],
+      }
+      for (const rpc of this._rpcs) {
+        if (rpc.sockets.size > 0) {
+          rpc.notifyTo(this._room, this._method, params)
+        }
+      }
+    }
+    this._items.clear()
+    this._active = false
+  }
 }
 
-function serverOnUpgrade(this: RPCServer["wss"], req: http.IncomingMessage, socket: net.Socket, head: Buffer): void {
+function serverOnUpgrade(
+  this: RPCServer['wss'],
+  req: http.IncomingMessage,
+  socket: net.Socket,
+  head: Buffer
+): void {
+  if (
+    req.socket.remoteAddress &&
+    !isPermittedIPAddress(req.socket.remoteAddress)
+  ) {
+    socket.write('HTTP/1.1 403 Forbidden\r\n\r\n')
+    socket.destroy()
+    return
+  }
 
-    if (req.socket.remoteAddress && !isPermittedIPAddress(req.socket.remoteAddress)) {
-        socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
-        socket.destroy();
-        return;
+  if (req.headers.origin !== undefined) {
+    if (!isPermittedHost(req.headers.origin, _.config.server.hostname)) {
+      socket.write('HTTP/1.1 403 Forbidden\r\n\r\n')
+      socket.destroy()
+      return
     }
+  }
 
-    if (req.headers.origin !== undefined) {
-        if (!isPermittedHost(req.headers.origin, _.config.server.hostname)) {
-            socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
-            socket.destroy();
-            return;
-        }
-    }
-
-    this.handleUpgrade(req, socket, head, ws => this.emit("connection", ws, req));
+  this.handleUpgrade(req, socket, head, (ws) =>
+    this.emit('connection', ws, req)
+  )
 }
 
 function rpcConnection(socket: Socket, req: http.IncomingMessage): void {
-    // connected
-    ++status.rpcCount;
+  // connected
+  ++status.rpcCount
 
-    const ip = req.socket.remoteAddress || "unix";
-    const ua = "" + req.headers["user-agent"];
+  const ip = req.socket.remoteAddress || 'unix'
+  const ua = '' + req.headers['user-agent']
 
-    socket.data.set("ip", ip);
-    socket.data.set("ua", ua);
+  socket.data.set('ip', ip)
+  socket.data.set('ua', ua)
 
-    socket.ws.on("error", wsError);
-    socket.on("close", socketClose);
+  socket.ws.on('error', wsError)
+  socket.on('close', socketClose)
 
-    log.info(`${ip} - RPC #${socket.id} connected - - ${ua}`);
+  log.info(`${ip} - RPC #${socket.id} connected - - ${ua}`)
 }
 
 function wsError(err: Error) {
-    // error
-    log.error(JSON.stringify(err, null, "  "));
-    console.error(err.stack);
+  // error
+  log.error(JSON.stringify(err, null, '  '))
+  console.error(err.stack)
 }
 
 function socketClose(this: Socket): void {
-    // disconnected
-    --status.rpcCount;
+  // disconnected
+  --status.rpcCount
 
-    log.info(`${this.data.get("ip")} - RPC #${this.id} closed - ${this.data.get("ua")}`);
+  log.info(
+    `${this.data.get('ip')} - RPC #${this.id} closed - ${this.data.get('ua')}`
+  )
 }
 
 function onJoin(socket: Socket, params: JoinParams) {
-    for (const room of params.rooms) {
-        socket.joinTo(room);
-    }
+  for (const room of params.rooms) {
+    socket.joinTo(room)
+  }
 }
 
 function onLeave(socket: Socket, params: JoinParams) {
-    for (const room of params.rooms) {
-        socket.leaveFrom(room);
-    }
+  for (const room of params.rooms) {
+    socket.leaveFrom(room)
+  }
 }
 
 function getTuners() {
-    return _.tuner.devices;
+  return _.tuner.devices
 }

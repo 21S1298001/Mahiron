@@ -6,11 +6,8 @@ root = true
 charset = utf-8
 end_of_line = crlf
 indent_style = space
-indent_size = 4
-insert_final_newline = true
-
-[*.{yml,json,sh,md,html,svg}]
 indent_size = 2
+insert_final_newline = true
 
 [*.sh]
 end_of_line = lf

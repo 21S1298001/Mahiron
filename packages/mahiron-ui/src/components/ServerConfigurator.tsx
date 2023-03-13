@@ -35,7 +35,7 @@ import {
   DialogFooter,
 } from "@fluentui/react";
 import { Validator as IPValidator } from "ip-num/Validator";
-import { UIState } from "../index";
+import { UIState } from "../App";
 import type { ConfigServer } from "mahiron-server/types/api";
 
 const configAPI = "/api/config/server";

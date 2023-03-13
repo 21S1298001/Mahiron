@@ -14,48 +14,48 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import EventEmitter from 'eventemitter3'
-import * as React from 'react'
-import { useState } from 'react'
-import { Stack, Nav } from '@fluentui/react'
-import { UIState } from '../index'
-import ServerConfigurator from './ServerConfigurator'
-import TunersConfigurator from './TunersConfigurator'
-import ChannelsConfigurator from './ChannelsConfigurator'
+import EventEmitter from "eventemitter3";
+import * as React from "react";
+import { useState } from "react";
+import { Stack, Nav } from "@fluentui/react";
+import { UIState } from "../App";
+import ServerConfigurator from "./ServerConfigurator";
+import TunersConfigurator from "./TunersConfigurator";
+import ChannelsConfigurator from "./ChannelsConfigurator";
 
 const ConfigView: React.FC<{
-  uiState: UIState
-  uiStateEvents: EventEmitter
+  uiState: UIState;
+  uiStateEvents: EventEmitter;
 }> = ({ uiState, uiStateEvents }) => {
-  const [key, setKey] = useState<string>('server')
+  const [key, setKey] = useState<string>("server");
 
   return (
     <Stack
       horizontal
-      tokens={{ childrenGap: '0 8' }}
-      style={{ margin: '8px 0' }}
+      tokens={{ childrenGap: "0 8" }}
+      style={{ margin: "8px 0" }}
     >
       <Nav
         groups={[
           {
             links: [
               {
-                key: 'server',
-                name: 'Server',
+                key: "server",
+                name: "Server",
                 url: null,
-                onClick: () => setKey('server'),
+                onClick: () => setKey("server"),
               },
               {
-                key: 'tuners',
-                name: 'Tuners',
+                key: "tuners",
+                name: "Tuners",
                 url: null,
-                onClick: () => setKey('tuners'),
+                onClick: () => setKey("tuners"),
               },
               {
-                key: 'channels',
-                name: 'Channels',
+                key: "channels",
+                name: "Channels",
                 url: null,
-                onClick: () => setKey('channels'),
+                onClick: () => setKey("channels"),
               },
             ],
           },
@@ -64,20 +64,20 @@ const ConfigView: React.FC<{
         styles={{ root: { width: 150 } }}
       />
       <Stack.Item grow>
-        <div style={{ margin: '8px 0 8px 24px' }}>
-          {key === 'server' && (
+        <div style={{ margin: "8px 0 8px 24px" }}>
+          {key === "server" && (
             <ServerConfigurator
               uiState={uiState}
               uiStateEvents={uiStateEvents}
             />
           )}
-          {key === 'tuners' && (
+          {key === "tuners" && (
             <TunersConfigurator
               uiState={uiState}
               uiStateEvents={uiStateEvents}
             />
           )}
-          {key === 'channels' && (
+          {key === "channels" && (
             <ChannelsConfigurator
               uiState={uiState}
               uiStateEvents={uiStateEvents}
@@ -86,7 +86,7 @@ const ConfigView: React.FC<{
         </div>
       </Stack.Item>
     </Stack>
-  )
-}
+  );
+};
 
-export default ConfigView
+export default ConfigView;

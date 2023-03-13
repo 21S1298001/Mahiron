@@ -37,7 +37,7 @@ import {
   IconButton,
   ActionButton,
 } from "@fluentui/react";
-import { UIState } from "../index";
+import { UIState } from "../App";
 import type { ConfigTuners, ChannelType } from "mahiron-server/types/api";
 
 const configAPI = "/api/config/tuners";

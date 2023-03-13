@@ -17,7 +17,6 @@
 import EventEmitter from "eventemitter3";
 import * as React from "react";
 import { useState, useEffect } from "react";
-import * as ReactDOM from "react-dom";
 import {
   createTheme,
   loadTheme,
@@ -218,7 +217,7 @@ rpc.methods.set("logs", (socket, { array }: NotifyParams<string>) => {
   uiStateEvents.emit("data:logs", array);
 });
 
-const Content = () => {
+export const App = () => {
   const [state, setState] = useState<UIState>(uiState);
 
   useEffect(() => {
@@ -339,8 +338,6 @@ const Content = () => {
     </Fabric>
   );
 };
-
-ReactDOM.render(<Content />, document.getElementById("root"));
 
 // dark theme
 const myTheme = createTheme({

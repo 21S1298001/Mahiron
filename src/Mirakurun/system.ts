@@ -65,7 +65,7 @@ export function isPermittedIPAddress(addr: string): boolean {
 
     const [isIPv4] = Validator.isValidIPv4String(addr);
     if (isIPv4) {
-        const ipv4 = new IPv4CidrRange(new IPv4(addr), new IPv4Prefix(32));
+        const ipv4 = new IPv4CidrRange(new IPv4(addr), new IPv4Prefix(BigInt(32)));
         for (const rangeString of _.config.server.allowIPv4CidrRanges) {
             if (ipv4.inside(IPv4CidrRange.fromCidr(rangeString))) {
                 return true;
@@ -75,7 +75,7 @@ export function isPermittedIPAddress(addr: string): boolean {
 
     const [isIPv6] = Validator.isValidIPv6String(addr);
     if (isIPv6) {
-        const ipv6 = new IPv6CidrRange(new IPv6(addr), new IPv6Prefix(128));
+        const ipv6 = new IPv6CidrRange(new IPv6(addr), new IPv6Prefix(BigInt(128)));
         for (const rangeString of _.config.server.allowIPv6CidrRanges) {
             if (ipv6.inside(IPv6CidrRange.fromCidr(rangeString))) {
                 return true;

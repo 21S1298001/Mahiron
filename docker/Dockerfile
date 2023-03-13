@@ -1,5 +1,4 @@
-ARG ARCH=
-FROM ${ARCH}node:16.14.0-buster AS build
+FROM node:19.7.0-bullseye-slim AS build
 WORKDIR /app
 ENV DOCKER=YES NODE_ENV=production
 ADD . .
@@ -10,7 +9,7 @@ RUN apt-get update && \
     npm run build && \
     npm install -g --unsafe-perm --production
 
-FROM ${ARCH}node:16.14.0-buster-slim
+FROM node:19.7.0-bullseye-slim
 WORKDIR /app
 RUN apt-get update && \
     apt-get upgrade -y && \

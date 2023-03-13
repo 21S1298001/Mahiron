@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-@import "@fluentui/react/dist/css/fabric.min.css";
+@import "office-ui-fabric-core/dist/css/fabric.min.css";
 
 body {
     background: #25272e;

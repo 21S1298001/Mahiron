@@ -15,16 +15,14 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import latestVersion from "latest-version";
-import * as api from "../api";
 import { Version } from "../../../api";
+import * as api from "../api";
 const pkg = require("../../../package.json");
 
 export const get: Operation = async (req, res) => {
-
     const version: Version = {
         current: pkg.version,
-        latest: await latestVersion("mirakurun")
+        latest: "",
     };
 
     api.responseJSON(res, version);
@@ -37,14 +35,14 @@ get.apiDoc = {
         200: {
             description: "OK",
             schema: {
-                $ref: "#/definitions/Version"
-            }
+                $ref: "#/definitions/Version",
+            },
         },
         default: {
             description: "Unexpected Error",
             schema: {
-                $ref: "#/definitions/Error"
-            }
-        }
-    }
+                $ref: "#/definitions/Error",
+            },
+        },
+    },
 };

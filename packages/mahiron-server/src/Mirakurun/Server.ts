@@ -135,7 +135,7 @@ class Server {
       app.use(
         express.static('lib/ui', {
           setHeaders: (res, path) => {
-            if (express.static.mime.lookup(path) === 'image/svg+xml') {
+            if (express.static.mime.getType(path) === 'image/svg+xml') {
               res.setHeader('Cache-Control', 'public, max-age=86400')
             }
           },

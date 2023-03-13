@@ -29,14 +29,14 @@ jobs:
         run: pnpm install --frozen-lockfile
         shell: bash
 
-      - name: Check by tsc
+      - name: Check server by tsc
         run: pnpm run type-check:server
 
       - name: Build server
         run: pnpm run build
 
-      - name: Check by tsc
-        run: pnpm run type-check
+      - name: Check ui by tsc
+        run: pnpm run type-check:ui
 
   test:
     runs-on: ubuntu-22.04

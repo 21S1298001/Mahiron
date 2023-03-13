@@ -30,6 +30,12 @@ jobs:
         shell: bash
 
       - name: Check by tsc
+        run: pnpm run type-check:server
+
+      - name: Build server
+        run: pnpm run build
+
+      - name: Check by tsc
         run: pnpm run type-check
 
   test:
@@ -56,6 +62,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
         shell: bash
+
+      - name: Build server
+        run: pnpm run build
 
       - name: Run test
         run: pnpm run test

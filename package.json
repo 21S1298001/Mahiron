@@ -79,7 +79,7 @@
     "webpack-cli": "5.0.1"
   },
   "engines": {
-    "node": "^16 || ^18 || ^19"
+    "node": ">=18"
   },
   "engineStrict": true,
   "os": [

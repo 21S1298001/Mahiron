@@ -305,7 +305,7 @@ export default class TunerDevice extends EventEmitter {
     let cmd: string
 
     if (this._isRemote === true) {
-      cmd = 'node lib/remote'
+      cmd = 'node dist/src/remote'
       cmd += ' ' + this._config.remoteMirakurunHost
       cmd += ' ' + (this._config.remoteMirakurunPort || 40772)
       cmd += ' ' + ch.type

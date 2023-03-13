@@ -133,7 +133,7 @@ class Server {
 
     if (!serverConfig.disableWebUI) {
       app.use(
-        express.static('lib/ui', {
+        express.static('dist/ui', {
           setHeaders: (res, path) => {
             if (express.static.mime.getType(path) === 'image/svg+xml') {
               res.setHeader('Cache-Control', 'public, max-age=86400')
@@ -142,7 +142,7 @@ class Server {
         })
       )
       app.use('/swagger-ui', express.static('node_modules/swagger-ui-dist'))
-      app.use('/api/debug', express.static('lib/ui/swagger-ui.html'))
+      app.use('/api/debug', express.static('dist/ui/swagger-ui.html'))
     }
 
     const api = yaml.load(
@@ -154,7 +154,7 @@ class Server {
       app: app,
       apiDoc: api,
       docsPath: '/docs',
-      paths: './lib/Mirakurun/api',
+      paths: './dist/src/Mirakurun/api',
     })
 
     app.use((err, req, res: express.Response, next) => {

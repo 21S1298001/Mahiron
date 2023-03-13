@@ -14,9 +14,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect } from "react";
+import EventEmitter from 'eventemitter3'
+import * as React from 'react'
+import { useState, useEffect } from 'react'
 import {
   Stack,
   Separator,
@@ -33,64 +33,64 @@ import {
   Dialog,
   DialogType,
   DialogFooter,
-} from "@fluentui/react";
-import { Validator as IPValidator } from "ip-num/Validator";
-import { UIState } from "../App";
-import type { ConfigServer } from "mahiron-server/types/api";
+} from '@fluentui/react'
+import { Validator as IPValidator } from 'ip-num/Validator'
+import { UIState } from '../App'
+import type { ConfigServer } from 'mahiron-server/types/api'
 
-const configAPI = "/api/config/server";
+const configAPI = '/api/config/server'
 
 const Configurator: React.FC<{
-  uiState: UIState;
-  uiStateEvents: EventEmitter;
+  uiState: UIState
+  uiStateEvents: EventEmitter
 }> = ({ uiState, uiStateEvents }) => {
-  const [current, setCurrent] = useState<ConfigServer>(null);
-  const [editing, setEditing] = useState<ConfigServer>(null);
-  const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
-  const [saved, setSaved] = useState<boolean>(false);
+  const [current, setCurrent] = useState<ConfigServer>(null)
+  const [editing, setEditing] = useState<ConfigServer>(null)
+  const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false)
+  const [saved, setSaved] = useState<boolean>(false)
 
   useEffect(() => {
     if (saved === true) {
       setTimeout(() => {
-        uiStateEvents.emit("notify:restart-required");
-      }, 500);
-      setSaved(false);
-      return;
+        uiStateEvents.emit('notify:restart-required')
+      }, 500)
+      setSaved(false)
+      return
     }
-    (async () => {
+    ;(async () => {
       try {
-        const res = await (await fetch(configAPI)).json();
-        console.log("ServerConfigurator", "GET", configAPI, "->", res);
-        setEditing({ ...res });
-        setCurrent({ ...res });
+        const res = await (await fetch(configAPI)).json()
+        console.log('ServerConfigurator', 'GET', configAPI, '->', res)
+        setEditing({ ...res })
+        setCurrent({ ...res })
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
-    })();
-  }, [saved]);
+    })()
+  }, [saved])
 
-  const docker = uiState.status.process.env.DOCKER === "YES";
+  const docker = uiState.status.process.env.DOCKER === 'YES'
   const ipv6Ready =
-    docker === false || uiState.status.process.env.DOCKER_NETWORK === "host";
-  const changed = JSON.stringify(current) !== JSON.stringify(editing);
+    docker === false || uiState.status.process.env.DOCKER_NETWORK === 'host'
+  const changed = JSON.stringify(current) !== JSON.stringify(editing)
 
-  let invalid = false;
+  let invalid = false
   if (editing) {
     if (editing.allowIPv4CidrRanges) {
       for (const range of editing.allowIPv4CidrRanges) {
-        const [valid] = IPValidator.isValidIPv4CidrRange(range);
+        const [valid] = IPValidator.isValidIPv4CidrRange(range)
         if (!valid) {
-          invalid = true;
-          break;
+          invalid = true
+          break
         }
       }
     }
     if (!invalid && editing.allowIPv6CidrRanges) {
       for (const range of editing.allowIPv6CidrRanges) {
-        const [valid] = IPValidator.isValidIPv6CidrRange(range);
+        const [valid] = IPValidator.isValidIPv6CidrRange(range)
         if (!valid) {
-          invalid = true;
-          break;
+          invalid = true
+          break
         }
       }
     }
@@ -100,12 +100,12 @@ const Configurator: React.FC<{
     <>
       {!current && <Spinner size={SpinnerSize.large} />}
       {editing && (
-        <Stack tokens={{ childrenGap: "8 0" }}>
+        <Stack tokens={{ childrenGap: '8 0' }}>
           <Dropdown
             label="LogLevel"
-            styles={{ dropdown: { display: "inline-block" } }}
+            styles={{ dropdown: { display: 'inline-block' } }}
             disabled={
-              docker && typeof uiState.status.process.env.LOG_LEVEL === "string"
+              docker && typeof uiState.status.process.env.LOG_LEVEL === 'string'
             }
             onRenderLabel={(props) => (
               <Stack horizontal verticalAlign="end">
@@ -119,26 +119,26 @@ const Configurator: React.FC<{
               </Stack>
             )}
             options={[
-              { key: -1, text: "FATAL (-1)" },
-              { key: 0, text: "ERROR (0)" },
-              { key: 1, text: "WARN (1)" },
-              { key: 2, text: "INFO (2)" }, // default
-              { key: 3, text: "DEBUG (3)" },
+              { key: -1, text: 'FATAL (-1)' },
+              { key: 0, text: 'ERROR (0)' },
+              { key: 1, text: 'WARN (1)' },
+              { key: 2, text: 'INFO (2)' }, // default
+              { key: 3, text: 'DEBUG (3)' },
             ]}
             selectedKey={
               editing?.logLevel === undefined ? 2 : editing?.logLevel
             }
             onChange={(ev, option: any) => {
-              setEditing({ ...editing, logLevel: option.key });
+              setEditing({ ...editing, logLevel: option.key })
             }}
           />
 
           <TextField
-            styles={{ fieldGroup: { "max-width": 200 } }}
+            styles={{ fieldGroup: { 'max-width': 200 } }}
             label="Hostname"
             value={editing.hostname}
             onChange={(ev, newValue) => {
-              setEditing({ ...editing, hostname: newValue });
+              setEditing({ ...editing, hostname: newValue })
             }}
           />
 
@@ -153,28 +153,28 @@ const Configurator: React.FC<{
             onText="Enable"
             offText="Disable"
             onChange={(ev, checked) => {
-              setEditing({ ...editing, disableIPv6: checked === false });
+              setEditing({ ...editing, disableIPv6: checked === false })
             }}
           />
 
           <Separator alignContent="start">Advanced</Separator>
 
           <TextField
-            styles={{ fieldGroup: { "max-width": 200 } }}
+            styles={{ fieldGroup: { 'max-width': 200 } }}
             label="EPG Gathering Interval"
             suffix="ms"
             placeholder="1800000"
-            value={`${editing.epgGatheringInterval || ""}`}
+            value={`${editing.epgGatheringInterval || ''}`}
             onChange={(ev, newValue) => {
-              if (newValue === "") {
-                delete editing.epgGatheringInterval;
+              if (newValue === '') {
+                delete editing.epgGatheringInterval
               } else if (/^[0-9]+$/.test(newValue)) {
-                const int = parseInt(newValue, 10);
+                const int = parseInt(newValue, 10)
                 if (int <= 1000 * 60 * 60 * 24 * 3 && int > 0) {
-                  editing.epgGatheringInterval = int;
+                  editing.epgGatheringInterval = int
                 }
               }
-              setEditing({ ...editing });
+              setEditing({ ...editing })
             }}
           />
 
@@ -203,12 +203,12 @@ const Configurator: React.FC<{
               setEditing({
                 ...editing,
                 disableEITParsing: checked === false ? true : undefined,
-              });
+              })
             }}
           />
 
           <TextField
-            styles={{ fieldGroup: { "max-width": 200 } }}
+            styles={{ fieldGroup: { 'max-width': 200 } }}
             label="Allow IPv4 CIDR Ranges"
             onRenderLabel={(props) => (
               <Stack horizontal verticalAlign="end">
@@ -226,23 +226,23 @@ const Configurator: React.FC<{
             )}
             multiline
             rows={3}
-            value={(editing.allowIPv4CidrRanges || []).join("\n")}
+            value={(editing.allowIPv4CidrRanges || []).join('\n')}
             onChange={(ev, newValue) => {
-              if (newValue.trim() === "") {
-                setEditing({ ...editing, allowIPv4CidrRanges: null });
+              if (newValue.trim() === '') {
+                setEditing({ ...editing, allowIPv4CidrRanges: null })
               } else {
                 setEditing({
                   ...editing,
                   allowIPv4CidrRanges: newValue
-                    .split("\n")
+                    .split('\n')
                     .map((range) => range.trim()),
-                });
+                })
               }
             }}
           />
 
           <TextField
-            styles={{ fieldGroup: { "max-width": 380 } }}
+            styles={{ fieldGroup: { 'max-width': 380 } }}
             label="Allow IPv6 CIDR Ranges"
             onRenderLabel={(props) => (
               <Stack horizontal verticalAlign="end">
@@ -260,24 +260,24 @@ const Configurator: React.FC<{
             )}
             multiline
             rows={3}
-            value={(editing.allowIPv6CidrRanges || []).join("\n")}
+            value={(editing.allowIPv6CidrRanges || []).join('\n')}
             onChange={(ev, newValue) => {
-              if (newValue.trim() === "") {
-                setEditing({ ...editing, allowIPv6CidrRanges: null });
+              if (newValue.trim() === '') {
+                setEditing({ ...editing, allowIPv6CidrRanges: null })
               } else {
                 setEditing({
                   ...editing,
                   allowIPv6CidrRanges: newValue
-                    .split("\n")
+                    .split('\n')
                     .map((range) => range.trim()),
-                });
+                })
               }
             }}
           />
 
           <Stack
             horizontal
-            tokens={{ childrenGap: "0 8" }}
+            tokens={{ childrenGap: '0 8' }}
             style={{ marginTop: 16 }}
           >
             <PrimaryButton
@@ -298,37 +298,37 @@ const Configurator: React.FC<{
         onDismiss={() => setShowSaveDialog(false)}
         dialogContentProps={{
           type: DialogType.largeHeader,
-          title: "Save",
-          subText: "Restart is required to apply configuration.",
+          title: 'Save',
+          subText: 'Restart is required to apply configuration.',
         }}
       >
         <DialogFooter>
           <PrimaryButton
             text="Save"
             onClick={() => {
-              setShowSaveDialog(false);
-              (async () => {
+              setShowSaveDialog(false)
+              ;(async () => {
                 for (const key of Object.keys(editing)) {
                   if (editing[key] === null) {
-                    delete editing[key];
+                    delete editing[key]
                   }
                 }
                 console.log(
-                  "ServerConfigurator",
-                  "PUT",
+                  'ServerConfigurator',
+                  'PUT',
                   configAPI,
-                  "<-",
+                  '<-',
                   editing
-                );
+                )
                 await fetch(configAPI, {
-                  method: "PUT",
+                  method: 'PUT',
                   headers: {
-                    "Content-Type": "application/json; charset=utf-8",
+                    'Content-Type': 'application/json; charset=utf-8',
                   },
                   body: JSON.stringify(editing),
-                });
-                setSaved(true);
-              })();
+                })
+                setSaved(true)
+              })()
             }}
           />
           <DefaultButton
@@ -338,7 +338,7 @@ const Configurator: React.FC<{
         </DialogFooter>
       </Dialog>
     </>
-  );
-};
+  )
+}
 
-export default Configurator;
+export default Configurator

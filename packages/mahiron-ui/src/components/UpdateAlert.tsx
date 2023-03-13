@@ -14,31 +14,31 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as React from "react";
-import { useState, useEffect } from "react";
+import * as React from 'react'
+import { useState, useEffect } from 'react'
 import {
   MessageBar,
   MessageBarType,
   MessageBarButton,
   Link,
-} from "@fluentui/react";
-import type { Version } from "mahiron-server/types/api";
+} from '@fluentui/react'
+import type { Version } from 'mahiron-server/types/api'
 
 const UpdateAlert: React.FC = () => {
-  const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
-  const [version, setVersion] = useState<Version>(null);
+  const [updateAvailable, setUpdateAvailable] = useState<boolean>(false)
+  const [version, setVersion] = useState<Version>(null)
 
   useEffect(() => {
     setTimeout(async () => {
-      console.log("UpdateAlert", "checking update", "...");
-      const version: Version = await (await fetch("/api/version")).json();
-      setVersion(version);
+      console.log('UpdateAlert', 'checking update', '...')
+      const version: Version = await (await fetch('/api/version')).json()
+      setVersion(version)
       if (version.current !== version.latest) {
-        setUpdateAvailable(true);
+        setUpdateAvailable(true)
       }
-      console.log("UpdateAlert", "checking update", "done.");
-    }, 1000 * 5);
-  }, []);
+      console.log('UpdateAlert', 'checking update', 'done.')
+    }, 1000 * 5)
+  }, [])
 
   return (
     <>
@@ -69,7 +69,7 @@ const UpdateAlert: React.FC = () => {
         </MessageBar>
       )}
     </>
-  );
-};
+  )
+}
 
-export default UpdateAlert;
+export default UpdateAlert

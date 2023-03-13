@@ -1,0 +1,23 @@
+{
+  "$schema": "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/eslintrc.json",
+  "root": true,
+  "extends": ["eslint:recommended"],
+  "overrides": [
+    {
+      "files": "**/*.{ts,tsx}",
+      "extends": ["plugin:@typescript-eslint/recommended"],
+      "plugins": ["@typescript-eslint"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": "latest"
+      },
+      "env": {
+        "browser": true
+      }
+    },
+    {
+      "files": "**/*",
+      "extends": ["plugin:editorconfig/noconflict", "prettier"]
+    }
+  ]
+}

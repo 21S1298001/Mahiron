@@ -14,9 +14,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect } from "react";
+import EventEmitter from 'eventemitter3'
+import * as React from 'react'
+import { useState, useEffect } from 'react'
 import {
   Stack,
   Separator,
@@ -24,106 +24,106 @@ import {
   TooltipHost,
   ITooltipHostStyles,
   ITooltipProps,
-} from "@fluentui/react";
-import { UIState } from "../App";
-import TunersManager from "./TunersManager";
+} from '@fluentui/react'
+import { UIState } from '../App'
+import TunersManager from './TunersManager'
 
 interface StatusItem {
-  label: string;
-  text: string;
+  label: string
+  text: string
 }
 
-const calloutProps = { gapSpace: 0 };
+const calloutProps = { gapSpace: 0 }
 const tooltipHostStyles: Partial<ITooltipHostStyles> = {
   root: {
-    display: "inline-block",
+    display: 'inline-block',
   },
-};
+}
 const tooltipProps: Partial<ITooltipProps> = {
   styles: {
     content: {
-      whiteSpace: "pre",
+      whiteSpace: 'pre',
     },
   },
-};
+}
 
 const StatusView: React.FC<{
-  uiState: UIState;
-  uiStateEvents: EventEmitter;
+  uiState: UIState
+  uiStateEvents: EventEmitter
 }> = ({ uiState, uiStateEvents }) => {
-  const [status, setStatus] = useState<UIState["status"]>(uiState.status);
-  const [services, setServices] = useState<UIState["services"]>(
+  const [status, setStatus] = useState<UIState['status']>(uiState.status)
+  const [services, setServices] = useState<UIState['services']>(
     uiState.services
-  );
-  const [tuners, setTuners] = useState<UIState["tuners"]>(uiState.tuners);
+  )
+  const [tuners, setTuners] = useState<UIState['tuners']>(uiState.tuners)
 
   useEffect(() => {
     const onStatusUpdate = () => {
-      setStatus({ ...uiState.status });
-    };
-    uiStateEvents.on("update:status", onStatusUpdate);
+      setStatus({ ...uiState.status })
+    }
+    uiStateEvents.on('update:status', onStatusUpdate)
 
     const onServicesUpdate = () => {
-      setServices([...uiState.services]);
-    };
-    uiStateEvents.on("update:services", onServicesUpdate);
+      setServices([...uiState.services])
+    }
+    uiStateEvents.on('update:services', onServicesUpdate)
 
     const onTunersUpdate = () => {
-      setTuners([...uiState.tuners]);
-    };
-    uiStateEvents.on("update:tuners", onTunersUpdate);
+      setTuners([...uiState.tuners])
+    }
+    uiStateEvents.on('update:tuners', onTunersUpdate)
 
     return () => {
-      uiStateEvents.off("update:status", onStatusUpdate);
-      uiStateEvents.off("update:services", onServicesUpdate);
-      uiStateEvents.off("update:tuners", onTunersUpdate);
-    };
-  }, []);
+      uiStateEvents.off('update:status', onStatusUpdate)
+      uiStateEvents.off('update:services', onServicesUpdate)
+      uiStateEvents.off('update:tuners', onTunersUpdate)
+    }
+  }, [])
 
-  const statusItem: StatusItem[] = [];
+  const statusItem: StatusItem[] = []
 
   if (status) {
-    const dockerStat = status.process?.env?.DOCKER === "YES" ? "🐋" : "";
+    const dockerStat = status.process?.env?.DOCKER === 'YES' ? '🐋' : ''
     statusItem.push({
-      label: "Platform",
+      label: 'Platform',
       text: `${status.process?.platform} (${status.process?.arch}) ${dockerStat}`,
-    });
+    })
     statusItem.push({
-      label: "Node.js Version",
+      label: 'Node.js Version',
       text: status.process?.versions?.node,
-    });
+    })
     statusItem.push({
-      label: "Memory (RSS)",
+      label: 'Memory (RSS)',
       text: `${Math.round(status.process?.memoryUsage?.rss / 1024 / 1024)} MB`,
-    });
+    })
     statusItem.push({
-      label: "EPG Gathering Network IDs",
+      label: 'EPG Gathering Network IDs',
       text: status.epg.gatheringNetworks
         .map((id) => `0x${id.toString(16).toUpperCase()}`)
-        .join(", "),
-    });
+        .join(', '),
+    })
     statusItem.push({
-      label: "EPG Stored Events",
+      label: 'EPG Stored Events',
       text: `${status.epg.storedEvents} Events`,
-    });
+    })
     statusItem.push({
-      label: "TunerDevice Streams",
+      label: 'TunerDevice Streams',
       text: `${status.streamCount.tunerDevice}`,
-    });
+    })
     statusItem.push({
-      label: "TSFilter Streams",
+      label: 'TSFilter Streams',
       text: `${status.streamCount.tsFilter}`,
-    });
+    })
     statusItem.push({
-      label: "Decoder Streams",
+      label: 'Decoder Streams',
       text: `${status.streamCount.decoder}`,
-    });
-    statusItem.push({ label: "RPC Connections", text: `${status.rpcCount}` });
+    })
+    statusItem.push({ label: 'RPC Connections', text: `${status.rpcCount}` })
   }
 
-  const statusList: JSX.Element[] = [];
+  const statusList: JSX.Element[] = []
   for (let i = 0; i < statusItem.length; i++) {
-    const item = statusItem[i];
+    const item = statusItem[i]
     statusList.push(
       <div
         key={`status-list-item${i}`}
@@ -140,16 +140,16 @@ const StatusView: React.FC<{
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  const serviceList: JSX.Element[] = [];
+  const serviceList: JSX.Element[] = []
   for (let i = 0; i < services.length; i++) {
-    const service = services[i];
+    const service = services[i]
     if (service.type !== 1 && service.type !== 173) {
-      continue;
+      continue
     }
-    const tooltipId = `service-list-item#${i}-tooltip`;
+    const tooltipId = `service-list-item#${i}-tooltip`
     serviceList.push(
       <div
         key={`service-list-item${i}`}
@@ -181,8 +181,8 @@ const StatusView: React.FC<{
               style={{
                 padding: 1,
                 height: 24,
-                backgroundSize: "contain",
-                backgroundRepeat: "no-repeat",
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
                 backgroundImage:
                   service.hasLogoData &&
                   `url(/api/services/${service.id}/logo)`,
@@ -196,26 +196,26 @@ const StatusView: React.FC<{
                   style={{
                     marginLeft: 4,
                     fontSize: 13,
-                    verticalAlign: "middle",
+                    verticalAlign: 'middle',
                   }}
                 >
                   {(status.epg.gatheringNetworks.includes(
                     service.networkId
-                  ) && <Icon iconName="Sync" style={{ color: "#f6ad49" }} />) ||
+                  ) && <Icon iconName="Sync" style={{ color: '#f6ad49' }} />) ||
                     (service.epgReady && (
-                      <Icon iconName="CheckMark" style={{ color: "#c3d825" }} />
-                    )) || <Icon iconName="Clock" style={{ color: "#777" }} />}
+                      <Icon iconName="CheckMark" style={{ color: '#c3d825' }} />
+                    )) || <Icon iconName="Clock" style={{ color: '#777' }} />}
                 </span>
               </div>
             </div>
           </div>
         </TooltipHost>
       </div>
-    );
+    )
   }
 
   return (
-    <Stack tokens={{ childrenGap: "16 0" }} style={{ margin: "16px 0 8px" }}>
+    <Stack tokens={{ childrenGap: '16 0' }} style={{ margin: '16px 0 8px' }}>
       <Stack>
         <Separator alignContent="start">Status</Separator>
         <div className="ms-Grid" dir="ltr">
@@ -233,7 +233,7 @@ const StatusView: React.FC<{
         <TunersManager tuners={tuners} />
       </Stack>
     </Stack>
-  );
-};
+  )
+}
 
-export default StatusView;
+export default StatusView

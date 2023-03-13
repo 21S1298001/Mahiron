@@ -14,9 +14,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect, useRef } from "react";
+import EventEmitter from 'eventemitter3'
+import * as React from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Stack,
   Spinner,
@@ -35,100 +35,100 @@ import {
   TextField,
   IconButton,
   ActionButton,
-} from "@fluentui/react";
-import { UIState } from "../App";
-import type { ConfigChannels } from "mahiron-server/types/api";
+} from '@fluentui/react'
+import { UIState } from '../App'
+import type { ConfigChannels } from 'mahiron-server/types/api'
 
-const configAPI = "/api/config/channels";
+const configAPI = '/api/config/channels'
 
 interface Item {
-  key: string;
-  enable: JSX.Element;
-  name: JSX.Element;
-  type: JSX.Element;
-  channel: JSX.Element;
-  options: JSX.Element;
-  controls: JSX.Element;
+  key: string
+  enable: JSX.Element
+  name: JSX.Element
+  type: JSX.Element
+  channel: JSX.Element
+  options: JSX.Element
+  controls: JSX.Element
 }
 
 const columns: IColumn[] = [
   {
-    key: "col-enable",
-    name: "Enable",
-    fieldName: "enable",
+    key: 'col-enable',
+    name: 'Enable',
+    fieldName: 'enable',
     minWidth: 44,
     maxWidth: 44,
   },
   {
-    key: "col-name",
-    name: "Name",
-    fieldName: "name",
+    key: 'col-name',
+    name: 'Name',
+    fieldName: 'name',
     minWidth: 100,
     maxWidth: 100,
   },
   {
-    key: "col-type",
-    name: "Type",
-    fieldName: "type",
+    key: 'col-type',
+    name: 'Type',
+    fieldName: 'type',
     minWidth: 65,
     maxWidth: 65,
   },
   {
-    key: "col-channel",
-    name: "Channel",
-    fieldName: "channel",
+    key: 'col-channel',
+    name: 'Channel',
+    fieldName: 'channel',
     minWidth: 70,
     maxWidth: 70,
   },
   {
-    key: "col-options",
-    name: "Options",
-    fieldName: "options",
+    key: 'col-options',
+    name: 'Options',
+    fieldName: 'options',
     minWidth: 200,
     // maxWidth: 400
   },
   {
-    key: "col-controls",
-    name: "",
-    fieldName: "controls",
+    key: 'col-controls',
+    name: '',
+    fieldName: 'controls',
     minWidth: 120,
     maxWidth: 120,
   },
-];
+]
 
-const dummySelection = new Selection(); // dummy
+const dummySelection = new Selection() // dummy
 
 const Configurator: React.FC<{
-  uiState: UIState;
-  uiStateEvents: EventEmitter;
+  uiState: UIState
+  uiStateEvents: EventEmitter
 }> = ({ uiStateEvents }) => {
-  const [current, setCurrent] = useState<ConfigChannels>(null);
-  const [editing, setEditing] = useState<ConfigChannels>(null);
-  const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
-  const [saved, setSaved] = useState<boolean>(false);
-  const listContainerRef = useRef<HTMLDivElement>(null);
+  const [current, setCurrent] = useState<ConfigChannels>(null)
+  const [editing, setEditing] = useState<ConfigChannels>(null)
+  const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false)
+  const [saved, setSaved] = useState<boolean>(false)
+  const listContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (saved === true) {
       setTimeout(() => {
-        uiStateEvents.emit("notify:restart-required");
-      }, 500);
-      setSaved(false);
-      return;
+        uiStateEvents.emit('notify:restart-required')
+      }, 500)
+      setSaved(false)
+      return
     }
-    (async () => {
+    ;(async () => {
       try {
-        const res = await (await fetch(configAPI)).json();
-        console.log("ChannelsConfigurator", "GET", configAPI, "->", res);
-        setEditing(JSON.parse(JSON.stringify(res)));
-        setCurrent(JSON.parse(JSON.stringify(res)));
+        const res = await (await fetch(configAPI)).json()
+        console.log('ChannelsConfigurator', 'GET', configAPI, '->', res)
+        setEditing(JSON.parse(JSON.stringify(res)))
+        setCurrent(JSON.parse(JSON.stringify(res)))
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
-    })();
-  }, [saved]);
+    })()
+  }, [saved])
 
-  const items = [];
+  const items = []
   editing?.forEach((ch, i) => {
     const item: Item = {
       key: `item${i}`,
@@ -136,8 +136,8 @@ const Configurator: React.FC<{
         <Toggle
           checked={!ch.isDisabled}
           onChange={(ev, checked) => {
-            ch.isDisabled = !checked;
-            setEditing([...editing]);
+            ch.isDisabled = !checked
+            setEditing([...editing])
           }}
           style={{ marginTop: 6 }}
         />
@@ -146,13 +146,13 @@ const Configurator: React.FC<{
         <TextField
           value={ch.name}
           onChange={(ev, newValue) => {
-            ch.name = newValue;
-            setEditing([...editing]);
+            ch.name = newValue
+            setEditing([...editing])
           }}
           onBlur={() => {
-            if (ch.name === "") {
-              ch.name = `ch${i}`;
-              setEditing([...editing]);
+            if (ch.name === '') {
+              ch.name = `ch${i}`
+              setEditing([...editing])
             }
           }}
         />
@@ -160,15 +160,15 @@ const Configurator: React.FC<{
       type: (
         <Dropdown
           options={[
-            { key: "GR", text: "GR" },
-            { key: "BS", text: "BS" },
-            { key: "CS", text: "CS" },
-            { key: "SKY", text: "SKY" },
+            { key: 'GR', text: 'GR' },
+            { key: 'BS', text: 'BS' },
+            { key: 'CS', text: 'CS' },
+            { key: 'SKY', text: 'SKY' },
           ]}
           selectedKey={ch.type}
           onChange={(ev, option) => {
-            ch.type = option.key as any;
-            setEditing([...editing]);
+            ch.type = option.key as any
+            setEditing([...editing])
           }}
         />
       ),
@@ -176,109 +176,109 @@ const Configurator: React.FC<{
         <TextField
           value={ch.channel}
           onChange={(ev, newValue) => {
-            ch.channel = newValue;
-            setEditing([...editing]);
+            ch.channel = newValue
+            setEditing([...editing])
           }}
           onBlur={() => {
-            if (ch.channel === "") {
-              ch.channel = "0";
-              setEditing([...editing]);
+            if (ch.channel === '') {
+              ch.channel = '0'
+              setEditing([...editing])
             }
           }}
         />
       ),
       options: (
-        <Stack tokens={{ childrenGap: "8 0" }}>
-          <Stack horizontal tokens={{ childrenGap: "0 8" }}>
+        <Stack tokens={{ childrenGap: '8 0' }}>
+          <Stack horizontal tokens={{ childrenGap: '0 8' }}>
             <TextField
               style={{ width: 55 }}
               label="Service ID:"
-              value={`${ch.serviceId || ""}`}
+              value={`${ch.serviceId || ''}`}
               onChange={(ev, newValue) => {
-                if (newValue === "") {
-                  delete ch.serviceId;
+                if (newValue === '') {
+                  delete ch.serviceId
                 } else if (/^[0-9]+$/.test(newValue)) {
-                  const sid = parseInt(newValue, 10);
+                  const sid = parseInt(newValue, 10)
                   if (sid <= 65535 && sid > 0) {
-                    ch.serviceId = sid;
+                    ch.serviceId = sid
                   }
                 }
-                setEditing([...editing]);
+                setEditing([...editing])
               }}
             />
             <TextField
               style={{ width: 80 }}
               label="Satellite:"
-              value={ch.satellite || ""}
+              value={ch.satellite || ''}
               onChange={(ev, newValue) => {
-                if (newValue === "") {
-                  delete ch.satellite;
+                if (newValue === '') {
+                  delete ch.satellite
                 } else {
-                  ch.satellite = newValue;
+                  ch.satellite = newValue
                 }
-                setEditing([...editing]);
+                setEditing([...editing])
               }}
             />
             <TextField
               style={{ width: 40 }}
               label="Space:"
               placeholder="0"
-              value={`${ch.space || ""}`}
+              value={`${ch.space || ''}`}
               onChange={(ev, newValue) => {
-                if (newValue === "") {
-                  delete ch.space;
+                if (newValue === '') {
+                  delete ch.space
                 } else if (/^[0-9]+$/.test(newValue)) {
-                  const space = parseInt(newValue, 10);
+                  const space = parseInt(newValue, 10)
                   if (space <= 65535 && space >= 0) {
-                    ch.space = space;
+                    ch.space = space
                   }
                 }
-                setEditing([...editing]);
+                setEditing([...editing])
               }}
             />
             <TextField
               style={{ width: 60 }}
               label="Freq:"
-              value={`${ch.freq || ""}`}
+              value={`${ch.freq || ''}`}
               onChange={(ev, newValue) => {
-                if (newValue === "") {
-                  delete ch.freq;
+                if (newValue === '') {
+                  delete ch.freq
                 } else if (/^[0-9.]+$/.test(newValue)) {
-                  const freq = parseFloat(newValue);
-                  ch.freq = freq;
+                  const freq = parseFloat(newValue)
+                  ch.freq = freq
                 }
-                setEditing([...editing]);
+                setEditing([...editing])
               }}
             />
             <Dropdown
               label="Polarity:"
               options={[
-                { key: "-", text: "-" },
-                { key: "H", text: "H" },
-                { key: "V", text: "V" },
+                { key: '-', text: '-' },
+                { key: 'H', text: 'H' },
+                { key: 'V', text: 'V' },
               ]}
-              selectedKey={ch.polarity || "-"}
+              selectedKey={ch.polarity || '-'}
               onChange={(ev, option) => {
-                if (option.key === "-") {
-                  delete ch.polarity;
+                if (option.key === '-') {
+                  delete ch.polarity
                 } else {
-                  ch.polarity = option.key as any;
+                  ch.polarity = option.key as any
                 }
-                setEditing([...editing]);
+                setEditing([...editing])
               }}
             />
             <TextField
               style={{ width: 40 }}
               label="TsmfRelTs:"
-              value={`${ch.tsmfRelTs || ""}`}
+              value={`${ch.tsmfRelTs || ''}`}
               onChange={(ev, newValue) => {
-                if (newValue === "") {
-                  delete ch.tsmfRelTs;
+                if (newValue === '') {
+                  delete ch.tsmfRelTs
                 } else if (/^[0-9]+$/.test(newValue)) {
-                  const tsmfRelTs = parseInt(newValue, 10);
-                  ch.tsmfRelTs = tsmfRelTs;
+                  const tsmfRelTs = parseInt(newValue, 10)
+                  ch.tsmfRelTs = tsmfRelTs
                 }
-                setEditing([...editing]);
+                setEditing([...editing])
               }}
             />
           </Stack>
@@ -290,36 +290,36 @@ const Configurator: React.FC<{
             disabled={i === 0}
             style={{ opacity: i === 0 ? 0 : 1 }}
             title="Up"
-            iconProps={{ iconName: "Up" }}
+            iconProps={{ iconName: 'Up' }}
             onClick={() => {
-              editing.splice(i, 1);
-              editing.splice(i - 1, 0, ch);
-              setEditing([...editing]);
+              editing.splice(i, 1)
+              editing.splice(i - 1, 0, ch)
+              setEditing([...editing])
             }}
           />
           <IconButton
             disabled={i === editing.length - 1}
             style={{ opacity: i === editing.length - 1 ? 0 : 1 }}
             title="Down"
-            iconProps={{ iconName: "Down" }}
+            iconProps={{ iconName: 'Down' }}
             onClick={() => {
-              editing.splice(i, 1);
-              editing.splice(i + 1, 0, ch);
-              setEditing([...editing]);
+              editing.splice(i, 1)
+              editing.splice(i + 1, 0, ch)
+              setEditing([...editing])
             }}
           />
           <IconButton
             title="Controls"
-            iconProps={{ iconName: "More" }}
+            iconProps={{ iconName: 'More' }}
             menuProps={{
               items: [
                 {
-                  key: "remove",
-                  text: "Remove Channel",
-                  iconProps: { iconName: "Delete" },
+                  key: 'remove',
+                  text: 'Remove Channel',
+                  iconProps: { iconName: 'Delete' },
                   onClick: () => {
-                    editing.splice(i, 1);
-                    setEditing([...editing]);
+                    editing.splice(i, 1)
+                    setEditing([...editing])
                   },
                 },
               ],
@@ -327,44 +327,44 @@ const Configurator: React.FC<{
           />
         </Stack>
       ),
-    };
+    }
     //
-    items.push(item);
-  });
+    items.push(item)
+  })
 
-  const changed = JSON.stringify(current) !== JSON.stringify(editing);
+  const changed = JSON.stringify(current) !== JSON.stringify(editing)
 
   if (listContainerRef.current) {
-    listContainerRef.current.style.maxHeight = "calc(100vh - 410px)";
+    listContainerRef.current.style.maxHeight = 'calc(100vh - 410px)'
   }
 
   return (
     <>
       {!current && <Spinner size={SpinnerSize.large} />}
       {editing && (
-        <Stack tokens={{ childrenGap: "8 0" }}>
+        <Stack tokens={{ childrenGap: '8 0' }}>
           <Stack.Item>
             <ActionButton
               text="Add Channel"
-              iconProps={{ iconName: "Add" }}
+              iconProps={{ iconName: 'Add' }}
               onClick={() => {
-                const i = editing.length;
+                const i = editing.length
                 editing.push({
                   name: `ch${i}`,
-                  type: "GR",
-                  channel: "0",
+                  type: 'GR',
+                  channel: '0',
                   isDisabled: true,
-                });
-                setEditing([...editing]);
+                })
+                setEditing([...editing])
                 setTimeout(() => {
                   listContainerRef.current.scrollTop =
-                    listContainerRef.current.scrollHeight;
-                }, 0);
+                    listContainerRef.current.scrollHeight
+                }, 0)
               }}
             />
           </Stack.Item>
 
-          <div ref={listContainerRef} style={{ overflowY: "scroll" }}>
+          <div ref={listContainerRef} style={{ overflowY: 'scroll' }}>
             <DetailsList
               setKey="items"
               items={items}
@@ -376,7 +376,7 @@ const Configurator: React.FC<{
 
           <Stack
             horizontal
-            tokens={{ childrenGap: "0 8" }}
+            tokens={{ childrenGap: '0 8' }}
             style={{ marginTop: 16 }}
           >
             <PrimaryButton
@@ -397,32 +397,32 @@ const Configurator: React.FC<{
         onDismiss={() => setShowSaveDialog(false)}
         dialogContentProps={{
           type: DialogType.largeHeader,
-          title: "Save",
-          subText: "Restart is required to apply configuration.",
+          title: 'Save',
+          subText: 'Restart is required to apply configuration.',
         }}
       >
         <DialogFooter>
           <PrimaryButton
             text="Save"
             onClick={() => {
-              setShowSaveDialog(false);
-              (async () => {
+              setShowSaveDialog(false)
+              ;(async () => {
                 console.log(
-                  "ChannelsConfigurator",
-                  "PUT",
+                  'ChannelsConfigurator',
+                  'PUT',
                   configAPI,
-                  "<-",
+                  '<-',
                   editing
-                );
+                )
                 await fetch(configAPI, {
-                  method: "PUT",
+                  method: 'PUT',
                   headers: {
-                    "Content-Type": "application/json; charset=utf-8",
+                    'Content-Type': 'application/json; charset=utf-8',
                   },
                   body: JSON.stringify(editing),
-                });
-                setSaved(true);
-              })();
+                })
+                setSaved(true)
+              })()
             }}
           />
           <DefaultButton
@@ -432,7 +432,7 @@ const Configurator: React.FC<{
         </DialogFooter>
       </Dialog>
     </>
-  );
-};
+  )
+}
 
-export default Configurator;
+export default Configurator

@@ -1,0 +1,46 @@
+{
+  "name": "mahiron-ui",
+  "description": "DVR Tuner Server for Japanese TV.",
+  "version": "3.9.0-rc.2",
+  "homepage": "https://github.com/21S1298001/Mahiron",
+  "license": "Apache-2.0",
+  "packageManager": "yarn@3.4.1",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack -w",
+    "lint": "concurrently -n lint: 'yarn:lint:*'",
+    "lint:eslint": "eslint .",
+    "lint:prettier": "prettier --check .",
+    "format": "concurrently -n format: -m 1 'yarn:format:*'",
+    "format:eslint": "yarn lint:eslint --fix",
+    "format:prettier": "yarn lint:prettier --write"
+  },
+  "dependencies": {
+    "@fluentui/react": "8.106.5",
+    "eventemitter3": "5.0.0",
+    "jsonrpc2-ws": "1.0.0-beta24",
+    "office-ui-fabric-core": "11.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
+    "@typescript-eslint/eslint-plugin": "5.54.1",
+    "@typescript-eslint/parser": "5.54.1",
+    "concurrently": "7.6.0",
+    "copy-webpack-plugin": "11.0.0",
+    "css-loader": "6.7.3",
+    "eslint": "8.36.0",
+    "eslint-config-prettier": "8.7.0",
+    "eslint-plugin-editorconfig": "4.0.2",
+    "eslint-plugin-mocha": "10.1.0",
+    "mocha": "10.2.0",
+    "prettier": "2.8.4",
+    "style-loader": "3.3.1",
+    "ts-loader": "9.4.2",
+    "typescript": "4.9.5",
+    "webpack": "5.76.1",
+    "webpack-cli": "5.0.1"
+  }
+}

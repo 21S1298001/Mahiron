@@ -17,7 +17,7 @@ export MALLOC_ARENA_MAX=2
 # trap
 function trap_exit() {
   echo "stopping... $(jobs -p)"
-  kill $(jobs -p) > /dev/null 2>&1 || echo "already killed."
+  kill "$(jobs -p)" > /dev/null 2>&1 || echo "already killed."
   /etc/init.d/pcscd stop
   sleep 1
   echo "exit."
@@ -30,10 +30,10 @@ if [ ! -e "/opt/bin" ]; then
 fi
 
 # rename wrong filename (migration from <= 3.1.1 >= 3.0.0)
-if [ -f "/app-data/services.yml" -a ! -f "$SERVICES_DB_PATH" ]; then
+if [ -f "/app-data/services.yml" ] && [ ! -f "$SERVICES_DB_PATH" ]; then
   cp -v "/app-data/services.yml" "$SERVICES_DB_PATH"
 fi
-if [ -f "/app-data/programs.yml" -a ! -f "$PROGRAMS_DB_PATH" ]; then
+if [ -f "/app-data/programs.yml" ] && [ ! -f "$PROGRAMS_DB_PATH" ]; then
   cp -v "/app-data/programs.yml" "$PROGRAMS_DB_PATH"
 fi
 
@@ -45,7 +45,7 @@ if [ -e "/opt/bin/startup" ]; then
 fi
 
 # only for test purpose
-if !(type "arib-b25-stream-test" > /dev/null 2>&1); then
+if ! (type "arib-b25-stream-test" > /dev/null 2>&1); then
   npm --prefix /opt install arib-b25-stream-test
   ln -sv /opt/node_modules/arib-b25-stream-test/bin/b25 /opt/bin/arib-b25-stream-test
 fi
@@ -55,8 +55,7 @@ if [ -e "/etc/init.d/pcscd" ]; then
     echo "starting pcscd..."
     /etc/init.d/pcscd start
     sleep 1
-    timeout 2 pcsc_scan | grep -A 50 "Using reader plug'n play mechanism"
-    if [ $? = 0 ]; then
+    if timeout 2 pcsc_scan | grep -A 50 "Using reader plug'n play mechanism"; then
       break;
     fi
     echo "failed!"
@@ -68,7 +67,7 @@ function start() {
     export NODE_ENV=production
     node -r source-map-support/register lib/server.js &
   else
-    npm run debug &
+    pnpm run debug &
   fi
 
   wait
@@ -76,7 +75,7 @@ function start() {
 
 function restart() {
   echo "restarting... $(jobs -p)"
-  kill $(jobs -p) > /dev/null 2>&1 || echo "already killed."
+  kill "$(jobs -p)" > /dev/null 2>&1 || echo "already killed."
   sleep 1
   start
 }

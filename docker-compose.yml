@@ -1,11 +1,10 @@
 version: "3.7"
 services:
-  mirakurun:
+  mahiron:
     build:
-      context: ../
-      dockerfile: docker/Dockerfile
-    image: chinachu/mirakurun:latest
-    container_name: mirakurun
+      context: .
+    image: 21S1298001/mahiron:latest
+    container_name: mahiron
     cap_add:
       - SYS_ADMIN
       - SYS_NICE

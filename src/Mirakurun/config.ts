@@ -43,6 +43,7 @@ const {
     DISABLE_WEB_UI,
     ALLOW_IPV4_CIDR_RANGES,
     ALLOW_IPV6_CIDR_RANGES,
+    RANDOMIZE_TUNERS,
 } = process.env;
 
 const IS_DOCKER = DOCKER === "YES";
@@ -74,6 +75,7 @@ export interface Server {
     readonly disableWebUI?: true;
     readonly allowIPv4CidrRanges?: string[];
     readonly allowIPv6CidrRanges?: string[];
+    readonly randomizeTuners?: boolean;
 }
 
 export interface Tuner {
@@ -253,6 +255,10 @@ export function loadServer(): Server {
             ALLOW_IPV6_CIDR_RANGES.trim().length > 0
         ) {
             config.allowIPv6CidrRanges = ALLOW_IPV6_CIDR_RANGES.split(",");
+        }
+
+        if (RANDOMIZE_TUNERS === "true") {
+            config.randomizeTuners = true;
         }
 
         log.info(

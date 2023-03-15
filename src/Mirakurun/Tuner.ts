@@ -15,18 +15,17 @@
    limitations under the License.
 */
 import { Writable } from "stream";
-import * as common from "./common";
-import * as log from "./log";
-import * as db from "./db";
-import _ from "./_";
-import TunerDevice from "./TunerDevice";
 import ChannelItem from "./ChannelItem";
+import * as common from "./common";
+import * as db from "./db";
+import * as log from "./log";
 import ServiceItem from "./ServiceItem";
-import TSFilter from "./TSFilter";
 import TSDecoder from "./TSDecoder";
+import TSFilter from "./TSFilter";
+import TunerDevice from "./TunerDevice";
+import _ from "./_";
 
 export default class Tuner {
-
     private _devices: TunerDevice[] = [];
 
     constructor() {
@@ -38,7 +37,6 @@ export default class Tuner {
     }
 
     get(index: number): TunerDevice {
-
         const l = this._devices.length;
         for (let i = 0; i < l; i++) {
             if (this._devices[i].index === index) {
@@ -50,7 +48,6 @@ export default class Tuner {
     }
 
     typeExists(type: common.ChannelType): boolean {
-
         const l = this._devices.length;
         for (let i = 0; i < l; i++) {
             if (this._devices[i].config.types.includes(type) === true) {
@@ -61,8 +58,11 @@ export default class Tuner {
         return false;
     }
 
-    initChannelStream(channel: ChannelItem, userReq: common.UserRequest, output: Writable): Promise<TSFilter> {
-
+    initChannelStream(
+        channel: ChannelItem,
+        userReq: common.UserRequest,
+        output: Writable
+    ): Promise<TSFilter> {
         let networkId: number;
 
         const services = channel.getServices();
@@ -70,45 +70,60 @@ export default class Tuner {
             networkId = services[0].networkId;
         }
 
-        return this._initTS({
-            ...userReq,
-            streamSetting: {
-                channel,
-                networkId,
-                parseEIT: true
-            }
-        }, output);
+        return this._initTS(
+            {
+                ...userReq,
+                streamSetting: {
+                    channel,
+                    networkId,
+                    parseEIT: true,
+                },
+            },
+            output
+        );
     }
 
-    initServiceStream(service: ServiceItem, userReq: common.UserRequest, output: Writable): Promise<TSFilter> {
-
-        return this._initTS({
-            ...userReq,
-            streamSetting: {
-                channel: service.channel,
-                serviceId: service.serviceId,
-                networkId: service.networkId,
-                parseEIT: true
-            }
-        }, output);
+    initServiceStream(
+        service: ServiceItem,
+        userReq: common.UserRequest,
+        output: Writable
+    ): Promise<TSFilter> {
+        return this._initTS(
+            {
+                ...userReq,
+                streamSetting: {
+                    channel: service.channel,
+                    serviceId: service.serviceId,
+                    networkId: service.networkId,
+                    parseEIT: true,
+                },
+            },
+            output
+        );
     }
 
-    initProgramStream(program: db.Program, userReq: common.UserRequest, output: Writable): Promise<TSFilter> {
-
-        return this._initTS({
-            ...userReq,
-            streamSetting: {
-                channel: _.service.get(program.networkId, program.serviceId).channel,
-                serviceId: program.serviceId,
-                eventId: program.eventId,
-                networkId: program.networkId,
-                parseEIT: true
-            }
-        }, output);
+    initProgramStream(
+        program: db.Program,
+        userReq: common.UserRequest,
+        output: Writable
+    ): Promise<TSFilter> {
+        return this._initTS(
+            {
+                ...userReq,
+                streamSetting: {
+                    channel: _.service.get(program.networkId, program.serviceId)
+                        .channel,
+                    serviceId: program.serviceId,
+                    eventId: program.eventId,
+                    networkId: program.networkId,
+                    parseEIT: true,
+                },
+            },
+            output
+        );
     }
 
     async getEPG(channel: ChannelItem, time?: number): Promise<void> {
-
         let timeout: NodeJS.Timer;
         if (!time) {
             time = _.config.server.epgRetrievalTime || 1000 * 60 * 10;
@@ -130,8 +145,8 @@ export default class Tuner {
             streamSetting: {
                 channel,
                 networkId,
-                parseEIT: true
-            }
+                parseEIT: true,
+            },
         });
 
         if (tsFilter === null) {
@@ -153,7 +168,6 @@ export default class Tuner {
     }
 
     async getServices(channel: ChannelItem): Promise<db.Service[]> {
-
         const tsFilter = await this._initTS({
             id: "Mirakurun:getServices()",
             priority: -1,
@@ -161,15 +175,14 @@ export default class Tuner {
             streamSetting: {
                 channel,
                 parseNIT: true,
-                parseSDT: true
-            }
+                parseSDT: true,
+            },
         });
         return new Promise<db.Service[]>((resolve, reject) => {
-
             let network = {
                 networkId: -1,
                 areaCode: -1,
-                remoteControlKeyId: -1
+                remoteControlKeyId: -1,
             };
             let services: db.Service[] = null;
 
@@ -177,21 +190,20 @@ export default class Tuner {
 
             Promise.all<void>([
                 new Promise((resolve, reject) => {
-                    tsFilter.once("network", _network => {
+                    tsFilter.once("network", (_network) => {
                         network = _network;
                         resolve();
                     });
                 }),
                 new Promise((resolve, reject) => {
-                    tsFilter.once("services", _services => {
+                    tsFilter.once("services", (_services) => {
                         services = _services;
                         resolve();
                     });
-                })
+                }),
             ]).then(() => tsFilter.close());
 
             tsFilter.once("close", () => {
-
                 tsFilter.removeAllListeners("network");
                 tsFilter.removeAllListeners("services");
 
@@ -201,8 +213,9 @@ export default class Tuner {
                     reject(new Error("stream has closed before get services"));
                 } else {
                     if (network.remoteControlKeyId !== -1) {
-                        services.forEach(service => {
-                            service.remoteControlKeyId = network.remoteControlKeyId;
+                        services.forEach((service) => {
+                            service.remoteControlKeyId =
+                                network.remoteControlKeyId;
                         });
                     }
 
@@ -213,51 +226,92 @@ export default class Tuner {
     }
 
     private _load(): this {
-
         log.debug("loading tuners...");
 
         const tuners = _.config.tuners;
 
         tuners.forEach((tuner, i) => {
-
-            if (!tuner.name || !tuner.types || (!tuner.remoteMirakurunHost && !tuner.command)) {
-                log.error("missing required property in tuner#%s configuration", i);
+            if (
+                !tuner.name ||
+                !tuner.types ||
+                (!tuner.remoteMirakurunHost && !tuner.command)
+            ) {
+                log.error(
+                    "missing required property in tuner#%s configuration",
+                    i
+                );
                 return;
             }
 
             if (typeof tuner.name !== "string") {
-                log.error("invalid type of property `name` in tuner#%s configuration", i);
+                log.error(
+                    "invalid type of property `name` in tuner#%s configuration",
+                    i
+                );
                 return;
             }
 
             if (Array.isArray(tuner.types) === false) {
                 console.log(tuner);
-                log.error("invalid type of property `types` in tuner#%s configuration", i);
+                log.error(
+                    "invalid type of property `types` in tuner#%s configuration",
+                    i
+                );
                 return;
             }
 
-            if (!tuner.remoteMirakurunHost && typeof tuner.command !== "string") {
-                log.error("invalid type of property `command` in tuner#%s configuration", i);
+            if (
+                !tuner.remoteMirakurunHost &&
+                typeof tuner.command !== "string"
+            ) {
+                log.error(
+                    "invalid type of property `command` in tuner#%s configuration",
+                    i
+                );
                 return;
             }
 
-            if (tuner.dvbDevicePath && typeof tuner.dvbDevicePath !== "string") {
-                log.error("invalid type of property `dvbDevicePath` in tuner#%s configuration", i);
+            if (
+                tuner.dvbDevicePath &&
+                typeof tuner.dvbDevicePath !== "string"
+            ) {
+                log.error(
+                    "invalid type of property `dvbDevicePath` in tuner#%s configuration",
+                    i
+                );
                 return;
             }
 
-            if (tuner.remoteMirakurunHost && typeof tuner.remoteMirakurunHost !== "string") {
-                log.error("invalid type of property `remoteMirakurunHost` in tuner#%s configuration", i);
+            if (
+                tuner.remoteMirakurunHost &&
+                typeof tuner.remoteMirakurunHost !== "string"
+            ) {
+                log.error(
+                    "invalid type of property `remoteMirakurunHost` in tuner#%s configuration",
+                    i
+                );
                 return;
             }
 
-            if (tuner.remoteMirakurunPort && Number.isInteger(tuner.remoteMirakurunPort) === false) {
-                log.error("invalid type of property `remoteMirakurunPort` in tuner#%s configuration", i);
+            if (
+                tuner.remoteMirakurunPort &&
+                Number.isInteger(tuner.remoteMirakurunPort) === false
+            ) {
+                log.error(
+                    "invalid type of property `remoteMirakurunPort` in tuner#%s configuration",
+                    i
+                );
                 return;
             }
 
-            if (tuner.remoteMirakurunDecoder !== undefined && typeof tuner.remoteMirakurunDecoder !== "boolean") {
-                log.error("invalid type of property `remoteMirakurunDecoder` in tuner#%s configuration", i);
+            if (
+                tuner.remoteMirakurunDecoder !== undefined &&
+                typeof tuner.remoteMirakurunDecoder !== "boolean"
+            ) {
+                log.error(
+                    "invalid type of property `remoteMirakurunDecoder` in tuner#%s configuration",
+                    i
+                );
                 return;
             }
 
@@ -265,9 +319,7 @@ export default class Tuner {
                 return;
             }
 
-            this._devices.push(
-                new TunerDevice(i, tuner)
-            );
+            this._devices.push(new TunerDevice(i, tuner));
         });
 
         log.info("%s of %s tuners loaded", this._devices.length, tuners.length);
@@ -276,9 +328,7 @@ export default class Tuner {
     }
 
     private _initTS(user: common.User, dest?: Writable): Promise<TSFilter> {
-
         return new Promise<TSFilter>((resolve, reject) => {
-
             const setting = user.streamSetting;
 
             if (_.config.server.disableEITParsing === true) {
@@ -291,12 +341,14 @@ export default class Tuner {
             const length = devices.length;
 
             function find() {
-
                 let device: TunerDevice = null;
 
                 // 1. join to existing
                 for (let i = 0; i < length; i++) {
-                    if (devices[i].isAvailable === true && devices[i].channel === setting.channel) {
+                    if (
+                        devices[i].isAvailable === true &&
+                        devices[i].channel === setting.channel
+                    ) {
                         device = devices[i];
                         break;
                     }
@@ -304,20 +356,33 @@ export default class Tuner {
 
                 // x. use remote data
                 if (device === null && !dest) {
-                    const remoteDevice = devices.find(device => device.isRemote);
+                    const remoteDevice = devices.find(
+                        (device) => device.isRemote
+                    );
                     if (remoteDevice) {
-                        if (setting.networkId !== undefined && setting.parseEIT === true) {
-                            remoteDevice.getRemotePrograms({ networkId: setting.networkId })
-                                .then(async programs => {
+                        if (
+                            setting.networkId !== undefined &&
+                            setting.parseEIT === true
+                        ) {
+                            remoteDevice
+                                .getRemotePrograms({
+                                    networkId: setting.networkId,
+                                })
+                                .then(async (programs) => {
                                     await common.sleep(1000);
-                                    _.program.findByNetworkIdAndReplace(setting.networkId, programs);
-                                    for (const service of _.service.findByNetworkId(setting.networkId)) {
+                                    _.program.findByNetworkIdAndReplace(
+                                        setting.networkId,
+                                        programs
+                                    );
+                                    for (const service of _.service.findByNetworkId(
+                                        setting.networkId
+                                    )) {
                                         service.epgReady = true;
                                     }
                                     await common.sleep(1000);
                                 })
                                 .then(() => resolve(null))
-                                .catch(err => reject(err));
+                                .catch((err) => reject(err));
 
                             return;
                         }
@@ -337,7 +402,10 @@ export default class Tuner {
                 // 3. replace existing
                 if (device === null) {
                     for (let i = 0; i < length; i++) {
-                        if (devices[i].isAvailable === true && devices[i].users.length === 0) {
+                        if (
+                            devices[i].isAvailable === true &&
+                            devices[i].users.length === 0
+                        ) {
                             device = devices[i];
                             break;
                         }
@@ -351,7 +419,10 @@ export default class Tuner {
                     });
 
                     for (let i = 0; i < length; i++) {
-                        if (devices[i].isUsing === true && devices[i].getPriority() < user.priority) {
+                        if (
+                            devices[i].isUsing === true &&
+                            devices[i].getPriority() < user.priority
+                        ) {
                             device = devices[i];
                             break;
                         }
@@ -367,12 +438,15 @@ export default class Tuner {
                     }
                 } else {
                     let output: Writable;
-                    if (user.disableDecoder === true || device.decoder === null) {
+                    if (
+                        user.disableDecoder === true ||
+                        device.decoder === null
+                    ) {
                         output = dest;
                     } else {
                         output = new TSDecoder({
                             output: dest,
-                            command: device.decoder
+                            command: device.decoder,
                         });
                     }
 
@@ -384,14 +458,15 @@ export default class Tuner {
                         parseNIT: setting.parseNIT,
                         parseSDT: setting.parseSDT,
                         parseEIT: setting.parseEIT,
-                        tsmfRelTs: setting.channel.tsmfRelTs
+                        tsmfRelTs: setting.channel.tsmfRelTs,
                     });
 
                     Object.defineProperty(user, "streamInfo", {
-                        get: () => tsFilter.streamInfo
+                        get: () => tsFilter.streamInfo,
                     });
 
-                    device.startStream(user, tsFilter, setting.channel)
+                    device
+                        .startStream(user, tsFilter, setting.channel)
                         .then(() => {
                             resolve(tsFilter);
                         })
@@ -406,7 +481,6 @@ export default class Tuner {
     }
 
     private _getDevicesByType(type: common.ChannelType): TunerDevice[] {
-
         const devices = [];
 
         const l = this._devices.length;
@@ -414,6 +488,10 @@ export default class Tuner {
             if (this._devices[i].config.types.includes(type) === true) {
                 devices.push(this._devices[i]);
             }
+        }
+
+        if (_.config.server.randomizeTuners === true) {
+            return devices.sort(() => Math.random() - 0.5);
         }
 
         return devices;

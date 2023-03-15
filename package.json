@@ -12,7 +12,7 @@
     "debug": "node -r source-map-support/register --inspect=0.0.0.0:9229 lib/server.js",
     "start.win32": "node.exe -r source-map-support/register bin/init.win32.js",
     "debug.win32": "node.exe -r source-map-support/register --inspect bin/init.win32.js",
-    "build": "pnpm run build:server && pnpm run build:webpack",
+    "build": "run-s 'build:*'",
     "build:server": "tsc --declaration",
     "build:webpack": "webpack",
     "watch": "concurrently -n w: pnpm:watch:*",
@@ -26,7 +26,11 @@
     "docker:build": "docker-compose -f docker/docker-compose.yml build",
     "docker:run": "docker-compose -f docker/docker-compose.yml run --rm --service-ports mirakurun",
     "docker:up": "docker-compose -f docker/docker-compose.yml up -d",
-    "docker:debug": "docker-compose -f docker/docker-compose.yml run --rm --service-ports -e DEBUG=true mirakurun"
+    "docker:debug": "docker-compose -f docker/docker-compose.yml run --rm --service-ports -e DEBUG=true mirakurun",
+    "lint": "run-p 'lint:*'",
+    "lint:prettier": "prettier -c './**/*.{ts,tsx}'",
+    "fix": "run-p 'fix:*'",
+    "fix:prettier": "prettier -w './**/*.{ts,tsx}'"
   },
   "dependencies": {
     "@chinachu/aribts": "1.3.5-mirakurun.18",
@@ -67,6 +71,8 @@
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "6.7.3",
     "mocha": "10.2.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.4",
     "process": "0.11.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",

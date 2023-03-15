@@ -14,17 +14,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+import { Icon, ITooltipHostStyles, ITooltipProps, Separator, Stack, TooltipHost } from "@fluentui/react";
 import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect } from "react";
-import { Stack, Separator, Icon, TooltipHost, ITooltipHostStyles, ITooltipProps } from "@fluentui/react";
+import React, { useEffect, useState } from "react";
 import { UIState } from "../index";
-import TunersManager from "./TunersManager";
+import { TunersManager } from "./TunersManager";
 
-interface StatusItem {
+type StatusItem = {
     label: string;
     text: string;
-}
+};
 
 const calloutProps = { gapSpace: 0 };
 const tooltipHostStyles: Partial<ITooltipHostStyles> = {
@@ -40,13 +39,16 @@ const tooltipProps: Partial<ITooltipProps> = {
     }
 };
 
-const StatusView: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
+export type StatusViewProps = Readonly<{ uiState: UIState; uiStateEvents: EventEmitter }>;
+
+export const StatusView: React.FC<StatusViewProps> = ({ uiState, uiStateEvents }) => {
     const [status, setStatus] = useState<UIState["status"]>(uiState.status);
     const [services, setServices] = useState<UIState["services"]>(uiState.services);
     const [tuners, setTuners] = useState<UIState["tuners"]>(uiState.tuners);
 
     useEffect(() => {
         const onStatusUpdate = () => {
+            if (!uiState.status) return;
             setStatus({ ...uiState.status });
         };
         uiStateEvents.on("update:status", onStatusUpdate);
@@ -120,7 +122,7 @@ const StatusView: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = 
                         `#${service.id}\n` +
                         `SID: 0x${service.serviceId.toString(16).toUpperCase()} (${service.serviceId})\n` +
                         `NID: 0x${service.networkId.toString(16).toUpperCase()} (${service.networkId})\n` +
-                        `Channel: ${service.channel.type} / ${service.channel.channel}`
+                        `Channel: ${service.channel?.type} / ${service.channel?.channel}`
                     }
                 >
                     <div className="ms-Grid" area-describeby={tooltipId} style={{ margin: 4 }}>
@@ -131,13 +133,13 @@ const StatusView: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = 
                                 height: 24,
                                 backgroundSize: "contain",
                                 backgroundRepeat: "no-repeat",
-                                backgroundImage: service.hasLogoData && `url(/api/services/${service.id}/logo)`
+                                backgroundImage: service.hasLogoData ? `url(/api/services/${service.id}/logo)` : undefined
                             }}
                         >
                             <div className="ms-Grid-col ms-sm12" style={{ paddingLeft: 50 }}>
                                 <span className="ms-fontWeight-semibold ms-fontSize-12">{service.name}</span>
                                 <span style={{ marginLeft: 4, fontSize: 13, verticalAlign: "middle" }}>
-                                    {(status.epg.gatheringNetworks.includes(service.networkId) && <Icon iconName="Sync" style={{ color: "#f6ad49" }} />) ||
+                                    {(status?.epg.gatheringNetworks.includes(service.networkId) && <Icon iconName="Sync" style={{ color: "#f6ad49" }} />) ||
                                         (service.epgReady && <Icon iconName="CheckMark" style={{ color: "#c3d825" }} />) || <Icon iconName="Clock" style={{ color: "#777" }} />}
                                 </span>
                             </div>
@@ -169,5 +171,3 @@ const StatusView: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = 
         </Stack>
     );
 };
-
-export default StatusView;

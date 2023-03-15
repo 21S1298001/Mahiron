@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "module": "es2015",
+    "target": "ES2015",
+    "module": "ES2015",
     "moduleResolution": "node",
     "esModuleInterop": false,
     "jsx": "react",
@@ -11,7 +11,8 @@
     "lib": [
       "es2020",
       "dom"
-    ]
+    ],
+    "strict": true
   },
   "exclude": [
     "node_modules"

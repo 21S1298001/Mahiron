@@ -14,16 +14,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+import { ActionButton, DefaultButton, DetailsList, Dialog, DialogFooter, DialogType, Dropdown, IColumn, IconButton, PrimaryButton, Selection, SelectionMode, Spinner, SpinnerSize, Stack, TextField, Toggle } from "@fluentui/react";
 import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect, useRef } from "react";
-import { Stack, Spinner, SpinnerSize, DetailsList, Selection, SelectionMode, IColumn, Dropdown, PrimaryButton, DefaultButton, Toggle, Dialog, DialogType, DialogFooter, TextField, IconButton, ActionButton } from "@fluentui/react";
+import React, { useEffect, useRef, useState } from "react";
+import { ChannelType, ConfigChannels } from "../../../api";
 import { UIState } from "../index";
-import { ConfigChannels, ChannelType } from "../../../api";
 
 const configAPI = "/api/config/channels";
 
-interface Item {
+type Item = {
     key: string;
     enable: JSX.Element;
     name: JSX.Element;
@@ -31,7 +30,7 @@ interface Item {
     channel: JSX.Element;
     options: JSX.Element;
     controls: JSX.Element;
-}
+};
 
 const columns: IColumn[] = [
     {
@@ -80,14 +79,11 @@ const columns: IColumn[] = [
 
 const dummySelection = new Selection(); // dummy
 
-const typesIndex = ["GR", "BS", "CS", "SKY"];
-function sortTypes(types: ChannelType[]): ChannelType[] {
-    return types.sort((a, b) => typesIndex.indexOf(a) - typesIndex.indexOf(b));
-}
+export type ChannelsConfiguratorProps = Readonly<{ uiState: UIState; uiStateEvents: EventEmitter }>;
 
-const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
-    const [current, setCurrent] = useState<ConfigChannels>(null);
-    const [editing, setEditing] = useState<ConfigChannels>(null);
+export const ChannelsConfigurator: React.FC<ChannelsConfiguratorProps> = ({ uiStateEvents }) => {
+    const [current, setCurrent] = useState<ConfigChannels | null>(null);
+    const [editing, setEditing] = useState<ConfigChannels | null>(null);
     const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
     const [saved, setSaved] = useState<boolean>(false);
     const listContainerRef = useRef<HTMLDivElement>(null);
@@ -112,7 +108,7 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
         })();
     }, [saved]);
 
-    const items = [];
+    const items: Item[] = [];
     editing?.forEach((ch, i) => {
         const item: Item = {
             key: `item${i}`,
@@ -129,8 +125,8 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
             name: (
                 <TextField
                     value={ch.name}
-                    onChange={(ev, newValue) => {
-                        ch.name = newValue;
+                    onChange={(_, newValue) => {
+                        ch.name = newValue ?? "";
                         setEditing([...editing]);
                     }}
                     onBlur={() => {
@@ -150,8 +146,8 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         { key: "SKY", text: "SKY" }
                     ]}
                     selectedKey={ch.type}
-                    onChange={(ev, option) => {
-                        ch.type = option.key as any;
+                    onChange={(_, option) => {
+                        ch.type = (option?.key ?? "GR") as ChannelType;
                         setEditing([...editing]);
                     }}
                 />
@@ -159,8 +155,8 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
             channel: (
                 <TextField
                     value={ch.channel}
-                    onChange={(ev, newValue) => {
-                        ch.channel = newValue;
+                    onChange={(_, newValue) => {
+                        ch.channel = newValue ?? "";
                         setEditing([...editing]);
                     }}
                     onBlur={() => {
@@ -177,9 +173,9 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         <TextField
                             style={{ width: 55 }}
                             label="Service ID:"
-                            value={`${ch.serviceId || ""}`}
-                            onChange={(ev, newValue) => {
-                                if (newValue === "") {
+                            value={ch.serviceId !== undefined ? String(ch.serviceId) : ""}
+                            onChange={(_, newValue) => {
+                                if (newValue === "" || newValue === undefined) {
                                     delete ch.serviceId;
                                 } else if (/^[0-9]+$/.test(newValue)) {
                                     const sid = parseInt(newValue, 10);
@@ -193,7 +189,7 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         <TextField
                             style={{ width: 80 }}
                             label="Satellite:"
-                            value={ch.satellite || ""}
+                            value={ch.satellite ?? ""}
                             onChange={(ev, newValue) => {
                                 if (newValue === "") {
                                     delete ch.satellite;
@@ -207,9 +203,9 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                             style={{ width: 40 }}
                             label="Space:"
                             placeholder="0"
-                            value={`${ch.space || ""}`}
-                            onChange={(ev, newValue) => {
-                                if (newValue === "") {
+                            value={ch.space !== undefined ? String(ch.space) : ""}
+                            onChange={(_, newValue) => {
+                                if (newValue === "" || newValue === undefined) {
                                     delete ch.space;
                                 } else if (/^[0-9]+$/.test(newValue)) {
                                     const space = parseInt(newValue, 10);
@@ -223,9 +219,9 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         <TextField
                             style={{ width: 60 }}
                             label="Freq:"
-                            value={`${ch.freq || ""}`}
-                            onChange={(ev, newValue) => {
-                                if (newValue === "") {
+                            value={ch.freq !== undefined ? String(ch.freq) : ""}
+                            onChange={(_, newValue) => {
+                                if (newValue === "" || newValue === undefined) {
                                     delete ch.freq;
                                 } else if (/^[0-9\.]+$/.test(newValue)) {
                                     const freq = parseFloat(newValue);
@@ -241,12 +237,12 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                                 { key: "H", text: "H" },
                                 { key: "V", text: "V" }
                             ]}
-                            selectedKey={ch.polarity || "-"}
-                            onChange={(ev, option) => {
-                                if (option.key === "-") {
+                            selectedKey={ch.polarity ?? "-"}
+                            onChange={(_, option) => {
+                                if (option?.key === "-") {
                                     delete ch.polarity;
                                 } else {
-                                    ch.polarity = option.key as any;
+                                    ch.polarity = option?.key as "H" | "V" | undefined;
                                 }
                                 setEditing([...editing]);
                             }}
@@ -254,9 +250,9 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         <TextField
                             style={{ width: 40 }}
                             label="TsmfRelTs:"
-                            value={`${ch.tsmfRelTs || ""}`}
-                            onChange={(ev, newValue) => {
-                                if (newValue === "") {
+                            value={ch.tsmfRelTs !== undefined ? String(ch.tsmfRelTs) : ""}
+                            onChange={(_, newValue) => {
+                                if (newValue === "" || newValue === undefined) {
                                     delete ch.tsmfRelTs;
                                 } else if (/^[0-9]+$/.test(newValue)) {
                                     const tsmfRelTs = parseInt(newValue, 10);
@@ -341,6 +337,7 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                                 });
                                 setEditing([...editing]);
                                 setTimeout(() => {
+                                    if (!listContainerRef.current) return;
                                     listContainerRef.current.scrollTop = listContainerRef.current.scrollHeight;
                                 }, 0);
                             }}
@@ -388,5 +385,3 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
         </>
     );
 };
-
-export default Configurator;

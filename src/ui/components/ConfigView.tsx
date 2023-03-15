@@ -14,16 +14,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+import { Nav, Stack } from "@fluentui/react";
 import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect } from "react";
-import { Stack, Nav } from "@fluentui/react";
+import React, { useState } from "react";
 import { UIState } from "../index";
-import ServerConfigurator from "./ServerConfigurator";
-import TunersConfigurator from "./TunersConfigurator";
-import ChannelsConfigurator from "./ChannelsConfigurator";
+import { ChannelsConfigurator } from "./ChannelsConfigurator";
+import { ServerConfigurator } from "./ServerConfigurator";
+import { TunersConfigurator } from "./TunersConfigurator";
 
-const ConfigView: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
+export type ConfiViewProps = Readonly<{ uiState: UIState; uiStateEvents: EventEmitter }>;
+
+export const ConfigView: React.FC<ConfiViewProps> = ({ uiState, uiStateEvents }) => {
     const [key, setKey] = useState<string>("server");
 
     return (
@@ -35,19 +36,19 @@ const ConfigView: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = 
                             {
                                 key: "server",
                                 name: "Server",
-                                url: null,
+                                url: "",
                                 onClick: () => setKey("server")
                             },
                             {
                                 key: "tuners",
                                 name: "Tuners",
-                                url: null,
+                                url: "",
                                 onClick: () => setKey("tuners")
                             },
                             {
                                 key: "channels",
                                 name: "Channels",
-                                url: null,
+                                url: "",
                                 onClick: () => setKey("channels")
                             }
                         ]
@@ -66,5 +67,3 @@ const ConfigView: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = 
         </Stack>
     );
 };
-
-export default ConfigView;

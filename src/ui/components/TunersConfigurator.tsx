@@ -14,12 +14,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+import { ActionButton, Checkbox, DefaultButton, DetailsList, Dialog, DialogFooter, DialogType, Dropdown, IColumn, IconButton, PrimaryButton, Selection, SelectionMode, Spinner, SpinnerSize, Stack, TextField, Toggle } from "@fluentui/react";
 import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect, useRef } from "react";
-import { Stack, Spinner, SpinnerSize, DetailsList, Selection, SelectionMode, IColumn, Dropdown, PrimaryButton, DefaultButton, Toggle, Dialog, DialogType, DialogFooter, TextField, Checkbox, IconButton, ActionButton } from "@fluentui/react";
+import React, { useEffect, useRef, useState } from "react";
+import { ChannelType, ConfigTuners } from "../../../api";
 import { UIState } from "../index";
-import { ConfigTuners, ChannelType } from "../../../api";
 
 const configAPI = "/api/config/tuners";
 
@@ -77,9 +76,11 @@ function sortTypes(types: ChannelType[]): ChannelType[] {
     return types.sort((a, b) => typesIndex.indexOf(a) - typesIndex.indexOf(b));
 }
 
-const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
-    const [current, setCurrent] = useState<ConfigTuners>(null);
-    const [editing, setEditing] = useState<ConfigTuners>(null);
+export type TunersConfiguratorProps = Readonly<{ uiState: UIState; uiStateEvents: EventEmitter }>;
+
+export const TunersConfigurator: React.FC<TunersConfiguratorProps> = ({ uiStateEvents }) => {
+    const [current, setCurrent] = useState<ConfigTuners | null>(null);
+    const [editing, setEditing] = useState<ConfigTuners | null>(null);
     const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
     const [saved, setSaved] = useState<boolean>(false);
     const listContainerRef = useRef<HTMLDivElement>(null);
@@ -104,14 +105,14 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
         })();
     }, [saved]);
 
-    const items = [];
+    const items: Item[] = [];
     editing?.forEach((tuner, i) => {
         const item: Item = {
             key: `item${i}`,
             enable: (
                 <Toggle
                     checked={!tuner.isDisabled}
-                    onChange={(ev, checked) => {
+                    onChange={(_, checked) => {
                         tuner.isDisabled = !checked;
                         setEditing([...editing]);
                     }}
@@ -121,8 +122,8 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
             name: (
                 <TextField
                     value={tuner.name}
-                    onChange={(ev, newValue) => {
-                        tuner.name = newValue;
+                    onChange={(_, newValue) => {
+                        tuner.name = newValue ?? "";
                         setEditing([...editing]);
                     }}
                 />
@@ -138,12 +139,12 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         { key: "SKY", text: "SKY" }
                     ]}
                     selectedKeys={tuner.types}
-                    onChange={(ev, option) => {
-                        if (option.selected === true) {
+                    onChange={(_, option) => {
+                        if (option?.selected === true) {
                             tuner.types.push(option.key as any);
                             tuner.types = sortTypes(tuner.types);
                         } else {
-                            tuner.types = tuner.types.filter(type => type !== option.key);
+                            tuner.types = tuner.types.filter(type => type !== option?.key);
                         }
                         setEditing([...editing]);
                     }}
@@ -155,8 +156,8 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         <>
                             <TextField
                                 label="Command:"
-                                value={tuner.command || ""}
-                                onChange={(ev, newValue) => {
+                                value={tuner.command ?? ""}
+                                onChange={(_, newValue) => {
                                     if (newValue === "") {
                                         delete tuner.command;
                                     } else {
@@ -167,8 +168,8 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                             />
                             <TextField
                                 label="DVB Device Path:"
-                                value={tuner.dvbDevicePath || ""}
-                                onChange={(ev, newValue) => {
+                                value={tuner.dvbDevicePath ?? ""}
+                                onChange={(_, newValue) => {
                                     if (newValue === "") {
                                         delete tuner.dvbDevicePath;
                                     } else {
@@ -183,9 +184,9 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         <Stack horizontal tokens={{ childrenGap: "0 8" }}>
                             <TextField
                                 label="Remote Mirakurun Host:"
-                                value={tuner.remoteMirakurunHost || ""}
+                                value={tuner.remoteMirakurunHost ?? ""}
                                 onChange={(ev, newValue) => {
-                                    if (newValue === "") {
+                                    if (newValue === "" || newValue === undefined) {
                                         delete tuner.remoteMirakurunHost;
                                     } else if (/^[0-9a-z\.]+$/.test(newValue)) {
                                         tuner.remoteMirakurunHost = newValue;
@@ -197,9 +198,9 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                                 style={{ width: 55 }}
                                 label="Port:"
                                 placeholder="40772"
-                                value={`${tuner.remoteMirakurunPort || ""}`}
-                                onChange={(ev, newValue) => {
-                                    if (newValue === "") {
+                                value={tuner.remoteMirakurunPort !== undefined ? String(tuner.remoteMirakurunPort) : ""}
+                                onChange={(_, newValue) => {
+                                    if (newValue === "" || newValue === undefined) {
                                         delete tuner.remoteMirakurunPort;
                                     } else if (/^[0-9]+$/.test(newValue)) {
                                         const port = parseInt(newValue, 10);
@@ -213,8 +214,8 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                             <Checkbox
                                 styles={{ root: { marginTop: 34 } }}
                                 label="Decode"
-                                checked={tuner.remoteMirakurunDecoder || false}
-                                onChange={(ev, checked) => {
+                                checked={tuner.remoteMirakurunDecoder ?? false}
+                                onChange={(_, checked) => {
                                     if (checked) {
                                         tuner.remoteMirakurunDecoder = true;
                                     } else {
@@ -228,8 +229,8 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                     {(!tuner.remoteMirakurunHost || !tuner.remoteMirakurunDecoder) && (
                         <TextField
                             label="Decoder:"
-                            value={tuner.decoder || ""}
-                            onChange={(ev, newValue) => {
+                            value={tuner.decoder ?? ""}
+                            onChange={(_, newValue) => {
                                 if (newValue === "") {
                                     delete tuner.decoder;
                                 } else {
@@ -316,6 +317,7 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                                 });
                                 setEditing([...editing]);
                                 setTimeout(() => {
+                                    if (!listContainerRef.current) return;
                                     listContainerRef.current.scrollTop = listContainerRef.current.scrollHeight;
                                 }, 0);
                             }}
@@ -363,5 +365,3 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
         </>
     );
 };
-
-export default Configurator;

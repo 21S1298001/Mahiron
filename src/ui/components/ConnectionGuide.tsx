@@ -14,15 +14,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as React from "react";
-import { useState } from "react";
-import { getTheme, FontWeights, mergeStyleSets, IButtonStyles, IconButton, IStackProps, ActionButton, Modal, Stack, Separator, Label, TextField, TooltipHost, Icon } from "@fluentui/react";
+import { ActionButton, FontWeights, getTheme, IButtonStyles, Icon, IconButton, IStackProps, Label, mergeStyleSets, Modal, Separator, Stack, TextField, TooltipHost } from "@fluentui/react";
+import React, { useState } from "react";
 
 function selectHandler(e: React.MouseEvent<HTMLInputElement>) {
     e.currentTarget.select();
 }
 
-const ConnectionGuide: React.FC = () => {
+export const ConnectionGuide: React.FC = () => {
     const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
     const theme = getTheme();
@@ -83,7 +82,7 @@ const ConnectionGuide: React.FC = () => {
                 </div>
                 <div className={contentStyles.body}>
                     <Stack {...stackProps}>
-                        <TextField readOnly label="Mirakurun Path" value={`${location.protocol}//${location.host}/`} onMouseOver={selectHandler} onClick={selectHandler} />
+                        <TextField readOnly label="Mahiron Path" value={`${location.protocol}//${location.host}/`} onMouseOver={selectHandler} onClick={selectHandler} />
                         <TextField readOnly label="Open API 2.0 / Swagger 2.0 Compliant Definition" value={`${location.protocol}//${location.host}/api/docs`} onMouseOver={selectHandler} onClick={selectHandler} />
                         <Separator>IPTV</Separator>
                         <TextField readOnly label="M3U Playlist" value={`${location.protocol}//${location.host}/api/iptv/playlist`} onMouseOver={selectHandler} onClick={selectHandler} />
@@ -96,7 +95,7 @@ const ConnectionGuide: React.FC = () => {
                             onClick={selectHandler}
                             onRenderLabel={props => (
                                 <Stack horizontal verticalAlign="end">
-                                    <Label>{props.label}</Label>
+                                    <Label>{props?.label}</Label>
                                     <TooltipHost content="Tested on Plex Media Server">
                                         <Icon iconName="Info" style={{ marginLeft: 4, marginBottom: 6 }} />
                                     </TooltipHost>
@@ -112,5 +111,3 @@ const ConnectionGuide: React.FC = () => {
         </>
     );
 };
-
-export default ConnectionGuide;

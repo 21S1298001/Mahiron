@@ -14,12 +14,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+import { ActionButton, Coachmark, DefaultButton, Dialog, DialogFooter, DialogType, DirectionalHint, PrimaryButton, TeachingBubbleContent } from "@fluentui/react";
 import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect, useRef } from "react";
-import { Dialog, DialogFooter, DialogType, PrimaryButton, DefaultButton, ActionButton, Coachmark, TeachingBubbleContent, DirectionalHint } from "@fluentui/react";
+import React, { useEffect, useRef, useState } from "react";
 
-const Restart: React.FC<{ uiStateEvents: EventEmitter }> = ({ uiStateEvents }) => {
+export type RestartProps = Readonly<{ uiStateEvents: EventEmitter }>;
+
+export const Restart: React.FC<RestartProps> = ({ uiStateEvents }) => {
     const [hideDialog, setHideDialog] = useState<boolean>(true);
     const [restartRequired, setRestartRequired] = useState<boolean>(false);
     const targetButton = useRef<HTMLDivElement>();
@@ -59,7 +60,7 @@ const Restart: React.FC<{ uiStateEvents: EventEmitter }> = ({ uiStateEvents }) =
                     <DefaultButton text="Cancel" onClick={() => setHideDialog(true)} />
                 </DialogFooter>
             </Dialog>
-            {restartRequired && (
+            {restartRequired && targetButton.current && (
                 <Coachmark
                     target={targetButton.current}
                     onDismiss={() => setRestartRequired(false)}
@@ -73,11 +74,9 @@ const Restart: React.FC<{ uiStateEvents: EventEmitter }> = ({ uiStateEvents }) =
                     </TeachingBubbleContent>
                 </Coachmark>
             )}
-            <div ref={targetButton}>
+            <div ref={targetButton as React.MutableRefObject<HTMLDivElement>}>
                 <ActionButton iconProps={{ iconName: "Sync" }} text="Restart" onClick={() => setHideDialog(false)} />
             </div>
         </>
     );
 };
-
-export default Restart;

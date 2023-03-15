@@ -274,6 +274,7 @@ export default class TunerDevice extends EventEmitter {
         }
 
         cmd = cmd.replace("<channel>", ch.channel);
+        cmd = cmd.replace("<channel_type>", ch.type);
 
         if (ch.satellite) {
             cmd = cmd.replace("<satelite>", ch.satellite); // deprecated

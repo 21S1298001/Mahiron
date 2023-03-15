@@ -358,6 +358,10 @@ definitions:
         type: boolean
       isFault:
         type: boolean
+      currentChannelType:
+        $ref: "#/definitions/ChannelType"
+      currentChannel:
+        type: string
 
   TunerUser:
     type: object

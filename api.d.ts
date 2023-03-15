@@ -170,6 +170,8 @@ export interface TunerDevice {
     isFree: boolean;
     isUsing: boolean;
     isFault: boolean;
+    currentChannelType?: ChannelType;
+    currentChannel?: string;
 }
 
 export interface TunerUser {

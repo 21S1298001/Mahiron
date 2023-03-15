@@ -22,12 +22,10 @@ import queue from "./queue";
 import ChannelItem from "./ChannelItem";
 
 export default class Channel {
-
     private _items: ChannelItem[] = [];
     private _epgGatheringInterval: number = _.config.server.epgGatheringInterval || 1000 * 60 * 30; // 30 mins
 
     constructor() {
-
         this._load();
 
         if (_.config.server.disableEITParsing !== true) {
@@ -40,14 +38,12 @@ export default class Channel {
     }
 
     add(item: ChannelItem): void {
-
         if (this.get(item.type, item.channel) === null) {
             this._items.push(item);
         }
     }
 
     get(type: common.ChannelType, channel: string): ChannelItem {
-
         const l = this._items.length;
         for (let i = 0; i < l; i++) {
             if (this._items[i].channel === channel && this._items[i].type === type) {
@@ -59,7 +55,6 @@ export default class Channel {
     }
 
     findByType(type: common.ChannelType): ChannelItem[] {
-
         const items = [];
 
         const l = this._items.length;
@@ -73,13 +68,11 @@ export default class Channel {
     }
 
     private _load(): void {
-
         log.debug("loading channels...");
 
         const channels = _.config.channels;
 
         channels.forEach((channel, i) => {
-
             if (typeof channel.name !== "string") {
                 log.error("invalid type of property `name` in channel#%d configuration", i);
                 return;
@@ -97,7 +90,7 @@ export default class Channel {
 
             if (channel.satelite && !channel.satellite) {
                 log.warn("renaming deprecated property name `satelite` to `satellite` in channel#%d (%s) configuration", i, channel.name);
-                (<any> channel).satellite = channel.satelite;
+                (<any>channel).satellite = channel.satelite;
             }
 
             if (channel.satellite && typeof channel.satellite !== "string") {
@@ -145,7 +138,7 @@ export default class Channel {
                 }
             } else {
                 if (channel.type !== "GR") {
-                    (<any> channel).name = `${channel.type}:${channel.channel}`;
+                    (<any>channel).name = `${channel.type}:${channel.channel}`;
                 }
                 this.add(new ChannelItem(channel));
             }
@@ -153,13 +146,10 @@ export default class Channel {
     }
 
     private _epgGatherer(): void {
-
         queue.add(async () => {
-
             const networkIds = [...new Set(_.service.items.map(item => item.networkId))];
 
             networkIds.forEach(networkId => {
-
                 const services = _.service.findByNetworkId(networkId);
 
                 if (services.length === 0) {
@@ -168,19 +158,18 @@ export default class Channel {
                 const service = services[0];
 
                 queue.add(async () => {
-
                     if (service.epgReady === true) {
                         const now = Date.now();
                         if (now - service.epgUpdatedAt < this._epgGatheringInterval) {
                             log.info("Network#%d EPG gathering has skipped by `epgGatheringInterval`", networkId);
                             return;
                         }
-                        if (now - service.epgUpdatedAt > 1000 * 60 * 60 * 6) { // 6 hours
+                        if (now - service.epgUpdatedAt > 1000 * 60 * 60 * 6) {
+                            // 6 hours
                             log.info("Network#%d EPG gathering is resuming forcibly because reached maximum pause time", networkId);
                             service.epgReady = false;
                         } else {
-                            const currentPrograms = _.program.findByNetworkIdAndTime(networkId, now)
-                                .filter(program => !!program.name && program.name !== "放送休止");
+                            const currentPrograms = _.program.findByNetworkIdAndTime(networkId, now).filter(program => !!program.name && program.name !== "放送休止");
                             if (currentPrograms.length === 0) {
                                 const networkPrograms = _.program.findByNetworkId(networkId);
                                 if (networkPrograms.length > 0) {

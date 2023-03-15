@@ -33,13 +33,11 @@ import { createRPCServer, initRPCNotifier } from "./rpc";
 const pkg = require("../../package.json");
 
 class Server {
-
     private _isRunning = false;
     private _servers = new Set<http.Server>();
     private _rpcs = new Set<RPCServer>();
 
     async init() {
-
         if (this._isRunning === true) {
             throw new Error("Server is running");
         }
@@ -66,18 +64,10 @@ class Server {
                 await sleep(5000);
             }
 
-            addresses = [
-                ...addresses,
-                ...system.getIPv4AddressesForListen(),
-                "127.0.0.1"
-            ];
+            addresses = [...addresses, ...system.getIPv4AddressesForListen(), "127.0.0.1"];
 
             if (serverConfig.disableIPv6 !== true) {
-                addresses = [
-                    ...addresses,
-                    ...system.getIPv6AddressesForListen(),
-                    "::1"
-                ];
+                addresses = [...addresses, ...system.getIPv6AddressesForListen(), "::1"];
             }
         }
 
@@ -99,14 +89,15 @@ class Server {
         };
         app.use(cors(corsOptions));
 
-        app.use(morgan(":remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :response-time ms :user-agent", {
-            stream: log.event as any
-        }));
+        app.use(
+            morgan(":remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :response-time ms :user-agent", {
+                stream: log.event as any
+            })
+        );
         app.use(express.urlencoded({ extended: false }));
         app.use(express.json());
 
         app.use((req: express.Request, res: express.Response, next) => {
-
             if (req.ip && system.isPermittedIPAddress(req.ip) === false) {
                 req.socket.end();
                 return;
@@ -131,13 +122,15 @@ class Server {
         });
 
         if (!serverConfig.disableWebUI) {
-            app.use(express.static("lib/ui", {
-                setHeaders: (res, path) => {
-                    if (express.static.mime.lookup(path) === "image/svg+xml") {
-                        res.setHeader("Cache-Control", "public, max-age=86400");
+            app.use(
+                express.static("lib/ui", {
+                    setHeaders: (res, path) => {
+                        if (express.static.mime.lookup(path) === "image/svg+xml") {
+                            res.setHeader("Cache-Control", "public, max-age=86400");
+                        }
                     }
-                }
-            }));
+                })
+            );
             app.use("/swagger-ui", express.static("node_modules/swagger-ui-dist"));
             app.use("/api/debug", express.static("lib/ui/swagger-ui.html"));
         }
@@ -153,7 +146,6 @@ class Server {
         });
 
         app.use((err, req, res: express.Response, next) => {
-
             if (err.message === "Not allowed by CORS") {
                 res.status(403).end();
                 return;
@@ -168,17 +160,18 @@ class Server {
                 });
             }
 
-            res.end(JSON.stringify({
-                code: res.statusCode,
-                reason: err.message || res.statusMessage,
-                errors: err.errors
-            }));
+            res.end(
+                JSON.stringify({
+                    code: res.statusCode,
+                    reason: err.message || res.statusMessage,
+                    errors: err.errors
+                })
+            );
 
             next();
         });
 
         addresses.forEach(address => {
-
             const server = http.createServer(app);
 
             server.timeout = 1000 * 15; // 15 sec.

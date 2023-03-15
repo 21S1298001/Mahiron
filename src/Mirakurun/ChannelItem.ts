@@ -98,7 +98,7 @@ export default class ChannelItem {
             space: this._space,
             freq: this._freq,
             polarity: this._polarity,
-            tsmfRelTs: this._tsmfRelTs,
+            tsmfRelTs: this._tsmfRelTs
         };
     }
 
@@ -108,74 +108,36 @@ export default class ChannelItem {
             return;
         }
 
-        if (
-            _.service
-                .findByChannel(this)
-                .some((service) => service.serviceId === serviceId) === true
-        ) {
+        if (_.service.findByChannel(this).some(service => service.serviceId === serviceId) === true) {
             return;
         }
 
-        log.debug(
-            "ChannelItem#'%s' serviceId=%d check has queued",
-            this._name,
-            serviceId
-        );
+        log.debug("ChannelItem#'%s' serviceId=%d check has queued", this._name, serviceId);
 
         queue.add(async () => {
-            log.info(
-                "ChannelItem#'%s' serviceId=%d check has started",
-                this._name,
-                serviceId
-            );
+            log.info("ChannelItem#'%s' serviceId=%d check has started", this._name, serviceId);
 
             let services;
             try {
                 services = await _.tuner.getServices(this);
             } catch (e) {
-                log.warn(
-                    "ChannelItem#'%s' serviceId=%d check has failed [%s]",
-                    this._name,
-                    serviceId,
-                    e
-                );
+                log.warn("ChannelItem#'%s' serviceId=%d check has failed [%s]", this._name, serviceId, e);
 
                 setTimeout(() => this.addService(serviceId), 180000);
                 return;
             }
 
-            const service = services.find(
-                (service) => service.serviceId === serviceId
-            );
+            const service = services.find(service => service.serviceId === serviceId);
             if (!service) {
-                log.warn(
-                    "ChannelItem#'%s' serviceId=%d check has failed [no service]",
-                    this._name,
-                    serviceId
-                );
+                log.warn("ChannelItem#'%s' serviceId=%d check has failed [no service]", this._name, serviceId);
 
                 setTimeout(() => this.addService(serviceId), 3600000);
                 return;
             }
 
-            log.debug(
-                "ChannelItem#'%s' serviceId=%d: %s",
-                this._name,
-                serviceId,
-                JSON.stringify(service, null, "  ")
-            );
+            log.debug("ChannelItem#'%s' serviceId=%d: %s", this._name, serviceId, JSON.stringify(service, null, "  "));
 
-            _.service.add(
-                new ServiceItem(
-                    this,
-                    service.networkId,
-                    service.serviceId,
-                    service.transportStreamId,
-                    service.name,
-                    service.type,
-                    service.logoId
-                )
-            );
+            _.service.add(new ServiceItem(this, service.networkId, service.serviceId, service.transportStreamId, service.name, service.type, service.logoId));
         });
     }
 
@@ -197,27 +159,16 @@ export default class ChannelItem {
             try {
                 services = await _.tuner.getServices(this);
             } catch (e) {
-                log.warn(
-                    "ChannelItem#'%s' service scan has failed [%s]",
-                    this._name,
-                    e
-                );
+                log.warn("ChannelItem#'%s' service scan has failed [%s]", this._name, e);
 
                 setTimeout(() => this.serviceScan(add), add ? 180000 : 3600000);
                 return;
             }
 
-            log.debug(
-                "ChannelItem#'%s' services: %s",
-                this._name,
-                JSON.stringify(services, null, "  ")
-            );
+            log.debug("ChannelItem#'%s' services: %s", this._name, JSON.stringify(services, null, "  "));
 
-            services.forEach((service) => {
-                const item = _.service.get(
-                    service.networkId,
-                    service.serviceId
-                );
+            services.forEach(service => {
+                const item = _.service.get(service.networkId, service.serviceId);
                 if (item !== null) {
                     item.name = service.name;
                     item.type = service.type;
@@ -226,18 +177,7 @@ export default class ChannelItem {
                     }
                     item.remoteControlKeyId = service.remoteControlKeyId;
                 } else if (add === true) {
-                    _.service.add(
-                        new ServiceItem(
-                            this,
-                            service.networkId,
-                            service.serviceId,
-                            service.transportStreamId,
-                            service.name,
-                            service.type,
-                            service.logoId,
-                            service.remoteControlKeyId
-                        )
-                    );
+                    _.service.add(new ServiceItem(this, service.networkId, service.serviceId, service.transportStreamId, service.name, service.type, service.logoId, service.remoteControlKeyId));
                 }
             });
 

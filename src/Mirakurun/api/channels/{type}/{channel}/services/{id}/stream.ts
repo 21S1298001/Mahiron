@@ -56,7 +56,6 @@ export const parameters = [
 ];
 
 export const get: Operation = (req, res) => {
-
     const channel = _.channel.get(req.params.type as ChannelType, req.params.channel);
 
     if (channel === null) {
@@ -65,7 +64,7 @@ export const get: Operation = (req, res) => {
     }
 
     const reqId = req.params.id as any as number;
-    const service = _.service.findByChannel(channel).find(sv => (sv.id === reqId || sv.serviceId === reqId));
+    const service = _.service.findByChannel(channel).find(sv => sv.id === reqId || sv.serviceId === reqId);
 
     if (!service) {
         api.responseError(res, 404);
@@ -73,22 +72,25 @@ export const get: Operation = (req, res) => {
     }
 
     let requestAborted = false;
-    req.once("close", () => requestAborted = true);
+    req.once("close", () => (requestAborted = true));
 
-    (<any> res.socket)._writableState.highWaterMark = Math.max(res.writableHighWaterMark, 1024 * 1024 * 16);
+    (<any>res.socket)._writableState.highWaterMark = Math.max(res.writableHighWaterMark, 1024 * 1024 * 16);
     res.socket.setNoDelay(true);
 
     const userId = (req.ip || "unix") + ":" + (req.socket.remotePort || Date.now());
 
-    service.getStream({
-        id: userId,
-        priority: parseInt(req.get("X-Mirakurun-Priority"), 10) || 0,
-        agent: req.get("User-Agent"),
-        url: req.url,
-        disableDecoder: (<number> <any> req.query.decode === 0)
-    }, res)
+    service
+        .getStream(
+            {
+                id: userId,
+                priority: parseInt(req.get("X-Mirakurun-Priority"), 10) || 0,
+                agent: req.get("User-Agent"),
+                url: req.url,
+                disableDecoder: <number>(<any>req.query.decode) === 0
+            },
+            res
+        )
         .then(tsFilter => {
-
             if (requestAborted === true || req.aborted === true) {
                 return tsFilter.close();
             }
@@ -99,7 +101,7 @@ export const get: Operation = (req, res) => {
             res.setHeader("X-Mirakurun-Tuner-User-ID", userId);
             res.status(200);
         })
-        .catch((err) => api.responseStreamErrorHandler(res, err));
+        .catch(err => api.responseStreamErrorHandler(res, err));
 };
 
 get.apiDoc = {

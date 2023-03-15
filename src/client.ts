@@ -103,7 +103,6 @@ export class ErrorResponse implements ErrorResponse {
 }
 
 export default class Client {
-
     basePath = spec.basePath;
     docsPath = "/docs";
     /** positive integer */
@@ -118,26 +117,22 @@ export default class Client {
     private _userAgent = `MirakurunClient/${pkg.version} Node/${process.version} (${process.platform})`;
     private _docs: OpenAPIV2.Document;
 
-    request(method: RequestMethod, path: string, option: RequestOption = {}): Promise<Response>|Promise<ErrorResponse> {
-
+    request(method: RequestMethod, path: string, option: RequestOption = {}): Promise<Response> | Promise<ErrorResponse> {
         return new Promise((resolve, reject) => {
-
             this._httpRequest(method, path, option).then(
                 res => {
-
                     const ret: Response = {
                         status: res.statusCode,
                         statusText: res.statusMessage,
                         contentType: res.headers["content-type"].split(";")[0],
                         headers: res.headers,
-                        isSuccess: (res.statusCode >= 200 && res.statusCode <= 202)
+                        isSuccess: res.statusCode >= 200 && res.statusCode <= 202
                     };
 
                     const chunks: Buffer[] = [];
 
                     res.on("data", chunk => chunks.push(chunk as Buffer));
                     res.on("end", () => {
-
                         const buffer = Buffer.concat(chunks);
 
                         if (ret.contentType === "application/json") {
@@ -156,7 +151,6 @@ export default class Client {
                     });
                 },
                 err => {
-
                     const ret = new ErrorResponse({
                         status: -1,
                         statusText: "Request Failure",
@@ -172,8 +166,7 @@ export default class Client {
         });
     }
 
-    async call(operationId: string, param: { [key: string]: any } = {}, option: RequestOption = {}): Promise<any|http.IncomingMessage> {
-
+    async call(operationId: string, param: { [key: string]: any } = {}, option: RequestOption = {}): Promise<any | http.IncomingMessage> {
         if (!this._docs) {
             await this._getDocs();
         }
@@ -245,39 +238,33 @@ export default class Client {
     }
 
     async getChannels(query?: ChannelsQuery): Promise<apid.Channel[]> {
-
         const res = await this.call("getChannels", query);
         return res.body as apid.Channel[];
     }
 
     async getChannelsByType(type: apid.ChannelType, query?: ChannelsQuery): Promise<apid.Channel[]> {
-
         const res = await this.call("getChannelsByType", { type, ...query });
         return res.body as apid.Channel[];
     }
 
     async getChannel(type: apid.ChannelType, channel: string): Promise<apid.Channel> {
-
         const res = await this.call("getChannel", { type, channel });
         return res.body as apid.Channel;
     }
 
     async getServicesByChannel(type: apid.ChannelType, channel: string): Promise<apid.Service[]> {
-
         const res = await this.call("getServicesByChannel", { type, channel });
         return res.body as apid.Service[];
     }
 
     async getServiceByChannel(type: apid.ChannelType, channel: string, sid: apid.ServiceId): Promise<apid.Service> {
-
         const res = await this.call("getServiceByChannel", { type, channel, sid });
         return res.body as apid.Service;
     }
 
-    async getServiceStreamByChannel(opt: { type: apid.ChannelType, channel: string, sid: apid.ServiceId, decode?: boolean, priority?: number, signal?: AbortSignal }): Promise<http.IncomingMessage>;
+    async getServiceStreamByChannel(opt: { type: apid.ChannelType; channel: string; sid: apid.ServiceId; decode?: boolean; priority?: number; signal?: AbortSignal }): Promise<http.IncomingMessage>;
     async getServiceStreamByChannel(type: apid.ChannelType, channel: string, sid: apid.ServiceId, decode?: boolean, priority?: number): Promise<http.IncomingMessage>;
     async getServiceStreamByChannel(...args: any[]) {
-
         let type: apid.ChannelType;
         let channel: string;
         let sid: apid.ServiceId;
@@ -301,18 +288,21 @@ export default class Client {
             priority = args[4];
         }
 
-        return this.call("getServiceStreamByChannel", {
-            type,
-            channel,
-            sid,
-            decode: decode ? 1 : 0
-        }, { priority, signal });
+        return this.call(
+            "getServiceStreamByChannel",
+            {
+                type,
+                channel,
+                sid,
+                decode: decode ? 1 : 0
+            },
+            { priority, signal }
+        );
     }
 
-    async getChannelStream(opt: { type: apid.ChannelType, channel: string, decode?: boolean, priority?: number, signal?: AbortSignal }): Promise<http.IncomingMessage>;
+    async getChannelStream(opt: { type: apid.ChannelType; channel: string; decode?: boolean; priority?: number; signal?: AbortSignal }): Promise<http.IncomingMessage>;
     async getChannelStream(type: apid.ChannelType, channel: string, decode?: boolean, priority?: number): Promise<http.IncomingMessage>;
     async getChannelStream(...args: any[]): Promise<http.IncomingMessage> {
-
         let type: apid.ChannelType;
         let channel: string;
         let decode: boolean;
@@ -333,29 +323,30 @@ export default class Client {
             priority = args[3];
         }
 
-        return this.call("getChannelStream", {
-            type,
-            channel,
-            decode: decode ? 1 : 0
-        }, { priority, signal });
+        return this.call(
+            "getChannelStream",
+            {
+                type,
+                channel,
+                decode: decode ? 1 : 0
+            },
+            { priority, signal }
+        );
     }
 
     async getPrograms(query?: ProgramsQuery): Promise<apid.Program[]> {
-
         const res = await this.call("getPrograms", query);
         return res.body as apid.Program[];
     }
 
     async getProgram(id: apid.ProgramId): Promise<apid.Program> {
-
         const res = await this.call("getProgram", { id });
         return res.body as apid.Program;
     }
 
-    async getProgramStream(opt: { id: apid.ProgramId, decode?: boolean, priority?: number, signal?: AbortSignal }): Promise<http.IncomingMessage>;
+    async getProgramStream(opt: { id: apid.ProgramId; decode?: boolean; priority?: number; signal?: AbortSignal }): Promise<http.IncomingMessage>;
     async getProgramStream(id: apid.ProgramId, decode?: boolean, priority?: number): Promise<http.IncomingMessage>;
     async getProgramStream(...args: any[]): Promise<http.IncomingMessage> {
-
         let id: apid.ProgramId;
         let decode: boolean;
         let priority: number;
@@ -373,34 +364,34 @@ export default class Client {
             priority = args[2];
         }
 
-        return this.call("getProgramStream", {
-            id,
-            decode: decode ? 1 : 0
-        }, { priority, signal });
+        return this.call(
+            "getProgramStream",
+            {
+                id,
+                decode: decode ? 1 : 0
+            },
+            { priority, signal }
+        );
     }
 
     async getServices(query?: ServicesQuery): Promise<apid.Service[]> {
-
         const res = await this.call("getServices", query);
         return res.body as apid.Service[];
     }
 
     async getService(id: apid.ServiceItemId): Promise<apid.Service> {
-
         const res = await this.call("getService", { id });
         return res.body as apid.Service;
     }
 
     async getLogoImage(id: apid.ServiceItemId): Promise<Buffer> {
-
         const res = await this.call("getLogoImage", { id });
         return res.body as Buffer;
     }
 
-    async getServiceStream(opt: { id: apid.ServiceItemId, decode?: boolean, priority?: number, signal?: AbortSignal }): Promise<http.IncomingMessage>;
+    async getServiceStream(opt: { id: apid.ServiceItemId; decode?: boolean; priority?: number; signal?: AbortSignal }): Promise<http.IncomingMessage>;
     async getServiceStream(id: apid.ServiceItemId, decode?: boolean, priority?: number): Promise<http.IncomingMessage>;
     async getServiceStream(...args: any[]): Promise<http.IncomingMessage> {
-
         let id: apid.ServiceItemId;
         let decode: boolean;
         let priority: number;
@@ -418,124 +409,108 @@ export default class Client {
             priority = args[2];
         }
 
-        return this.call("getServiceStream", {
-            id,
-            decode: decode ? 1 : 0
-        }, { priority, signal });
+        return this.call(
+            "getServiceStream",
+            {
+                id,
+                decode: decode ? 1 : 0
+            },
+            { priority, signal }
+        );
     }
 
     async getTuners(): Promise<apid.TunerDevice[]> {
-
         const res = await this.call("getTuners");
         return res.body as apid.TunerDevice[];
     }
 
     async getTuner(index: number): Promise<apid.TunerDevice> {
-
         const res = await this.call("getTuner", { index });
         return res.body as apid.TunerDevice;
     }
 
     async getTunerProcess(index: number): Promise<apid.TunerProcess> {
-
         const res = await this.call("getTunerProcess", { index });
         return res.body as apid.TunerProcess;
     }
 
     async killTunerProcess(index: number): Promise<apid.TunerProcess> {
-
         const res = await this.call("killTunerProcess", { index });
         return res.body as apid.TunerProcess;
     }
 
     async getEvents(): Promise<apid.Event[]> {
-
         const res = await this.call("getEvents");
         return res.body as apid.Event[];
     }
 
     async getEventsStream(query?: EventsQuery): Promise<http.IncomingMessage> {
-
         return this.call("getEventsStream", query);
     }
 
     async getChannelsConfig(): Promise<apid.ConfigChannels> {
-
         const res = await this.call("getChannelsConfig");
         return res.body as apid.ConfigChannels;
     }
 
     async updateChannelsConfig(channels: apid.ConfigChannels): Promise<apid.ConfigChannels> {
-
         const res = await this.call("updateChannelsConfig", { body: channels });
         return res.body as apid.ConfigChannels;
     }
 
     async channelScan(option?: ChannelScanOption): Promise<http.IncomingMessage> {
-
         return this.call("channelScan", option);
     }
 
     async getServerConfig(): Promise<apid.ConfigServer> {
-
         const res = await this.call("getServerConfig");
         return res.body as apid.ConfigServer;
     }
 
     async updateServerConfig(server: apid.ConfigServer): Promise<apid.ConfigServer> {
-
         const res = await this.call("updateServerConfig", { body: server });
         return res.body as apid.ConfigServer;
     }
 
     async getTunersConfig(): Promise<apid.ConfigTuners> {
-
         const res = await this.call("getTunersConfig");
         return res.body as apid.ConfigTuners;
     }
 
     async updateTunersConfig(tuners: apid.ConfigTuners): Promise<apid.ConfigTuners> {
-
         const res = await this.call("updateTunersConfig", { body: tuners });
         return res.body as apid.ConfigTuners;
     }
 
     async getLog(): Promise<string> {
-
         const res = await this.call("getLog");
         return res.body as string;
     }
 
     async getLogStream(): Promise<http.IncomingMessage> {
-
         return this.call("getLogStream");
     }
 
     async checkVersion(): Promise<apid.Version> {
-
         const res = await this.call("checkVersion");
         return res.body as apid.Version;
     }
 
     async updateVersion(force?: boolean): Promise<http.IncomingMessage> {
-
         return this.call("updateVersion", { force });
     }
 
     async getStatus(): Promise<apid.Status> {
-
         const res = await this.call("getStatus");
         return res.body as apid.Status;
     }
 
     async restart(): Promise<{}> {
-
         const res = await this.call("restart");
         return res.body;
     }
 
     private _httpRequest(method: RequestMethod, path: string, option: RequestOption = {}): Promise<http.IncomingMessage> {
-
         const opt: http.RequestOptions = {
             method: method,
             path: this.basePath + path,
@@ -573,35 +548,38 @@ export default class Client {
             option.body = JSON.stringify(option.body);
         }
 
-        if (option.signal) { // instanceof AbortSignal
+        if (option.signal) {
+            // instanceof AbortSignal
             // http.request() AbortSignal is not working expectedly on node@16.12.0
-            (<any> opt).signal = option.signal;
+            (<any>opt).signal = option.signal;
         }
 
         return new Promise((resolve, reject) => {
-
             const req = http.request(opt, res => {
-
                 if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location) {
                     if (/^\//.test(res.headers.location) === false) {
                         reject(new Error(`Redirecting location "${res.headers.location}" isn't supported.`));
                         return;
                     }
-                    this._httpRequest(method, res.headers.location, option)
-                        .then(resolve, reject);
+                    this._httpRequest(method, res.headers.location, option).then(resolve, reject);
                     return;
                 }
 
                 resolve(res);
             });
 
-            if (option.signal) { // instanceof AbortSignal
+            if (option.signal) {
+                // instanceof AbortSignal
                 // workaround
-                option.signal.addEventListener("abort", () => {
-                    if (!req.destroyed) {
-                        req.destroy();
-                    }
-                }, { once: true });
+                option.signal.addEventListener(
+                    "abort",
+                    () => {
+                        if (!req.destroyed) {
+                            req.destroy();
+                        }
+                    },
+                    { once: true }
+                );
             }
 
             req.on("error", reject);
@@ -615,7 +593,6 @@ export default class Client {
     }
 
     private async _requestStream(method: RequestMethod, path: string, option: RequestOption = {}): Promise<http.IncomingMessage> {
-
         const res = await this._httpRequest(method, path, option);
 
         if (res.statusCode >= 200 && res.statusCode <= 202) {
@@ -629,7 +606,6 @@ export default class Client {
     }
 
     private async _getDocs() {
-
         const res = await this.request("GET", this.docsPath);
         if (res.isSuccess !== true) {
             throw new Error(`Failed to get "${this.docsPath}".`);

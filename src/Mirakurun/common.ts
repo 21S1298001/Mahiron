@@ -57,7 +57,6 @@ export type ChannelType = keyof typeof ChannelTypes;
 
 export function updateObject<T, U>(target: T, input: U): boolean;
 export function updateObject<T extends any[], U extends any[]>(target: T, input: U): boolean {
-
     let updated = false;
 
     for (const k in input) {
@@ -69,7 +68,7 @@ export function updateObject<T extends any[], U extends any[]>(target: T, input:
         } else if (typeof target[k] === "object" && typeof input[k] === "object") {
             updated = updateObject(target[k], input[k]) || updated;
             continue;
-        } else  if (target[k] === input[k]) {
+        } else if (target[k] === input[k]) {
             continue;
         }
 
@@ -81,7 +80,6 @@ export function updateObject<T extends any[], U extends any[]>(target: T, input:
 }
 
 function updateArray<T extends any[], U extends any[]>(target: T, input: U): boolean {
-
     const length = target.length;
 
     if (length !== input.length) {
@@ -118,20 +116,18 @@ export function sleep(ms: number): Promise<void> {
 }
 
 export function getTimeFromMJD(buffer: Uint8Array | Buffer): number {
-
     const mjd = (buffer[0] << 8) | buffer[1];
-    const h = (buffer[2] >> 4) * 10 + (buffer[2] & 0x0F);
-    const i = (buffer[3] >> 4) * 10 + (buffer[3] & 0x0F);
-    const s = (buffer[4] >> 4) * 10 + (buffer[4] & 0x0F);
+    const h = (buffer[2] >> 4) * 10 + (buffer[2] & 0x0f);
+    const i = (buffer[3] >> 4) * 10 + (buffer[3] & 0x0f);
+    const s = (buffer[4] >> 4) * 10 + (buffer[4] & 0x0f);
 
-    return ((mjd - 40587) * 86400 + ((h - 9) * 60 * 60) + (i * 60) + s) * 1000;
+    return ((mjd - 40587) * 86400 + (h - 9) * 60 * 60 + i * 60 + s) * 1000;
 }
 
 export function getTimeFromBCD24(buffer: Uint8Array | Buffer): number {
-
-    let time = ((buffer[0] >> 4) * 10 + (buffer[0] & 0x0F)) * 3600;
-    time += ((buffer[1] >> 4) * 10 + (buffer[1] & 0x0F)) * 60;
-    time += (buffer[2] >> 4) * 10 + (buffer[2] & 0x0F);
+    let time = ((buffer[0] >> 4) * 10 + (buffer[0] & 0x0f)) * 3600;
+    time += ((buffer[1] >> 4) * 10 + (buffer[1] & 0x0f)) * 60;
+    time += (buffer[2] >> 4) * 10 + (buffer[2] & 0x0f);
 
     return time * 1000;
 }

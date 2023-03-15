@@ -19,11 +19,7 @@ import * as api from "../api";
 import _ from "../_";
 
 export const get: Operation = (req, res) => {
-
-    api.responseJSON(
-        res,
-        _.tuner.devices
-    );
+    api.responseJSON(res, _.tuner.devices);
 };
 
 get.apiDoc = {

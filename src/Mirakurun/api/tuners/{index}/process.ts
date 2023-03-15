@@ -29,7 +29,6 @@ export const parameters = [
 ];
 
 export const get: Operation = (req, res) => {
-
     const tuner = _.tuner.get(req.params.index as any as number);
 
     if (tuner === null || Number.isInteger(tuner.pid) === false) {
@@ -67,7 +66,6 @@ get.apiDoc = {
 };
 
 export const del: Operation = (req, res) => {
-
     const tuner = _.tuner.get(req.params.index as any as number);
 
     if (tuner === null || Number.isInteger(tuner.pid) === false) {
@@ -75,8 +73,9 @@ export const del: Operation = (req, res) => {
         return;
     }
 
-    tuner.kill()
-        .then(() => api.responseJSON(res, {pid: null}))
+    tuner
+        .kill()
+        .then(() => api.responseJSON(res, { pid: null }))
         .catch((error: Error) => api.responseError(res, 500, error.message));
 };
 

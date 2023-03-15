@@ -16,16 +16,10 @@
 */
 import * as React from "react";
 import { useState, useEffect } from "react";
-import {
-    MessageBar,
-    MessageBarType,
-    MessageBarButton,
-    Link
-} from "@fluentui/react";
+import { MessageBar, MessageBarType, MessageBarButton, Link } from "@fluentui/react";
 import { Version } from "../../../api";
 
 const UpdateAlert: React.FC = () => {
-
     const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
     const [version, setVersion] = useState<Version>(null);
 
@@ -51,10 +45,7 @@ const UpdateAlert: React.FC = () => {
                     dismissButtonAriaLabel="Close"
                     actions={
                         <div>
-                            <MessageBarButton
-                                href="https://github.com/Chinachu/Mirakurun/blob/master/doc/Platforms.md"
-                                target="_blank"
-                            >
+                            <MessageBarButton href="https://github.com/Chinachu/Mirakurun/blob/master/doc/Platforms.md" target="_blank">
                                 How to Update
                             </MessageBarButton>
                         </div>

@@ -86,15 +86,7 @@ export interface ProgramVideo {
 
 export type ProgramVideoType = "mpeg2" | "h.264" | "h.265";
 
-export type ProgramVideoResolution =
-    | "240p"
-    | "480i"
-    | "480p"
-    | "720p"
-    | "1080i"
-    | "1080p"
-    | "2160p"
-    | "4320p";
+export type ProgramVideoResolution = "240p" | "480i" | "480p" | "720p" | "1080i" | "1080p" | "2160p" | "4320p";
 
 export interface ProgramAudio {
     /** component_type
@@ -121,20 +113,10 @@ export enum ProgramAudioSamplingRate {
     "24kHz" = 24000,
     "32kHz" = 32000,
     "44.1kHz" = 44100,
-    "48kHz" = 48000,
+    "48kHz" = 48000
 }
 
-export type ProgramAudioLanguageCode =
-    | "jpn"
-    | "eng"
-    | "deu"
-    | "fra"
-    | "ita"
-    | "rus"
-    | "zho"
-    | "kor"
-    | "spa"
-    | "etc";
+export type ProgramAudioLanguageCode = "jpn" | "eng" | "deu" | "fra" | "ita" | "rus" | "zho" | "kor" | "spa" | "etc";
 
 export interface ProgramSeries {
     id: number;
@@ -159,10 +141,7 @@ export function loadServices(integrity: string): Service[] {
     return load(process.env.SERVICES_DB_PATH, integrity);
 }
 
-export async function saveServices(
-    data: Service[],
-    integrity: string
-): Promise<void> {
+export async function saveServices(data: Service[], integrity: string): Promise<void> {
     return save(process.env.SERVICES_DB_PATH, data, integrity);
 }
 
@@ -170,10 +149,7 @@ export function loadPrograms(integrity: string): Program[] {
     return load(process.env.PROGRAMS_DB_PATH, integrity);
 }
 
-export async function savePrograms(
-    data: Program[],
-    integrity: string
-): Promise<void> {
+export async function savePrograms(data: Program[], integrity: string): Promise<void> {
     return save(process.env.PROGRAMS_DB_PATH, data, integrity);
 }
 
@@ -203,12 +179,7 @@ function load(path: string, integrity: string) {
     }
 }
 
-async function save(
-    path: string,
-    data: any[],
-    integrity: string,
-    retrying = false
-): Promise<void> {
+async function save(path: string, data: any[], integrity: string, retrying = false): Promise<void> {
     log.info("save db `%s` w/ integirty (%s)", path, integrity);
 
     data.unshift({ __integrity__: integrity });

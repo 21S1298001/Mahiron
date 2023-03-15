@@ -17,20 +17,9 @@
 import EventEmitter from "eventemitter3";
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
-import {
-    Dialog,
-    DialogFooter,
-    DialogType,
-    PrimaryButton,
-    DefaultButton,
-    ActionButton,
-    Coachmark,
-    TeachingBubbleContent,
-    DirectionalHint
-} from "@fluentui/react";
+import { Dialog, DialogFooter, DialogType, PrimaryButton, DefaultButton, ActionButton, Coachmark, TeachingBubbleContent, DirectionalHint } from "@fluentui/react";
 
 const Restart: React.FC<{ uiStateEvents: EventEmitter }> = ({ uiStateEvents }) => {
-
     const [hideDialog, setHideDialog] = useState<boolean>(true);
     const [restartRequired, setRestartRequired] = useState<boolean>(false);
     const targetButton = useRef<HTMLDivElement>();
@@ -67,10 +56,7 @@ const Restart: React.FC<{ uiStateEvents: EventEmitter }> = ({ uiStateEvents }) =
                             setRestartRequired(false);
                         }}
                     />
-                    <DefaultButton
-                        text="Cancel"
-                        onClick={() => setHideDialog(true)}
-                    />
+                    <DefaultButton text="Cancel" onClick={() => setHideDialog(true)} />
                 </DialogFooter>
             </Dialog>
             {restartRequired && (
@@ -79,23 +65,16 @@ const Restart: React.FC<{ uiStateEvents: EventEmitter }> = ({ uiStateEvents }) =
                     onDismiss={() => setRestartRequired(false)}
                     positioningContainerProps={{
                         directionalHint: DirectionalHint.leftCenter,
-                        doNotLayer: false,
+                        doNotLayer: false
                     }}
                 >
-                    <TeachingBubbleContent
-                        hasCloseButton
-                        onDismiss={() => setRestartRequired(false)}
-                    >
+                    <TeachingBubbleContent hasCloseButton onDismiss={() => setRestartRequired(false)}>
                         Restart is required to apply configuration.
                     </TeachingBubbleContent>
                 </Coachmark>
             )}
             <div ref={targetButton}>
-                <ActionButton
-                    iconProps={{ iconName: "Sync" }}
-                    text="Restart"
-                    onClick={() => setHideDialog(false)}
-                />
+                <ActionButton iconProps={{ iconName: "Sync" }} text="Restart" onClick={() => setHideDialog(false)} />
             </div>
         </>
     );

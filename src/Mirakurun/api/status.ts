@@ -23,7 +23,6 @@ import _ from "../_";
 const pkg = require("../../../package.json");
 
 export const get: Operation = (req, res) => {
-
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     res.status(200);
 
@@ -51,7 +50,6 @@ get.apiDoc = {
 };
 
 export function getStatus(): Status {
-
     const ret: Status = {
         time: Date.now(),
         version: pkg.version,
@@ -91,17 +89,17 @@ export function getStatus(): Status {
             // ns → μs
             last: status.timerAccuracy.last / 1000,
             m1: {
-                avg: (status.timerAccuracy.m1.reduce((a, b) => a + b) / status.timerAccuracy.m1.length) / 1000,
+                avg: status.timerAccuracy.m1.reduce((a, b) => a + b) / status.timerAccuracy.m1.length / 1000,
                 min: Math.min.apply(null, status.timerAccuracy.m1) / 1000,
                 max: Math.max.apply(null, status.timerAccuracy.m1) / 1000
             },
             m5: {
-                avg: (status.timerAccuracy.m5.reduce((a, b) => a + b) / status.timerAccuracy.m5.length) / 1000,
+                avg: status.timerAccuracy.m5.reduce((a, b) => a + b) / status.timerAccuracy.m5.length / 1000,
                 min: Math.min.apply(null, status.timerAccuracy.m5) / 1000,
                 max: Math.max.apply(null, status.timerAccuracy.m5) / 1000
             },
             m15: {
-                avg: (status.timerAccuracy.m15.reduce((a, b) => a + b) / status.timerAccuracy.m15.length) / 1000,
+                avg: status.timerAccuracy.m15.reduce((a, b) => a + b) / status.timerAccuracy.m15.length / 1000,
                 min: Math.min.apply(null, status.timerAccuracy.m15) / 1000,
                 max: Math.max.apply(null, status.timerAccuracy.m15) / 1000
             }

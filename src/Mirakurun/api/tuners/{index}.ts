@@ -29,7 +29,6 @@ export const parameters = [
 ];
 
 export const get: Operation = (req, res) => {
-
     const tuner = _.tuner.get(req.params.index as any as number);
 
     if (tuner === null) {

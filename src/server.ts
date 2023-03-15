@@ -21,11 +21,11 @@ import { createHash } from "crypto";
 
 process.title = "Mirakurun: Server";
 
-process.on("uncaughtException", (err) => {
+process.on("uncaughtException", err => {
     ++status.errorCount.uncaughtException;
     console.error(err.stack);
 });
-process.on("unhandledRejection", (err) => {
+process.on("unhandledRejection", err => {
     ++status.errorCount.unhandledRejection;
     console.error(err);
 });
@@ -50,9 +50,7 @@ import _ from "./Mirakurun/_";
 
 _.config.server = config.loadServer();
 _.config.channels = config.loadChannels();
-_.configIntegrity.channels = createHash("sha256")
-    .update(JSON.stringify(_.config.channels))
-    .digest("base64");
+_.configIntegrity.channels = createHash("sha256").update(JSON.stringify(_.config.channels)).digest("base64");
 _.config.tuners = config.loadTuners();
 
 if (typeof _.config.server.logLevel === "number") {

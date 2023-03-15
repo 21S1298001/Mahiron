@@ -19,7 +19,6 @@ import { spawn } from "child_process";
 import * as api from "../api";
 
 export const put: Operation = (req, res) => {
-
     if (process.env.pm_uptime) {
         const cmd = spawn("mirakurun", ["restart"], {
             detached: true,
@@ -53,9 +52,7 @@ put.apiDoc = {
     tags: ["misc"],
     summary: "Restart Mirakurun",
     operationId: "restart",
-    produces: [
-        "application/json"
-    ],
+    produces: ["application/json"],
     responses: {
         202: {
             description: "Accepted"

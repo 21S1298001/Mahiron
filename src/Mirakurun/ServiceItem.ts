@@ -24,10 +24,7 @@ import _ from "./_";
 
 export default class ServiceItem {
     static getId(networkId: number, serviceId: number): number {
-        return parseInt(
-            networkId + (serviceId / 100000).toFixed(5).slice(2),
-            10
-        );
+        return parseInt(networkId + (serviceId / 100000).toFixed(5).slice(2), 10);
     }
 
     private _id: number;
@@ -159,17 +156,14 @@ export default class ServiceItem {
             epgUpdatedAt: this._epgUpdatedAt,
             channel: {
                 type: this._channel.type,
-                channel: this._channel.channel,
-            },
+                channel: this._channel.channel
+            }
         };
 
         return ret;
     }
 
-    getStream(
-        userRequest: common.UserRequest,
-        output: stream.Writable
-    ): Promise<TSFilter> {
+    getStream(userRequest: common.UserRequest, output: stream.Writable): Promise<TSFilter> {
         return _.tuner.initServiceStream(this, userRequest, output);
     }
 

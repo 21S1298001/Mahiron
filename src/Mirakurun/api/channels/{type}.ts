@@ -31,20 +31,21 @@ export const parameters = [
 ];
 
 export const get: Operation = (req, res) => {
+    const channels = _.channel
+        .findByType(req.params.type as ChannelType)
+        .map(channel => {
+            const ch: any = channel.toJSON();
 
-    const channels = _.channel.findByType(req.params.type as ChannelType).map(channel => {
+            ch.services = channel.getServices().map(service => ({
+                id: service.id,
+                serviceId: service.serviceId,
+                networkId: service.networkId,
+                name: service.name
+            }));
 
-        const ch: any = channel.toJSON();
-
-        ch.services = channel.getServices().map(service => ({
-            id: service.id,
-            serviceId: service.serviceId,
-            networkId: service.networkId,
-            name: service.name
-        }));
-
-        return ch;
-    }).filter(sift(req.query));
+            return ch;
+        })
+        .filter(sift(req.query));
 
     api.responseJSON(res, channels);
 };

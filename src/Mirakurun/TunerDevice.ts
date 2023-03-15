@@ -15,18 +15,18 @@
    limitations under the License.
 */
 import * as child_process from "child_process";
+import { EventEmitter } from "eventemitter3";
 import * as stream from "stream";
 import * as util from "util";
-import { EventEmitter } from "eventemitter3";
-import * as common from "./common";
-import * as log from "./log";
-import * as config from "./config";
 import * as apid from "../../api";
-import status from "./status";
-import Event from "./Event";
-import ChannelItem from "./ChannelItem";
-import TSFilter from "./TSFilter";
 import Client, { ProgramsQuery } from "../client";
+import ChannelItem from "./ChannelItem";
+import * as common from "./common";
+import * as config from "./config";
+import Event from "./Event";
+import * as log from "./log";
+import status from "./status";
+import TSFilter from "./TSFilter";
 
 interface User extends common.User {
     _stream?: TSFilter;
@@ -262,6 +262,7 @@ export default class TunerDevice extends EventEmitter {
         }
 
         cmd = cmd.replace("<channel>", ch.channel);
+        cmd = cmd.replace("<channel_type>", ch.type);
 
         if (ch.satellite) {
             cmd = cmd.replace("<satelite>", ch.satellite); // deprecated

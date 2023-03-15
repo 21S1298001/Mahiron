@@ -242,7 +242,7 @@ export const ServerConfigurator: React.FC<ServerConfiguratorProps> = ({ uiState,
                             setShowSaveDialog(false);
                             (async () => {
                                 if (!editing) return;
-                                for (const key of Object.keys(editing)) {
+                                for (const key of Object.keys(editing) as (keyof typeof editing)[]) {
                                     if (editing[key] === null) {
                                         delete editing[key];
                                     }

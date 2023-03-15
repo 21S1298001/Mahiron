@@ -198,8 +198,8 @@ const Content = () => {
 
         const icon = document.getElementById("icon");
         if (!icon) return;
-        if (icon.getAttribute("href") !== iconSrcMap[state.statusIconName]) {
-            icon.setAttribute("href", iconSrcMap[state.statusIconName]);
+        if (icon.getAttribute("href") !== iconSrcMap[state.statusIconName as keyof typeof iconSrcMap]) {
+            icon.setAttribute("href", iconSrcMap[state.statusIconName as keyof typeof iconSrcMap]);
         }
 
         const onStateUpdate = () => {
@@ -216,7 +216,7 @@ const Content = () => {
         <Fabric style={{ margin: "16px" }}>
             <Stack tokens={{ childrenGap: "8 0" }}>
                 <Stack horizontal verticalAlign="center" tokens={{ childrenGap: "0 8" }}>
-                    <img style={{ height: "96px" }} src={iconSrcMap[state.statusIconName]} />
+                    <img style={{ height: "96px" }} src={iconSrcMap[state.statusIconName as keyof typeof iconSrcMap]} />
                     <div className="ms-fontSize-42">Mirakurun</div>
                     <Text variant="mediumPlus" nowrap block className={ColorClassNames.themePrimary}>
                         {state.status?.version}

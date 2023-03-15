@@ -43,7 +43,7 @@ const {
     DISABLE_WEB_UI,
     ALLOW_IPV4_CIDR_RANGES,
     ALLOW_IPV6_CIDR_RANGES,
-    RANDOMIZE_TUNERS,
+    RANDOMIZE_TUNERS
 } = process.env;
 
 const IS_DOCKER = DOCKER === "YES";
@@ -164,12 +164,7 @@ export function loadServer(): Server {
 
     // set default
     if (!config.allowIPv4CidrRanges) {
-        config.allowIPv4CidrRanges = [
-            "10.0.0.0/8",
-            "127.0.0.0/8",
-            "172.16.0.0/12",
-            "192.168.0.0/16",
-        ];
+        config.allowIPv4CidrRanges = ["10.0.0.0/8", "127.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"];
     }
     if (!config.allowIPv6CidrRanges) {
         config.allowIPv6CidrRanges = ["fc00::/7"];
@@ -183,59 +178,31 @@ export function loadServer(): Server {
             config.disableIPv6 = true;
         }
 
-        if (
-            !config.hostname &&
-            typeof HOSTNAME !== "undefined" &&
-            HOSTNAME.trim().length > 0
-        ) {
+        if (!config.hostname && typeof HOSTNAME !== "undefined" && HOSTNAME.trim().length > 0) {
             config.hostname = HOSTNAME.trim();
         }
         if (typeof LOG_LEVEL !== "undefined" && /^-?[0123]$/.test(LOG_LEVEL)) {
             config.logLevel = parseInt(LOG_LEVEL, 10);
         }
-        if (
-            typeof MAX_LOG_HISTORY !== "undefined" &&
-            /^[0-9]+$/.test(MAX_LOG_HISTORY)
-        ) {
+        if (typeof MAX_LOG_HISTORY !== "undefined" && /^[0-9]+$/.test(MAX_LOG_HISTORY)) {
             config.maxLogHistory = parseInt(MAX_LOG_HISTORY, 10);
         }
-        if (
-            typeof MAX_BUFFER_BYTES_BEFORE_READY !== "undefined" &&
-            /^[0-9]+$/.test(MAX_BUFFER_BYTES_BEFORE_READY)
-        ) {
-            config.maxBufferBytesBeforeReady = parseInt(
-                MAX_BUFFER_BYTES_BEFORE_READY,
-                10
-            );
+        if (typeof MAX_BUFFER_BYTES_BEFORE_READY !== "undefined" && /^[0-9]+$/.test(MAX_BUFFER_BYTES_BEFORE_READY)) {
+            config.maxBufferBytesBeforeReady = parseInt(MAX_BUFFER_BYTES_BEFORE_READY, 10);
         }
-        if (
-            typeof EVENT_END_TIMEOUT !== "undefined" &&
-            /^[0-9]+$/.test(EVENT_END_TIMEOUT)
-        ) {
+        if (typeof EVENT_END_TIMEOUT !== "undefined" && /^[0-9]+$/.test(EVENT_END_TIMEOUT)) {
             config.eventEndTimeout = parseInt(EVENT_END_TIMEOUT, 10);
         }
-        if (
-            typeof PROGRAM_GC_INTERVAL !== "undefined" &&
-            /^[0-9]+$/.test(PROGRAM_GC_INTERVAL)
-        ) {
+        if (typeof PROGRAM_GC_INTERVAL !== "undefined" && /^[0-9]+$/.test(PROGRAM_GC_INTERVAL)) {
             config.programGCInterval = parseInt(PROGRAM_GC_INTERVAL, 10);
         }
-        if (
-            typeof EPG_GATHERING_INTERVAL !== "undefined" &&
-            /^[0-9]+$/.test(EPG_GATHERING_INTERVAL)
-        ) {
+        if (typeof EPG_GATHERING_INTERVAL !== "undefined" && /^[0-9]+$/.test(EPG_GATHERING_INTERVAL)) {
             config.epgGatheringInterval = parseInt(EPG_GATHERING_INTERVAL, 10);
         }
-        if (
-            typeof EPG_RETRIEVAL_TIME !== "undefined" &&
-            /^[0-9]+$/.test(EPG_RETRIEVAL_TIME)
-        ) {
+        if (typeof EPG_RETRIEVAL_TIME !== "undefined" && /^[0-9]+$/.test(EPG_RETRIEVAL_TIME)) {
             config.epgRetrievalTime = parseInt(EPG_RETRIEVAL_TIME, 10);
         }
-        if (
-            typeof LOGO_DATA_INTERVAL !== "undefined" &&
-            /^[0-9]+$/.test(LOGO_DATA_INTERVAL)
-        ) {
+        if (typeof LOGO_DATA_INTERVAL !== "undefined" && /^[0-9]+$/.test(LOGO_DATA_INTERVAL)) {
             config.logoDataInterval = parseInt(LOGO_DATA_INTERVAL, 10);
         }
         if (DISABLE_EIT_PARSING === "true") {
@@ -244,16 +211,10 @@ export function loadServer(): Server {
         if (DISABLE_WEB_UI === "true") {
             config.disableWebUI = true;
         }
-        if (
-            typeof ALLOW_IPV4_CIDR_RANGES !== "undefined" &&
-            ALLOW_IPV4_CIDR_RANGES.trim().length > 0
-        ) {
+        if (typeof ALLOW_IPV4_CIDR_RANGES !== "undefined" && ALLOW_IPV4_CIDR_RANGES.trim().length > 0) {
             config.allowIPv4CidrRanges = ALLOW_IPV4_CIDR_RANGES.split(",");
         }
-        if (
-            typeof ALLOW_IPV6_CIDR_RANGES !== "undefined" &&
-            ALLOW_IPV6_CIDR_RANGES.trim().length > 0
-        ) {
+        if (typeof ALLOW_IPV6_CIDR_RANGES !== "undefined" && ALLOW_IPV6_CIDR_RANGES.trim().length > 0) {
             config.allowIPv6CidrRanges = ALLOW_IPV6_CIDR_RANGES.split(",");
         }
 
@@ -261,10 +222,7 @@ export function loadServer(): Server {
             config.randomizeTuners = true;
         }
 
-        log.info(
-            "load server config (merged w/ env): %s",
-            JSON.stringify(config)
-        );
+        log.info("load server config (merged w/ env): %s", JSON.stringify(config));
     }
 
     if (!config.hostname) {
@@ -283,11 +241,7 @@ export function loadServer(): Server {
                 continue;
             }
             for (const error of errors) {
-                log.error(
-                    "invalid server config property `allowIPv4CidrRanges`: %s - %s",
-                    range,
-                    error
-                );
+                log.error("invalid server config property `allowIPv4CidrRanges`: %s - %s", range, error);
             }
         }
 
@@ -305,11 +259,7 @@ export function loadServer(): Server {
                 continue;
             }
             for (const error of errors) {
-                log.error(
-                    "invalid server config property `allowIPv6CidrRanges`: %s - %s",
-                    range,
-                    error
-                );
+                log.error("invalid server config property `allowIPv6CidrRanges`: %s - %s", range, error);
             }
         }
 
@@ -421,7 +371,7 @@ function save(name: string, path: string, data: object): Promise<void> {
     log.info("save %s config `%s`", name, path);
 
     return new Promise<void>((resolve, reject) => {
-        fs.writeFile(path, yaml.dump(data), (err) => {
+        fs.writeFile(path, yaml.dump(data), err => {
             if (err) {
                 return reject(err);
             }

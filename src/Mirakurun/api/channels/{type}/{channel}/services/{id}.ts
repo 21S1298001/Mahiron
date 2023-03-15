@@ -43,7 +43,6 @@ export const parameters = [
 ];
 
 export const get: Operation = (req, res) => {
-
     const channel = _.channel.get(req.params.type as ChannelType, req.params.channel);
 
     if (channel === null) {
@@ -52,7 +51,7 @@ export const get: Operation = (req, res) => {
     }
 
     const reqId = req.params.id as any as number;
-    const service = _.service.findByChannel(channel).find(sv => (sv.id === reqId || sv.serviceId === reqId));
+    const service = _.service.findByChannel(channel).find(sv => sv.id === reqId || sv.serviceId === reqId);
 
     if (!service) {
         api.responseError(res, 404);

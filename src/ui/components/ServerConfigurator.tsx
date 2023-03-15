@@ -17,31 +17,14 @@
 import EventEmitter from "eventemitter3";
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
-import {
-    Stack,
-    Separator,
-    Spinner,
-    SpinnerSize,
-    Dropdown,
-    TooltipHost,
-    Icon,
-    Label,
-    TextField,
-    PrimaryButton,
-    DefaultButton,
-    Toggle,
-    Dialog,
-    DialogType,
-    DialogFooter,
-} from "@fluentui/react";
-import { Validator as IPValidator } from "ip-num/Validator"
+import { Stack, Separator, Spinner, SpinnerSize, Dropdown, TooltipHost, Icon, Label, TextField, PrimaryButton, DefaultButton, Toggle, Dialog, DialogType, DialogFooter } from "@fluentui/react";
+import { Validator as IPValidator } from "ip-num/Validator";
 import { UIState } from "../index";
 import { ConfigServer } from "../../../api";
 
 const configAPI = "/api/config/server";
 
-const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
-
+const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
     const [current, setCurrent] = useState<ConfigServer>(null);
     const [editing, setEditing] = useState<ConfigServer>(null);
     const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
@@ -96,20 +79,17 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
     return (
         <>
             {!current && <Spinner size={SpinnerSize.large} />}
-            {editing &&
+            {editing && (
                 <Stack tokens={{ childrenGap: "8 0" }}>
                     <Dropdown
                         label="LogLevel"
                         styles={{ dropdown: { display: "inline-block" } }}
                         disabled={docker && typeof uiState.status.process.env.LOG_LEVEL === "string"}
-                        onRenderLabel={(props) => (
+                        onRenderLabel={props => (
                             <Stack horizontal verticalAlign="end">
                                 <Label>{props.label}</Label>
                                 <TooltipHost content="If running in Docker, Env var `LOG_LEVEL` is preferred.">
-                                    <Icon
-                                        iconName="Info"
-                                        style={{ marginLeft: 4, marginBottom: 6 }}
-                                    />
+                                    <Icon iconName="Info" style={{ marginLeft: 4, marginBottom: 6 }} />
                                 </TooltipHost>
                             </Stack>
                         )}
@@ -118,7 +98,7 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                             { key: 0, text: "ERROR (0)" },
                             { key: 1, text: "WARN (1)" },
                             { key: 2, text: "INFO (2)" }, // default
-                            { key: 3, text: "DEBUG (3)" },
+                            { key: 3, text: "DEBUG (3)" }
                         ]}
                         selectedKey={editing?.logLevel === undefined ? 2 : editing?.logLevel}
                         onChange={(ev, option: any) => {
@@ -138,7 +118,7 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                     <Toggle
                         label="IPv6"
                         disabled={!ipv6Ready}
-                        checked={(ipv6Ready && (editing.disableIPv6 === undefined || editing.disableIPv6 === false))}
+                        checked={ipv6Ready && (editing.disableIPv6 === undefined || editing.disableIPv6 === false)}
                         onText="Enable"
                         offText="Disable"
                         onChange={(ev, checked) => {
@@ -171,49 +151,44 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                         label={
                             <Stack horizontal verticalAlign="end">
                                 <Label>EIT Parsing</Label>
-                                <TooltipHost content={
-                                    `If running in Docker, Env var \`DISABLE_EIT_PARSING\` is preferred.
-                                    ⚠️ If disabled, won't work some clients!`
-                                }>
-                                    <Icon
-                                        iconName="Info"
-                                        style={{ marginLeft: 4, marginBottom: 6 }}
-                                    />
+                                <TooltipHost
+                                    content={`If running in Docker, Env var \`DISABLE_EIT_PARSING\` is preferred.
+                                    ⚠️ If disabled, won't work some clients!`}
+                                >
+                                    <Icon iconName="Info" style={{ marginLeft: 4, marginBottom: 6 }} />
                                 </TooltipHost>
                             </Stack>
                         }
-                        checked={(editing.disableEITParsing === undefined || editing.disableEITParsing === false)}
+                        checked={editing.disableEITParsing === undefined || editing.disableEITParsing === false}
                         onText="Enable"
                         offText="Disable ⚠️"
                         onChange={(ev, checked) => {
-                            setEditing({ ...editing, disableEITParsing: checked === false ? true : undefined })
+                            setEditing({ ...editing, disableEITParsing: checked === false ? true : undefined });
                         }}
                     />
 
                     <TextField
                         styles={{ fieldGroup: { "max-width": 200 } }}
                         label="Allow IPv4 CIDR Ranges"
-                        onRenderLabel={(props) => (
+                        onRenderLabel={props => (
                             <Stack horizontal verticalAlign="end">
                                 <Label>{props.label}</Label>
-                                <TooltipHost content={
-                                    `If running in Docker, Env var \`ALLOW_IPV4_CIDR_RANGES\` is preferred.
-                                    ⚠️ Maximum attention required!`
-                                }>
-                                    <Icon
-                                        iconName="Warning"
-                                        style={{ marginLeft: 4, marginBottom: 6 }}
-                                    />
+                                <TooltipHost
+                                    content={`If running in Docker, Env var \`ALLOW_IPV4_CIDR_RANGES\` is preferred.
+                                    ⚠️ Maximum attention required!`}
+                                >
+                                    <Icon iconName="Warning" style={{ marginLeft: 4, marginBottom: 6 }} />
                                 </TooltipHost>
                             </Stack>
                         )}
-                        multiline rows={3}
+                        multiline
+                        rows={3}
                         value={(editing.allowIPv4CidrRanges || []).join("\n")}
                         onChange={(ev, newValue) => {
                             if (newValue.trim() === "") {
                                 setEditing({ ...editing, allowIPv4CidrRanges: null });
                             } else {
-                                setEditing({ ...editing, allowIPv4CidrRanges: newValue.split("\n").map(range => range.trim()) })
+                                setEditing({ ...editing, allowIPv4CidrRanges: newValue.split("\n").map(range => range.trim()) });
                             }
                         }}
                     />
@@ -221,27 +196,25 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                     <TextField
                         styles={{ fieldGroup: { "max-width": 380 } }}
                         label="Allow IPv6 CIDR Ranges"
-                        onRenderLabel={(props) => (
+                        onRenderLabel={props => (
                             <Stack horizontal verticalAlign="end">
                                 <Label>{props.label}</Label>
-                                <TooltipHost content={
-                                    `If running in Docker, Env var \`ALLOW_IPV6_CIDR_RANGES\` is preferred.
-                                    ⚠️ Maximum attention required!`
-                                }>
-                                    <Icon
-                                        iconName="Warning"
-                                        style={{ marginLeft: 4, marginBottom: 6 }}
-                                    />
+                                <TooltipHost
+                                    content={`If running in Docker, Env var \`ALLOW_IPV6_CIDR_RANGES\` is preferred.
+                                    ⚠️ Maximum attention required!`}
+                                >
+                                    <Icon iconName="Warning" style={{ marginLeft: 4, marginBottom: 6 }} />
                                 </TooltipHost>
                             </Stack>
                         )}
-                        multiline rows={3}
+                        multiline
+                        rows={3}
                         value={(editing.allowIPv6CidrRanges || []).join("\n")}
                         onChange={(ev, newValue) => {
                             if (newValue.trim() === "") {
                                 setEditing({ ...editing, allowIPv6CidrRanges: null });
                             } else {
-                                setEditing({ ...editing, allowIPv6CidrRanges: newValue.split("\n").map(range => range.trim()) })
+                                setEditing({ ...editing, allowIPv6CidrRanges: newValue.split("\n").map(range => range.trim()) });
                             }
                         }}
                     />
@@ -251,7 +224,7 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                         <DefaultButton text="Cancel" disabled={!changed} onClick={() => setEditing({ ...current })} />
                     </Stack>
                 </Stack>
-            }
+            )}
             <Dialog
                 hidden={!showSaveDialog}
                 onDismiss={() => setShowSaveDialog(false)}
@@ -282,10 +255,7 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                             })();
                         }}
                     />
-                    <DefaultButton
-                        text="Cancel"
-                        onClick={() => setShowSaveDialog(false)}
-                    />
+                    <DefaultButton text="Cancel" onClick={() => setShowSaveDialog(false)} />
                 </DialogFooter>
             </Dialog>
         </>

@@ -18,7 +18,6 @@ import { Operation } from "express-openapi";
 import * as config from "../../config";
 
 export const get: Operation = (req, res) => {
-
     res.status(200);
     res.json(config.loadChannels());
 };
@@ -43,7 +42,6 @@ get.apiDoc = {
 };
 
 export const put: Operation = (req, res) => {
-
     const channels: config.Channel[] = req.body;
 
     config.saveChannels(channels);

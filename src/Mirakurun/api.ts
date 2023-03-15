@@ -23,7 +23,6 @@ export interface Error {
 }
 
 export function responseError(res: express.Response, code: number, reason?: string): express.Response {
-
     if (reason) {
         res.writeHead(code, reason, {
             "Content-Type": "application/json"
@@ -46,7 +45,6 @@ export function responseError(res: express.Response, code: number, reason?: stri
 }
 
 export function responseStreamErrorHandler(res: express.Response, err: NodeJS.ErrnoException): express.Response {
-
     if (err.message === "no available tuners") {
         return responseError(res, 503, "Tuner Resource Unavailable");
     }
@@ -55,7 +53,6 @@ export function responseStreamErrorHandler(res: express.Response, err: NodeJS.Er
 }
 
 export function responseJSON(res: express.Response, body: any): express.Response {
-
     // this is lighter than res.json()
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     res.status(200);

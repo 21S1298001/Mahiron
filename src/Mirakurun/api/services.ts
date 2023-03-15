@@ -23,7 +23,6 @@ import Service from "../Service";
 import { ChannelTypes } from "../common";
 
 export const get: Operation = async (req, res) => {
-
     const serviceItems = [..._.service.items]; // shallow copy
     serviceItems.sort((a, b) => a.getOrder() - b.getOrder());
 

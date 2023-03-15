@@ -77,7 +77,7 @@ function tick() {
     last = process.hrtime();
     setTimeout(tick, 1000);
 }
-setTimeout(() => last = process.hrtime(), 1000 * 9);
+setTimeout(() => (last = process.hrtime()), 1000 * 9);
 setTimeout(tick, 1000 * 10);
 
 export default status;

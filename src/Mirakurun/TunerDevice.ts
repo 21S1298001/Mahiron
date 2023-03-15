@@ -47,7 +47,6 @@ interface Status {
 }
 
 export default class TunerDevice extends EventEmitter {
-
     private _channel: ChannelItem = null;
     private _command: string = null;
     private _process: child_process.ChildProcess = null;
@@ -128,7 +127,6 @@ export default class TunerDevice extends EventEmitter {
     }
 
     getPriority(): number {
-
         let priority = -2;
 
         for (const user of this._users) {
@@ -161,7 +159,6 @@ export default class TunerDevice extends EventEmitter {
     }
 
     async startStream(user: User, stream: TSFilter, channel?: ChannelItem): Promise<void> {
-
         log.debug("TunerDevice#%d start stream for user `%s` (priority=%d)...", this._index, user.id, user.priority);
 
         if (this._isAvailable === false) {
@@ -205,7 +202,6 @@ export default class TunerDevice extends EventEmitter {
     }
 
     endStream(user: User): void {
-
         log.debug("TunerDevice#%d end stream for user `%s` (priority=%d)...", this._index, user.id, user.priority);
 
         user._stream.end();
@@ -225,7 +221,6 @@ export default class TunerDevice extends EventEmitter {
     }
 
     async getRemotePrograms(query?: ProgramsQuery): Promise<apid.Program[]> {
-
         if (!this._isRemote) {
             throw new Error(util.format("TunerDevice#%d is not remote device", this._index));
         }
@@ -245,7 +240,6 @@ export default class TunerDevice extends EventEmitter {
     }
 
     private _spawn(ch: ChannelItem): void {
-
         log.debug("TunerDevice#%d spawn...", this._index);
 
         if (this._process) {
@@ -296,19 +290,14 @@ export default class TunerDevice extends EventEmitter {
         if (this._config.dvbDevicePath) {
             const cat = child_process.spawn("cat", [this._config.dvbDevicePath]);
 
-            cat.once("error", (err) => {
-
+            cat.once("error", err => {
                 log.error("TunerDevice#%d cat process error `%s` (pid=%d)", this._index, err.name, cat.pid);
 
                 this._kill(false);
             });
 
             cat.once("close", (code, signal) => {
-
-                log.debug(
-                    "TunerDevice#%d cat process has closed with code=%d by signal `%s` (pid=%d)",
-                    this._index, code, signal, cat.pid
-                );
+                log.debug("TunerDevice#%d cat process has closed with code=%d by signal `%s` (pid=%d)", this._index, code, signal, cat.pid);
 
                 if (this._exited === false) {
                     this._kill(false);
@@ -322,10 +311,9 @@ export default class TunerDevice extends EventEmitter {
             this._stream = this._process.stdout;
         }
 
-        this._process.once("exit", () => this._exited = true);
+        this._process.once("exit", () => (this._exited = true));
 
-        this._process.once("error", (err) => {
-
+        this._process.once("error", err => {
             log.fatal("TunerDevice#%d process error `%s` (pid=%d)", this._index, err.name, this._process.pid);
 
             ++this._fatalCount;
@@ -340,11 +328,7 @@ export default class TunerDevice extends EventEmitter {
         });
 
         this._process.once("close", (code, signal) => {
-
-            log.info(
-                "TunerDevice#%d process has closed with exit code=%d by signal `%s` (pid=%d)",
-                this._index, code, signal, this._process.pid
-            );
+            log.info("TunerDevice#%d process has closed with exit code=%d by signal `%s` (pid=%d)", this._index, code, signal, this._process.pid);
 
             this._end();
             setTimeout(this._release.bind(this), this._config.dvbDevicePath ? 1000 : 100);
@@ -362,14 +346,12 @@ export default class TunerDevice extends EventEmitter {
     }
 
     private _streamOnData(chunk: Buffer): void {
-
         for (const user of this._users) {
             user._stream.write(chunk);
         }
     }
 
     private _end(): void {
-
         this._isAvailable = false;
 
         this._stream.removeAllListeners("data");
@@ -385,7 +367,6 @@ export default class TunerDevice extends EventEmitter {
     }
 
     private async _kill(close: boolean): Promise<void> {
-
         log.debug("TunerDevice#%d kill...", this._index);
 
         if (!this._process || !this._process.pid) {
@@ -401,7 +382,6 @@ export default class TunerDevice extends EventEmitter {
         this._updated();
 
         await new Promise<void>(resolve => {
-
             this.once("release", resolve);
 
             if (process.platform === "win32") {
@@ -425,7 +405,6 @@ export default class TunerDevice extends EventEmitter {
     }
 
     private _release(): void {
-
         if (this._process) {
             this._process.stderr.removeAllListeners();
             this._process.removeAllListeners();

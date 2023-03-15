@@ -17,26 +17,7 @@
 import EventEmitter from "eventemitter3";
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
-import {
-    Stack,
-    Spinner,
-    SpinnerSize,
-    DetailsList,
-    Selection,
-    SelectionMode,
-    IColumn,
-    Dropdown,
-    PrimaryButton,
-    DefaultButton,
-    Toggle,
-    Dialog,
-    DialogType,
-    DialogFooter,
-    TextField,
-    Checkbox,
-    IconButton,
-    ActionButton
-} from "@fluentui/react";
+import { Stack, Spinner, SpinnerSize, DetailsList, Selection, SelectionMode, IColumn, Dropdown, PrimaryButton, DefaultButton, Toggle, Dialog, DialogType, DialogFooter, TextField, Checkbox, IconButton, ActionButton } from "@fluentui/react";
 import { UIState } from "../index";
 import { ConfigTuners, ChannelType } from "../../../api";
 
@@ -77,7 +58,7 @@ const columns: IColumn[] = [
         key: "col-options",
         name: "Options",
         fieldName: "options",
-        minWidth: 340,
+        minWidth: 340
         // maxWidth: 400
     },
     {
@@ -96,8 +77,7 @@ function sortTypes(types: ChannelType[]): ChannelType[] {
     return types.sort((a, b) => typesIndex.indexOf(a) - typesIndex.indexOf(b));
 }
 
-const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
-
+const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
     const [current, setCurrent] = useState<ConfigTuners>(null);
     const [editing, setEditing] = useState<ConfigTuners>(null);
     const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
@@ -288,15 +268,19 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                     <IconButton
                         title="Controls"
                         iconProps={{ iconName: "More" }}
-                        menuProps={{ items: [{
-                            key: "remove",
-                            text: "Remove Tuner",
-                            iconProps: { iconName: "Delete" },
-                            onClick: () => {
-                                editing.splice(i, 1);
-                                setEditing([...editing]);
-                            }
-                        }] }}
+                        menuProps={{
+                            items: [
+                                {
+                                    key: "remove",
+                                    text: "Remove Tuner",
+                                    iconProps: { iconName: "Delete" },
+                                    onClick: () => {
+                                        editing.splice(i, 1);
+                                        setEditing([...editing]);
+                                    }
+                                }
+                            ]
+                        }}
                     />
                 </Stack>
             )
@@ -314,7 +298,7 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
     return (
         <>
             {!current && <Spinner size={SpinnerSize.large} />}
-            {editing &&
+            {editing && (
                 <Stack tokens={{ childrenGap: "8 0" }}>
                     <Stack.Item>
                         <ActionButton
@@ -339,13 +323,7 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                     </Stack.Item>
 
                     <div ref={listContainerRef} style={{ overflowY: "scroll" }}>
-                        <DetailsList
-                            setKey="items"
-                            items={items}
-                            columns={columns}
-                            selection={dummySelection}
-                            selectionMode={SelectionMode.none}
-                        />
+                        <DetailsList setKey="items" items={items} columns={columns} selection={dummySelection} selectionMode={SelectionMode.none} />
                     </div>
 
                     <Stack horizontal tokens={{ childrenGap: "0 8" }} style={{ marginTop: 16 }}>
@@ -353,7 +331,7 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                         <DefaultButton text="Cancel" disabled={!changed} onClick={() => setEditing(JSON.parse(JSON.stringify(current)))} />
                     </Stack>
                 </Stack>
-            }
+            )}
             <Dialog
                 hidden={!showSaveDialog}
                 onDismiss={() => setShowSaveDialog(false)}
@@ -379,10 +357,7 @@ const Configurator: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> 
                             })();
                         }}
                     />
-                    <DefaultButton
-                        text="Cancel"
-                        onClick={() => setShowSaveDialog(false)}
-                    />
+                    <DefaultButton text="Cancel" onClick={() => setShowSaveDialog(false)} />
                 </DialogFooter>
             </Dialog>
         </>

@@ -22,7 +22,7 @@ const pkg = require("../../../package.json");
 export const get: Operation = async (req, res) => {
     const version: Version = {
         current: pkg.version,
-        latest: "",
+        latest: ""
     };
 
     api.responseJSON(res, version);
@@ -35,14 +35,14 @@ get.apiDoc = {
         200: {
             description: "OK",
             schema: {
-                $ref: "#/definitions/Version",
-            },
+                $ref: "#/definitions/Version"
+            }
         },
         default: {
             description: "Unexpected Error",
             schema: {
-                $ref: "#/definitions/Error",
-            },
-        },
-    },
+                $ref: "#/definitions/Error"
+            }
+        }
+    }
 };

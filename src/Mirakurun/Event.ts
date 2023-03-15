@@ -30,7 +30,6 @@ export type EventResource = "program" | "service" | "tuner";
 export type EventType = "create" | "update" | "remove";
 
 export default class Event extends EventEmitter {
-
     static get log(): EventMessage[] {
         return _.event.log;
     }
@@ -48,7 +47,6 @@ export default class Event extends EventEmitter {
     }
 
     static emit(resource: EventResource, type: EventType, data: any): boolean {
-
         const message: EventMessage = {
             resource: resource,
             type: type,
@@ -65,7 +63,6 @@ export default class Event extends EventEmitter {
         super();
 
         this.on("event", message => {
-
             this._log.push(message);
 
             // testing

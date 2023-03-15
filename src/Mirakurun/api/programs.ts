@@ -20,7 +20,6 @@ import * as db from "../db";
 import _ from "../_";
 
 export const get: Operation = (req, res) => {
-
     let programs: db.Program[];
 
     // tslint:disable-next-line:prefer-conditional-expression

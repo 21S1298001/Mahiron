@@ -22,18 +22,13 @@ import { IPv4CidrRange, IPv6CidrRange } from "ip-num/IPRange";
 import _ from "./_";
 
 export function getIPv4AddressesForListen(): string[] {
-
     const addresses = [];
 
     const interfaces = os.networkInterfaces();
     Object.keys(interfaces).forEach(k => {
         interfaces[k]
             .filter(a => {
-                return (
-                    a.family === "IPv4" &&
-                    a.internal === false &&
-                    isPermittedIPAddress(a.address) === true
-                );
+                return a.family === "IPv4" && a.internal === false && isPermittedIPAddress(a.address) === true;
             })
             .forEach(a => addresses.push(a.address));
     });
@@ -42,18 +37,13 @@ export function getIPv4AddressesForListen(): string[] {
 }
 
 export function getIPv6AddressesForListen(): string[] {
-
     const addresses = [];
 
     const interfaces = os.networkInterfaces();
     Object.keys(interfaces).forEach(k => {
         interfaces[k]
             .filter(a => {
-                return (
-                    a.family === "IPv6" &&
-                    a.internal === false &&
-                    isPermittedIPAddress(a.address) === true
-                );
+                return a.family === "IPv6" && a.internal === false && isPermittedIPAddress(a.address) === true;
             })
             .forEach(a => addresses.push(a.address + "%" + k));
     });
@@ -62,7 +52,6 @@ export function getIPv6AddressesForListen(): string[] {
 }
 
 export function isPermittedIPAddress(addr: string): boolean {
-
     const [isIPv4] = Validator.isValidIPv4String(addr);
     if (isIPv4) {
         const ipv4 = new IPv4CidrRange(new IPv4(addr), new IPv4Prefix(BigInt(32)));
@@ -87,7 +76,6 @@ export function isPermittedIPAddress(addr: string): boolean {
 }
 
 export function isPermittedHost(url: string, allowedHostname?: string): boolean {
-
     const u = new URL(url);
 
     if (u.hostname === "localhost" || u.hostname === allowedHostname || isPermittedIPAddress(u.hostname) === true) {

@@ -17,17 +17,13 @@
 import EventEmitter from "eventemitter3";
 import * as React from "react";
 import { useState, useEffect } from "react";
-import {
-    Stack,
-    Nav
-} from "@fluentui/react";
+import { Stack, Nav } from "@fluentui/react";
 import { UIState } from "../index";
 import ServerConfigurator from "./ServerConfigurator";
 import TunersConfigurator from "./TunersConfigurator";
 import ChannelsConfigurator from "./ChannelsConfigurator";
 
-const ConfigView: React.FC<{ uiState: UIState, uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
-
+const ConfigView: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
     const [key, setKey] = useState<string>("server");
 
     return (

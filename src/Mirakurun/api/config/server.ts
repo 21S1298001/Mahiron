@@ -18,7 +18,6 @@ import { Operation } from "express-openapi";
 import * as config from "../../config";
 
 export const get: Operation = (req, res) => {
-
     res.status(200);
     res.json(config.loadServer());
 };
@@ -43,7 +42,6 @@ get.apiDoc = {
 };
 
 export const put: Operation = (req, res) => {
-
     const server: config.Server = req.body;
 
     config.saveServer(server);

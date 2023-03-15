@@ -16,22 +16,7 @@
 */
 import * as React from "react";
 import { useState, useEffect } from "react";
-import {
-    Text,
-    Icon,
-    GroupedList,
-    DetailsRow,
-    Selection,
-    IColumn,
-    IGroup,
-    Dialog,
-    DialogFooter,
-    DialogType,
-    PrimaryButton,
-    DefaultButton,
-    IconButton,
-    ColorClassNames
-} from "@fluentui/react";
+import { Text, Icon, GroupedList, DetailsRow, Selection, IColumn, IGroup, Dialog, DialogFooter, DialogType, PrimaryButton, DefaultButton, IconButton, ColorClassNames } from "@fluentui/react";
 import { TunerDevice } from "../../../api";
 
 interface Item {
@@ -51,7 +36,7 @@ const deviceColumns: IColumn[] = [
         name: "",
         fieldName: "command",
         minWidth: 0,
-        isResizable: true,
+        isResizable: true
     },
     {
         key: "col-controls",
@@ -79,19 +64,20 @@ const userColumns: IColumn[] = [
 const dummySelection = new Selection(); // dummy
 
 const onRenderCell = (nestingDepth: number, item: Item, itemIndex: number) => {
-    return <DetailsRow
-        columns={item._kind === "device" ? deviceColumns : userColumns}
-        groupNestingDepth={nestingDepth + (item._kind === "device" ? 0 : 1)}
-        item={item}
-        itemIndex={itemIndex}
-        selection={dummySelection}
-        selectionMode={0}
-        compact
-    />
+    return (
+        <DetailsRow
+            columns={item._kind === "device" ? deviceColumns : userColumns}
+            groupNestingDepth={nestingDepth + (item._kind === "device" ? 0 : 1)}
+            item={item}
+            itemIndex={itemIndex}
+            selection={dummySelection}
+            selectionMode={0}
+            compact
+        />
+    );
 };
 
 const TunersManager: React.FC<{ tuners: TunerDevice[] }> = ({ tuners }) => {
-
     const [killTarget, setKillTarget] = useState<number>(null);
 
     const items: Item[] = [];
@@ -105,10 +91,7 @@ const TunersManager: React.FC<{ tuners: TunerDevice[] }> = ({ tuners }) => {
                 <>
                     <Icon title="Command" iconName="ServerProcesses" />
                     <Text style={{ lineHeight: "30px", marginLeft: 8 }}>{tuner.command || "-"}</Text>
-                    <Text
-                        style={{ lineHeight: "30px", marginLeft: 8 }}
-                        className={ColorClassNames.neutralTertiaryAlt}
-                    >
+                    <Text style={{ lineHeight: "30px", marginLeft: 8 }} className={ColorClassNames.neutralTertiaryAlt}>
                         {tuner.pid ? `(pid=${tuner.pid})` : ""}
                     </Text>
                 </>
@@ -119,12 +102,16 @@ const TunersManager: React.FC<{ tuners: TunerDevice[] }> = ({ tuners }) => {
                 <IconButton
                     title="Controls"
                     iconProps={{ iconName: "More" }}
-                    menuProps={{ items: [{
-                        key: "kill",
-                        text: "Kill Tuner Process...",
-                        iconProps: { iconName: "Cancel" },
-                        onClick: () => setKillTarget(tuner.index)
-                    }] }}
+                    menuProps={{
+                        items: [
+                            {
+                                key: "kill",
+                                text: "Kill Tuner Process...",
+                                iconProps: { iconName: "Cancel" },
+                                onClick: () => setKillTarget(tuner.index)
+                            }
+                        ]
+                    }}
                 />
             );
         }
@@ -197,10 +184,7 @@ const TunersManager: React.FC<{ tuners: TunerDevice[] }> = ({ tuners }) => {
                             setKillTarget(null);
                         }}
                     />
-                    <DefaultButton
-                        text="Cancel"
-                        onClick={() => setKillTarget(null)}
-                    />
+                    <DefaultButton text="Cancel" onClick={() => setKillTarget(null)} />
                 </DialogFooter>
             </Dialog>
         </>

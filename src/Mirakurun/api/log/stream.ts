@@ -18,7 +18,6 @@ import { Operation } from "express-openapi";
 import { event } from "../../log";
 
 export const get: Operation = (req, res) => {
-
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.status(200);
 

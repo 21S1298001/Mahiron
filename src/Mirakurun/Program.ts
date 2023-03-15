@@ -27,7 +27,6 @@ export function getProgramItemId(networkId: number, serviceId: number, eventId: 
 }
 
 export default class Program {
-
     private _itemMap = new Map<number, db.Program>();
     private _saveTimerId: NodeJS.Timer;
     private _emitTimerId: NodeJS.Timer;
@@ -46,7 +45,6 @@ export default class Program {
     }
 
     add(item: db.Program, firstAdd: boolean = false): void {
-
         if (this.exists(item.id)) {
             return;
         }
@@ -94,7 +92,6 @@ export default class Program {
     }
 
     findByNetworkId(networkId: number): db.Program[] {
-
         const items = [];
 
         for (const item of this._itemMap.values()) {
@@ -107,7 +104,6 @@ export default class Program {
     }
 
     findByNetworkIdAndTime(networkId: number, time: number): db.Program[] {
-
         const items = [];
 
         for (const item of this._itemMap.values()) {
@@ -120,7 +116,6 @@ export default class Program {
     }
 
     findByNetworkIdAndReplace(networkId: number, programs: db.Program[]): void {
-
         let count = 0;
 
         for (const item of [...this._itemMap.values()].reverse()) {
@@ -150,19 +145,17 @@ export default class Program {
     }
 
     private _load(): void {
-
         log.debug("loading programs...");
 
         const now = Date.now();
         let dropped = false;
 
         db.loadPrograms(_.configIntegrity.channels).forEach(item => {
-
             if (item.networkId === undefined) {
                 dropped = true;
                 return;
             }
-            if (now > (item.startAt + item.duration)) {
+            if (now > item.startAt + item.duration) {
                 dropped = true;
                 return;
             }
@@ -176,36 +169,22 @@ export default class Program {
     }
 
     private _findAndRemoveConflicts(added: db.Program): void {
-
         const addedEndAt = added.startAt + added.duration;
 
         for (const item of this._itemMap.values()) {
-            if (
-                item.networkId === added.networkId &&
-                item.serviceId === added.serviceId &&
-                item.id !== added.id
-            ) {
+            if (item.networkId === added.networkId && item.serviceId === added.serviceId && item.id !== added.id) {
                 const itemEndAt = item.startAt + item.duration;
-                if ((
-                        (added.startAt <= item.startAt && item.startAt < addedEndAt) ||
-                        (item.startAt <= added.startAt && added.startAt < itemEndAt)
-                    ) &&
-                    (!item._pf || added._pf)
-                ) {
+                if (((added.startAt <= item.startAt && item.startAt < addedEndAt) || (item.startAt <= added.startAt && added.startAt < itemEndAt)) && (!item._pf || added._pf)) {
                     this.remove(item.id);
                     Event.emit("program", "remove", { id: item.id });
 
-                    log.debug(
-                        "ProgramItem#%d (networkId=%d, serviceId=%d, eventId=%d) has removed by overlapped ProgramItem#%d (eventId=%d)",
-                        item.id, item.networkId, item.serviceId, item.eventId, added.id, added.eventId
-                    );
+                    log.debug("ProgramItem#%d (networkId=%d, serviceId=%d, eventId=%d) has removed by overlapped ProgramItem#%d (eventId=%d)", item.id, item.networkId, item.serviceId, item.eventId, added.id, added.eventId);
                 }
             }
         }
     }
 
     private async _emit(): Promise<void> {
-
         if (this._emitRunning) {
             return;
         }
@@ -225,31 +204,22 @@ export default class Program {
     }
 
     private _save(): void {
-
         log.debug("saving programs...");
 
-        db.savePrograms(
-            Array.from(this._itemMap.values()),
-            _.configIntegrity.channels
-        );
+        db.savePrograms(Array.from(this._itemMap.values()), _.configIntegrity.channels);
     }
 
     private _gc(): void {
-
         log.debug("Program GC has queued");
 
         queue.add(async () => {
-
             const shortExp = Date.now() - 1000 * 60 * 60 * 3; // 3 hour
             const longExp = Date.now() - 1000 * 60 * 60 * 24; // 24 hours
             const maximum = Date.now() + 1000 * 60 * 60 * 24 * 9; // 9 days
             let count = 0;
 
             for (const item of this._itemMap.values()) {
-                if (
-                    (item.duration === 1 ? longExp : shortExp) > (item.startAt + item.duration) ||
-                    maximum < item.startAt
-                ) {
+                if ((item.duration === 1 ? longExp : shortExp) > item.startAt + item.duration || maximum < item.startAt) {
                     ++count;
                     this.remove(item.id);
                 }

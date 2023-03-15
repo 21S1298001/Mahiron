@@ -126,14 +126,7 @@ export interface ProgramGenre {
 
 export type ProgramVideoType = "mpeg2" | "h.264" | "h.265";
 
-export type ProgramVideoResolution =
-    | "240p"
-    | "480i"
-    | "480p"
-    | "720p"
-    | "1080i"
-    | "2160p"
-    | "4320p";
+export type ProgramVideoResolution = "240p" | "480i" | "480p" | "720p" | "1080i" | "2160p" | "4320p";
 
 export enum ProgramAudioSamplingRate {
     "16kHz" = 16000,
@@ -141,20 +134,10 @@ export enum ProgramAudioSamplingRate {
     "24kHz" = 24000,
     "32kHz" = 32000,
     "44.1kHz" = 44100,
-    "48kHz" = 48000,
+    "48kHz" = 48000
 }
 
-export type ProgramAudioLanguageCode =
-    | "jpn"
-    | "eng"
-    | "deu"
-    | "fra"
-    | "ita"
-    | "rus"
-    | "zho"
-    | "kor"
-    | "spa"
-    | "etc";
+export type ProgramAudioLanguageCode = "jpn" | "eng" | "deu" | "fra" | "ita" | "rus" | "zho" | "kor" | "spa" | "etc";
 
 export interface ProgramSeries {
     id: number;
@@ -256,7 +239,7 @@ export enum LogLevel {
     "ERROR" = 0,
     "WARN" = 1,
     "INFO" = 2,
-    "DEBUG" = 3,
+    "DEBUG" = 3
 }
 
 export type ConfigTuners = ConfigTunersItem[];

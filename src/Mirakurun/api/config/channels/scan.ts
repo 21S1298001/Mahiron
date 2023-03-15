@@ -59,11 +59,10 @@ interface ScanConfig {
 }
 
 function range(start: number, end: number): string[] {
-    return Array.from({length: (end - start + 1)}, (v, index) => (index + start).toString(10));
+    return Array.from({ length: end - start + 1 }, (v, index) => (index + start).toString(10));
 }
 
 export function generateScanConfig(option: ChannelScanOption): ScanConfig {
-
     // delete undefined from option
     Object.keys(option).forEach(key => option[key] === undefined && delete option[key]);
 
@@ -77,7 +76,7 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
         };
 
         return {
-            channels: range(option.startCh, option.endCh).map((ch) => ch),
+            channels: range(option.startCh, option.endCh).map(ch => ch),
             scanMode: option.scanMode,
             setDisabledOnAdd: option.setDisabledOnAdd
         };
@@ -120,7 +119,7 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
         };
 
         return {
-            channels: range(option.startCh, option.endCh).map((ch) => ch),
+            channels: range(option.startCh, option.endCh).map(ch => ch),
             scanMode: option.scanMode,
             setDisabledOnAdd: option.setDisabledOnAdd
         };
@@ -134,7 +133,7 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
         };
 
         return {
-            channels: range(option.startCh, option.endCh).map((ch) => `CS${ch}`),
+            channels: range(option.startCh, option.endCh).map(ch => `CS${ch}`),
             scanMode: option.scanMode,
             setDisabledOnAdd: option.setDisabledOnAdd
         };
@@ -142,7 +141,6 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
 }
 
 export function generateChannelItemForService(type: common.ChannelType, channel: string, service: db.Service, setDisabledOnAdd: boolean): config.Channel {
-
     let name = service.name;
     name = name.trim();
     if (name.length === 0) {
@@ -159,7 +157,6 @@ export function generateChannelItemForService(type: common.ChannelType, channel:
 }
 
 export function generateChannelItemForChannel(type: common.ChannelType, channel: string, services: db.Service[], setDisabledOnAdd: boolean): config.Channel {
-
     const baseName = services[0].name;
     let matchIndex = baseName.length;
 
@@ -197,7 +194,6 @@ export function generateChannelItemForChannel(type: common.ChannelType, channel:
 }
 
 export function generateChannelItems(scanMode: ScanMode, type: common.ChannelType, channel: string, services: db.Service[], setDisabledOnAdd: boolean): config.Channel[] {
-
     if (scanMode === ScanMode.Service) {
         const channelItems: config.Channel[] = [];
         for (const service of services) {
@@ -210,7 +206,6 @@ export function generateChannelItems(scanMode: ScanMode, type: common.ChannelTyp
 }
 
 export const put: Operation = async (req, res) => {
-
     if (isScanning === true) {
         api.responseError(res, 409, "Already Scanning");
         return;
@@ -249,7 +244,7 @@ export const put: Operation = async (req, res) => {
     for (let i = 0; i < chLength; i++) {
         const channel = scanConfig.channels[i];
 
-        res.write(`channel: "${channel}" (${i + 1}/${chLength}) [${Math.round((i + 1) / chLength * 100)}%] ...\n`);
+        res.write(`channel: "${channel}" (${i + 1}/${chLength}) [${Math.round(((i + 1) / chLength) * 100)}%] ...\n`);
 
         if (!refresh) {
             const takeoverChannelItems = oldChannelItems.filter(chItem => chItem.type === type && chItem.channel === channel && !chItem.isDisabled);
@@ -267,7 +262,7 @@ export const put: Operation = async (req, res) => {
 
         let services: db.Service[];
         try {
-            services = await _.tuner.getServices(<any> {
+            services = await _.tuner.getServices(<any>{
                 type: type,
                 channel: channel
             });
@@ -343,10 +338,7 @@ About BS Subchannel Style:
 - In the subchannel style, minCh and maxCh are zero padded to two digits. minSubCh and maxSubCh are not padded.
 - BS "non" subchannel style scans and GR scans are basically the same. Note that if you scan the wrong channel range, the GR channel will be registered as BS and the BS channel will be registered as GR. This problem does not occur because CS scan uses a character string with \`CS\` added as a channel number prefix.`,
     operationId: "channelScan",
-    produces: [
-        "text/plain",
-        "application/json"
-    ],
+    produces: ["text/plain", "application/json"],
     parameters: [
         {
             in: "query",
@@ -401,18 +393,14 @@ About BS Subchannel Style:
             name: "scanMode",
             type: "string",
             enum: [ScanMode.Channel, ScanMode.Service],
-            description: "To specify the service explictly, use the `Service` mode.\n\n" +
-                "_Default value (GR)_: Channel\n" +
-                "_Default value (BS/CS)_: Service"
+            description: "To specify the service explictly, use the `Service` mode.\n\n" + "_Default value (GR)_: Channel\n" + "_Default value (BS/CS)_: Service"
         },
         {
             in: "query",
             name: "setDisabledOnAdd",
             type: "boolean",
             allowEmptyValue: true,
-            description: "If `true`, set disable on add channel.\n\n" +
-                "_Default value (GR)_: false\n" +
-                "_Default value (BS/CS)_: true"
+            description: "If `true`, set disable on add channel.\n\n" + "_Default value (GR)_: false\n" + "_Default value (BS/CS)_: true"
         },
         {
             in: "query",
@@ -420,8 +408,7 @@ About BS Subchannel Style:
             type: "boolean",
             allowEmptyValue: true,
             default: false,
-            description: "If `true`, update the existing settings without inheriting them.\n" +
-                "However, non-scanned types of channels will always be inherited."
+            description: "If `true`, update the existing settings without inheriting them.\n" + "However, non-scanned types of channels will always be inherited."
         }
     ],
     responses: {

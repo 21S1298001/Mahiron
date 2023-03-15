@@ -16,29 +16,13 @@
 */
 import * as React from "react";
 import { useState } from "react";
-import {
-    getTheme,
-    FontWeights,
-    mergeStyleSets,
-    IButtonStyles,
-    IconButton,
-    IStackProps,
-    ActionButton,
-    Modal,
-    Stack,
-    Separator,
-    Label,
-    TextField,
-    TooltipHost,
-    Icon
-} from "@fluentui/react";
+import { getTheme, FontWeights, mergeStyleSets, IButtonStyles, IconButton, IStackProps, ActionButton, Modal, Stack, Separator, Label, TextField, TooltipHost, Icon } from "@fluentui/react";
 
 function selectHandler(e: React.MouseEvent<HTMLInputElement>) {
     e.currentTarget.select();
 }
 
 const ConnectionGuide: React.FC = () => {
-
     const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
     const theme = getTheme();
@@ -46,7 +30,7 @@ const ConnectionGuide: React.FC = () => {
         container: {
             display: "flex",
             flexFlow: "column nowrap",
-            alignItems: "stretch",
+            alignItems: "stretch"
         },
         header: [
             theme.fonts.xLarge,
@@ -57,8 +41,8 @@ const ConnectionGuide: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 fontWeight: FontWeights.semibold,
-                padding: "12px 12px 14px 24px",
-            },
+                padding: "12px 12px 14px 24px"
+            }
         ],
         body: {
             flex: "4 4 auto",
@@ -70,98 +54,61 @@ const ConnectionGuide: React.FC = () => {
             selectors: {
                 p: { margin: "14px 0" },
                 "p:first-child": { marginTop: 0 },
-                "p:last-child": { marginBottom: 0 },
-            },
-        },
+                "p:last-child": { marginBottom: 0 }
+            }
+        }
     });
     const stackProps: Partial<IStackProps> = {
         tokens: { childrenGap: 8 },
-        styles: { root: { marginBottom: 20 } },
+        styles: { root: { marginBottom: 20 } }
     };
     const iconButtonStyles: Partial<IButtonStyles> = {
         root: {
             color: theme.palette.neutralPrimary,
             marginLeft: "auto",
             marginTop: "4px",
-            marginRight: "2px",
+            marginRight: "2px"
         },
         rootHovered: {
-            color: theme.palette.neutralDark,
-        },
+            color: theme.palette.neutralDark
+        }
     };
 
     return (
         <>
-            <Modal
-                titleAriaId="connection-guide-title"
-                isOpen={isModalOpen}
-                onDismiss={() => setModalOpen(false)}
-                isBlocking={false}
-                containerClassName={contentStyles.container}
-            >
+            <Modal titleAriaId="connection-guide-title" isOpen={isModalOpen} onDismiss={() => setModalOpen(false)} isBlocking={false} containerClassName={contentStyles.container}>
                 <div className={contentStyles.header}>
                     <span id="connection-guide-title">Connection Guide</span>
-                    <IconButton
-                        styles={iconButtonStyles}
-                        iconProps={{ iconName: "Cancel" }}
-                        ariaLabel="Close"
-                        onClick={() => setModalOpen(false)}
-                    />
+                    <IconButton styles={iconButtonStyles} iconProps={{ iconName: "Cancel" }} ariaLabel="Close" onClick={() => setModalOpen(false)} />
                 </div>
                 <div className={contentStyles.body}>
                     <Stack {...stackProps}>
-                        <TextField readOnly
-                            label="Mirakurun Path"
-                            value={`${location.protocol}//${location.host}/`}
-                            onMouseOver={selectHandler} onClick={selectHandler}
-                        />
-                        <TextField readOnly
-                            label="Open API 2.0 / Swagger 2.0 Compliant Definition"
-                            value={`${location.protocol}//${location.host}/api/docs`}
-                            onMouseOver={selectHandler} onClick={selectHandler}
-                        />
+                        <TextField readOnly label="Mirakurun Path" value={`${location.protocol}//${location.host}/`} onMouseOver={selectHandler} onClick={selectHandler} />
+                        <TextField readOnly label="Open API 2.0 / Swagger 2.0 Compliant Definition" value={`${location.protocol}//${location.host}/api/docs`} onMouseOver={selectHandler} onClick={selectHandler} />
                         <Separator>IPTV</Separator>
-                        <TextField readOnly
-                            label="M3U Playlist"
-                            value={`${location.protocol}//${location.host}/api/iptv/playlist`}
-                            onMouseOver={selectHandler} onClick={selectHandler}
-                        />
-                        <TextField readOnly
-                            label="XMLTV"
-                            value={`${location.protocol}//${location.host}/api/iptv/xmltv`}
-                            onMouseOver={selectHandler} onClick={selectHandler}
-                        />
-                        <TextField readOnly
+                        <TextField readOnly label="M3U Playlist" value={`${location.protocol}//${location.host}/api/iptv/playlist`} onMouseOver={selectHandler} onClick={selectHandler} />
+                        <TextField readOnly label="XMLTV" value={`${location.protocol}//${location.host}/api/iptv/xmltv`} onMouseOver={selectHandler} onClick={selectHandler} />
+                        <TextField
+                            readOnly
                             label="HDHomeRun Device Address"
                             value={`${location.protocol}//${location.host}/api/iptv`}
-                            onMouseOver={selectHandler} onClick={selectHandler}
-                            onRenderLabel={(props) => (
+                            onMouseOver={selectHandler}
+                            onClick={selectHandler}
+                            onRenderLabel={props => (
                                 <Stack horizontal verticalAlign="end">
                                     <Label>{props.label}</Label>
                                     <TooltipHost content="Tested on Plex Media Server">
-                                        <Icon
-                                            iconName="Info"
-                                            style={{ marginLeft: 4, marginBottom: 6 }}
-                                        />
+                                        <Icon iconName="Info" style={{ marginLeft: 4, marginBottom: 6 }} />
                                     </TooltipHost>
                                 </Stack>
                             )}
                         />
                         <Separator>Misc</Separator>
-                        <TextField readOnly
-                            label="BonDriver_Mirakurun.ini"
-                            multiline rows={3}
-                            value={`[GLOBAL]\nSERVER_HOST="${location.hostname}"\nSERVER_PORT="${location.port}"`}
-                            onMouseOver={selectHandler} onClick={selectHandler}
-                        />
+                        <TextField readOnly label="BonDriver_Mirakurun.ini" multiline rows={3} value={`[GLOBAL]\nSERVER_HOST="${location.hostname}"\nSERVER_PORT="${location.port}"`} onMouseOver={selectHandler} onClick={selectHandler} />
                     </Stack>
                 </div>
             </Modal>
-            <ActionButton
-                iconProps={{ iconName: "Info" }}
-                text="Connection Guide"
-                onClick={() => setModalOpen(true)}
-            />
+            <ActionButton iconProps={{ iconName: "Info" }} text="Connection Guide" onClick={() => setModalOpen(true)} />
         </>
     );
 };

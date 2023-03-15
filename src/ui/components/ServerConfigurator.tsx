@@ -14,19 +14,20 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+import { DefaultButton, Dialog, DialogFooter, DialogType, Dropdown, Icon, Label, PrimaryButton, Separator, Spinner, SpinnerSize, Stack, TextField, Toggle, TooltipHost } from "@fluentui/react";
 import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect, useRef } from "react";
-import { Stack, Separator, Spinner, SpinnerSize, Dropdown, TooltipHost, Icon, Label, TextField, PrimaryButton, DefaultButton, Toggle, Dialog, DialogType, DialogFooter } from "@fluentui/react";
 import { Validator as IPValidator } from "ip-num/Validator";
-import { UIState } from "../index";
+import React, { useEffect, useState } from "react";
 import { ConfigServer } from "../../../api";
+import { UIState } from "../index";
 
 const configAPI = "/api/config/server";
 
-const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> = ({ uiState, uiStateEvents }) => {
-    const [current, setCurrent] = useState<ConfigServer>(null);
-    const [editing, setEditing] = useState<ConfigServer>(null);
+export type ServerConfiguratorProps = Readonly<{ uiState: UIState; uiStateEvents: EventEmitter }>;
+
+export const ServerConfigurator: React.FC<ServerConfiguratorProps> = ({ uiState, uiStateEvents }) => {
+    const [current, setCurrent] = useState<ConfigServer | null>(null);
+    const [editing, setEditing] = useState<ConfigServer | null>(null);
     const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
     const [saved, setSaved] = useState<boolean>(false);
 
@@ -40,7 +41,7 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
         }
         (async () => {
             try {
-                const res = await (await fetch(configAPI)).json();
+                const res = await fetch(configAPI).then(res => res.json());
                 console.log("ServerConfigurator", "GET", configAPI, "->", res);
                 setEditing({ ...res });
                 setCurrent({ ...res });
@@ -50,8 +51,8 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
         })();
     }, [saved]);
 
-    const docker = uiState.status.process.env.DOCKER === "YES";
-    const ipv6Ready = docker === false || uiState.status.process.env.DOCKER_NETWORK === "host";
+    const docker = uiState.status?.process.env.DOCKER === "YES";
+    const ipv6Ready = docker === false || uiState.status?.process.env.DOCKER_NETWORK === "host";
     const changed = JSON.stringify(current) !== JSON.stringify(editing);
 
     let invalid = false;
@@ -84,10 +85,10 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                     <Dropdown
                         label="LogLevel"
                         styles={{ dropdown: { display: "inline-block" } }}
-                        disabled={docker && typeof uiState.status.process.env.LOG_LEVEL === "string"}
+                        disabled={docker && typeof uiState.status?.process.env.LOG_LEVEL === "string"}
                         onRenderLabel={props => (
                             <Stack horizontal verticalAlign="end">
-                                <Label>{props.label}</Label>
+                                <Label>{props?.label}</Label>
                                 <TooltipHost content="If running in Docker, Env var `LOG_LEVEL` is preferred.">
                                     <Icon iconName="Info" style={{ marginLeft: 4, marginBottom: 6 }} />
                                 </TooltipHost>
@@ -133,9 +134,9 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         label="EPG Gathering Interval"
                         suffix="ms"
                         placeholder="1800000"
-                        value={`${editing.epgGatheringInterval || ""}`}
-                        onChange={(ev, newValue) => {
-                            if (newValue === "") {
+                        value={editing.epgGatheringInterval !== undefined ? String(editing.epgGatheringInterval) : ""}
+                        onChange={(_, newValue) => {
+                            if (newValue === "" || newValue === undefined) {
                                 delete editing.epgGatheringInterval;
                             } else if (/^[0-9]+$/.test(newValue)) {
                                 const int = parseInt(newValue, 10);
@@ -162,7 +163,7 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         checked={editing.disableEITParsing === undefined || editing.disableEITParsing === false}
                         onText="Enable"
                         offText="Disable ⚠️"
-                        onChange={(ev, checked) => {
+                        onChange={(_, checked) => {
                             setEditing({ ...editing, disableEITParsing: checked === false ? true : undefined });
                         }}
                     />
@@ -172,7 +173,7 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         label="Allow IPv4 CIDR Ranges"
                         onRenderLabel={props => (
                             <Stack horizontal verticalAlign="end">
-                                <Label>{props.label}</Label>
+                                <Label>{props?.label}</Label>
                                 <TooltipHost
                                     content={`If running in Docker, Env var \`ALLOW_IPV4_CIDR_RANGES\` is preferred.
                                     ⚠️ Maximum attention required!`}
@@ -184,11 +185,11 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         multiline
                         rows={3}
                         value={(editing.allowIPv4CidrRanges || []).join("\n")}
-                        onChange={(ev, newValue) => {
-                            if (newValue.trim() === "") {
-                                setEditing({ ...editing, allowIPv4CidrRanges: null });
+                        onChange={(_, newValue) => {
+                            if (newValue?.trim() === "") {
+                                setEditing({ ...editing, allowIPv4CidrRanges: undefined });
                             } else {
-                                setEditing({ ...editing, allowIPv4CidrRanges: newValue.split("\n").map(range => range.trim()) });
+                                setEditing({ ...editing, allowIPv4CidrRanges: newValue?.split("\n").map(range => range.trim()) });
                             }
                         }}
                     />
@@ -198,7 +199,7 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         label="Allow IPv6 CIDR Ranges"
                         onRenderLabel={props => (
                             <Stack horizontal verticalAlign="end">
-                                <Label>{props.label}</Label>
+                                <Label>{props?.label}</Label>
                                 <TooltipHost
                                     content={`If running in Docker, Env var \`ALLOW_IPV6_CIDR_RANGES\` is preferred.
                                     ⚠️ Maximum attention required!`}
@@ -210,11 +211,11 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         multiline
                         rows={3}
                         value={(editing.allowIPv6CidrRanges || []).join("\n")}
-                        onChange={(ev, newValue) => {
-                            if (newValue.trim() === "") {
-                                setEditing({ ...editing, allowIPv6CidrRanges: null });
+                        onChange={(_, newValue) => {
+                            if (newValue?.trim() === "") {
+                                setEditing({ ...editing, allowIPv6CidrRanges: undefined });
                             } else {
-                                setEditing({ ...editing, allowIPv6CidrRanges: newValue.split("\n").map(range => range.trim()) });
+                                setEditing({ ...editing, allowIPv6CidrRanges: newValue?.split("\n").map(range => range.trim()) });
                             }
                         }}
                     />
@@ -240,6 +241,7 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
                         onClick={() => {
                             setShowSaveDialog(false);
                             (async () => {
+                                if (!editing) return;
                                 for (const key of Object.keys(editing)) {
                                     if (editing[key] === null) {
                                         delete editing[key];
@@ -261,5 +263,3 @@ const Configurator: React.FC<{ uiState: UIState; uiStateEvents: EventEmitter }> 
         </>
     );
 };
-
-export default Configurator;

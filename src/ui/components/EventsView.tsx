@@ -15,18 +15,19 @@
    limitations under the License.
 */
 import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect, useRef } from "react";
 import { Client as RPCClient } from "jsonrpc2-ws";
-import { JoinParams } from "../../../lib/Mirakurun/rpc.d";
+import React, { useEffect, useRef, useState } from "react";
 import { Event } from "../../../api";
+import { JoinParams } from "../../../lib/Mirakurun/rpc.d";
 import "./Logs.css";
 
 let _itemId = 0;
 
 let eventsCache: JSX.Element[] = [];
 
-const EventsView: React.FC<{ uiStateEvents: EventEmitter; rpc: RPCClient }> = ({ uiStateEvents, rpc }) => {
+export type EventsViewProps = Readonly<{ uiStateEvents: EventEmitter; rpc: RPCClient }>;
+
+export const EventsView: React.FC<EventsViewProps> = ({ uiStateEvents, rpc }) => {
     const [eventList, setEventList] = useState<JSX.Element[]>([]);
     const latestRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +72,7 @@ const EventsView: React.FC<{ uiStateEvents: EventEmitter; rpc: RPCClient }> = ({
     }, []);
 
     useEffect(() => {
-        latestRef.current.scrollIntoView();
+        latestRef.current?.scrollIntoView();
     });
 
     return (
@@ -81,5 +82,3 @@ const EventsView: React.FC<{ uiStateEvents: EventEmitter; rpc: RPCClient }> = ({
         </div>
     );
 };
-
-export default EventsView;

@@ -15,9 +15,8 @@
    limitations under the License.
 */
 import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect, useRef } from "react";
 import { Client as RPCClient } from "jsonrpc2-ws";
+import React, { useEffect, useRef, useState } from "react";
 import { JoinParams } from "../../../lib/Mirakurun/rpc.d";
 import "./Logs.css";
 
@@ -25,7 +24,9 @@ let _itemId = 0;
 
 let logListCache: JSX.Element[] = [];
 
-const LogsView: React.FC<{ uiStateEvents: EventEmitter; rpc: RPCClient }> = ({ uiStateEvents, rpc }) => {
+export type LogsViewProps = Readonly<{ uiStateEvents: EventEmitter; rpc: RPCClient }>;
+
+export const LogsView: React.FC<LogsViewProps> = ({ uiStateEvents, rpc }) => {
     const [logList, setLogList] = useState<JSX.Element[]>([]);
     const latestRef = useRef<HTMLDivElement>(null);
 
@@ -72,7 +73,7 @@ const LogsView: React.FC<{ uiStateEvents: EventEmitter; rpc: RPCClient }> = ({ u
     }, []);
 
     useEffect(() => {
-        latestRef.current.scrollIntoView();
+        latestRef.current?.scrollIntoView();
     });
 
     return (
@@ -82,5 +83,3 @@ const LogsView: React.FC<{ uiStateEvents: EventEmitter; rpc: RPCClient }> = ({ u
         </div>
     );
 };
-
-export default LogsView;

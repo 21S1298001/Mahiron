@@ -14,9 +14,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as React from "react";
-import { useState, useEffect } from "react";
-import { Text, Icon, GroupedList, DetailsRow, Selection, IColumn, IGroup, Dialog, DialogFooter, DialogType, PrimaryButton, DefaultButton, IconButton, ColorClassNames } from "@fluentui/react";
+import { ColorClassNames, DefaultButton, DetailsRow, Dialog, DialogFooter, DialogType, GroupedList, IColumn, Icon, IconButton, IGroup, PrimaryButton, Selection, Text } from "@fluentui/react";
+import React, { useState } from "react";
 import { TunerDevice } from "../../../api";
 
 interface Item {
@@ -77,8 +76,10 @@ const onRenderCell = (nestingDepth: number, item: Item, itemIndex: number) => {
     );
 };
 
-const TunersManager: React.FC<{ tuners: TunerDevice[] }> = ({ tuners }) => {
-    const [killTarget, setKillTarget] = useState<number>(null);
+export type TunersManagerProps = Readonly<{ tuners: TunerDevice[] }>;
+
+export const TunersManager: React.FC<TunersManagerProps> = ({ tuners }) => {
+    const [killTarget, setKillTarget] = useState<number | null>(null);
 
     const items: Item[] = [];
     for (const tuner of tuners) {
@@ -161,7 +162,7 @@ const TunersManager: React.FC<{ tuners: TunerDevice[] }> = ({ tuners }) => {
                 items={items}
                 groups={groups}
                 groupProps={{ headerProps: { styles: { headerCount: { display: "none" } } } }} // hide count
-                onRenderCell={onRenderCell}
+                onRenderCell={onRenderCell as any}
                 selectionMode={0}
                 compact
             />
@@ -190,5 +191,3 @@ const TunersManager: React.FC<{ tuners: TunerDevice[] }> = ({ tuners }) => {
         </>
     );
 };
-
-export default TunersManager;

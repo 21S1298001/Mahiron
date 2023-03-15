@@ -14,36 +14,34 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import EventEmitter from "eventemitter3";
-import * as React from "react";
-import { useState, useEffect } from "react";
-import * as ReactDOM from "react-dom";
-import { createTheme, loadTheme, Fabric, Stack, ActionButton, Pivot, PivotItem, Separator, Text, Link, Icon, ColorClassNames } from "@fluentui/react";
+import { ActionButton, ColorClassNames, createTheme, Fabric, Link, loadTheme, Pivot, PivotItem, Separator, Stack, Text } from "@fluentui/react";
 import { initializeIcons } from "@fluentui/react/lib/Icons";
+import EventEmitter from "eventemitter3";
 import { Client as RPCClient } from "jsonrpc2-ws";
-import { JoinParams, NotifyParams } from "../../lib/Mirakurun/rpc.d";
+import * as React from "react";
+import { useEffect, useState } from "react";
+import * as ReactDOM from "react-dom";
+import { Service, Status, TunerDevice } from "../../api.d";
 import { EventMessage } from "../../lib/Mirakurun/Event.d";
-import { TunerDevice, Service, Status, Program } from "../../api.d";
-import ConnectionGuide from "./components/ConnectionGuide";
-import UpdateAlert from "./components/UpdateAlert";
-import Restart from "./components/Restart";
-import StatusView from "./components/StatusView";
-import EventsView from "./components/EventsView";
-import LogsView from "./components/LogsView";
-import ConfigView from "./components/ConfigView";
-import HeartView from "./components/HeartView";
+import { JoinParams, NotifyParams } from "../../lib/Mirakurun/rpc.d";
+import { ConfigView } from "./components/ConfigView";
+import { ConnectionGuide } from "./components/ConnectionGuide";
+import { EventsView } from "./components/EventsView";
+import { LogsView } from "./components/LogsView";
+import { Restart } from "./components/Restart";
+import { StatusView } from "./components/StatusView";
 import "./index.css";
 
 initializeIcons();
 
-export interface UIState {
+export type UIState = {
     version: string;
     statusName: string;
     statusIconName: string;
     tuners: TunerDevice[];
     services: Service[];
-    status: Status;
-}
+    status: Status | null;
+};
 
 const uiState: UIState = {
     version: "..",
@@ -87,9 +85,7 @@ function idleStatusChecker(): boolean {
 }
 uiStateEvents.on("update:tuners", idleStatusChecker);
 
-const rpc = new RPCClient(`${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}/rpc`, {
-    protocols: null
-});
+const rpc = new RPCClient(`${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}/rpc`);
 
 rpc.on("connecting", () => {
     console.log("rpc:connecting");
@@ -101,7 +97,8 @@ rpc.on("connecting", () => {
 rpc.on("connected", async () => {
     console.log("rpc:connected");
 
-    status: {
+    // status
+    {
         uiState.status = await rpc.call("getStatus");
 
         statusRefreshInterval = setInterval(async () => {
@@ -112,13 +109,15 @@ rpc.on("connected", async () => {
             uiStateEvents.emit("update:status");
         }, 1000 * 3);
 
-        if (uiState.version !== ".." && uiState.version !== uiState.status.version) {
+        if (uiState.version !== ".." && uiState.version !== uiState.status?.version) {
             location.reload();
             return;
         }
-        uiState.version = uiState.status.version;
+        uiState.version = uiState.status?.version ?? "";
     }
-    services: {
+
+    // services
+    {
         uiState.services = await (await fetch("/api/services")).json();
 
         servicesRefreshInterval = setInterval(async () => {
@@ -198,6 +197,7 @@ const Content = () => {
         }
 
         const icon = document.getElementById("icon");
+        if (!icon) return;
         if (icon.getAttribute("href") !== iconSrcMap[state.statusIconName]) {
             icon.setAttribute("href", iconSrcMap[state.statusIconName]);
         }
@@ -215,8 +215,6 @@ const Content = () => {
     return (
         <Fabric style={{ margin: "16px" }}>
             <Stack tokens={{ childrenGap: "8 0" }}>
-                <UpdateAlert />
-
                 <Stack horizontal verticalAlign="center" tokens={{ childrenGap: "0 8" }}>
                     <img style={{ height: "96px" }} src={iconSrcMap[state.statusIconName]} />
                     <div className="ms-fontSize-42">Mirakurun</div>
@@ -247,40 +245,26 @@ const Content = () => {
                     <PivotItem itemIcon="Settings" headerText="Config">
                         <ConfigView uiState={uiState} uiStateEvents={uiStateEvents} />
                     </PivotItem>
-                    <PivotItem itemIcon="Heart" headerText="Special Thanks">
-                        <HeartView />
-                    </PivotItem>
                 </Pivot>
 
                 <Stack>
                     <Separator />
                     <Text>
-                        <Link href="https://github.com/Chinachu/Mirakurun" target="_blank">
-                            Mirakurun
+                        <Link href="https://github.com/21S1298001/Mahiron" target="_blank">
+                            Mahiron
                         </Link>{" "}
                         {state.version}
-                        &nbsp;&copy; 2016-{" "}
-                        <Link href="https://github.com/kanreisa" target="_blank">
-                            kanreisa
+                        &nbsp;&copy; 2023
+                        <Link href="https://github.com/21S1298001" target="_blank">
+                            21S1298001
                         </Link>
                         .
-                    </Text>
-                    <Text>
-                        <Icon iconName="Heart" />{" "}
-                        <Link href="https://chinachu.moe/" target="_blank">
-                            Chinachu Project
-                        </Link>
-                        &nbsp;(
-                        <Link href="https://github.com/Chinachu" target="_blank">
-                            GitHub
-                        </Link>
-                        )
                     </Text>
                 </Stack>
 
                 <Stack>
                     <Text variant="xSmall" className={ColorClassNames.neutralTertiaryAlt}>
-                        Mirakurun comes with ABSOLUTELY NO WARRANTY. USE AT YOUR OWN RISK.
+                        Mahiron comes with ABSOLUTELY NO WARRANTY. USE AT YOUR OWN RISK.
                     </Text>
                 </Stack>
             </Stack>

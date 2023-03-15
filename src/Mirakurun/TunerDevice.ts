@@ -15,18 +15,18 @@
    limitations under the License.
 */
 import * as child_process from "child_process";
+import { EventEmitter } from "eventemitter3";
 import * as stream from "stream";
 import * as util from "util";
-import { EventEmitter } from "eventemitter3";
-import * as common from "./common";
-import * as log from "./log";
-import * as config from "./config";
 import * as apid from "../../api";
-import status from "./status";
-import Event from "./Event";
-import ChannelItem from "./ChannelItem";
-import TSFilter from "./TSFilter";
 import Client, { ProgramsQuery } from "../client";
+import ChannelItem from "./ChannelItem";
+import * as common from "./common";
+import * as config from "./config";
+import Event from "./Event";
+import * as log from "./log";
+import status from "./status";
+import TSFilter from "./TSFilter";
 
 interface User extends common.User {
     _stream?: TSFilter;
@@ -44,6 +44,8 @@ interface Status {
     readonly isFree: boolean;
     readonly isUsing: boolean;
     readonly isFault: boolean;
+    readonly currentChannelType?: common.ChannelType;
+    readonly currentChannel?: string;
 }
 
 export default class TunerDevice extends EventEmitter {
@@ -126,6 +128,14 @@ export default class TunerDevice extends EventEmitter {
         return this._isFault;
     }
 
+    get currentChannelType(): common.ChannelType {
+        return this._channel?.type;
+    }
+
+    get currentChannel(): string {
+        return this._channel?.channel;
+    }
+
     getPriority(): number {
         let priority = -2;
 
@@ -150,7 +160,9 @@ export default class TunerDevice extends EventEmitter {
             isRemote: this.isRemote,
             isFree: this.isFree,
             isUsing: this.isUsing,
-            isFault: this.isFault
+            isFault: this.isFault,
+            currentChannelType: this.currentChannelType,
+            currentChannel: this.currentChannel
         };
     }
 

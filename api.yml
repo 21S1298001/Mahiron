@@ -1,4 +1,4 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
   title: Mirakurun
   version: ~
@@ -14,7 +14,6 @@ produces:
 paths: {}
 
 definitions:
-
   # common --------------------------------------------------------------------
 
   Error:
@@ -27,7 +26,7 @@ definitions:
       errors:
         type: array
         items:
-          $ref: '#/definitions/ErrorOfOpenAPI'
+          $ref: "#/definitions/ErrorOfOpenAPI"
 
   ErrorOfOpenAPI:
     type: object
@@ -71,7 +70,7 @@ definitions:
       - channel
     properties:
       type:
-        $ref: '#/definitions/ChannelType'
+        $ref: "#/definitions/ChannelType"
       channel:
         type: string
       name:
@@ -92,7 +91,7 @@ definitions:
       services:
         type: array
         items:
-          $ref: '#/definitions/Service'
+          $ref: "#/definitions/Service"
 
   ChannelType:
     type: string
@@ -114,11 +113,13 @@ definitions:
       - type
     properties:
       id:
-        $ref: '#/definitions/ServiceItemId'
+        $ref: "#/definitions/ServiceItemId"
       serviceId:
-        $ref: '#/definitions/ServiceId'
+        $ref: "#/definitions/ServiceId"
       networkId:
-        $ref: '#/definitions/NetworkId'
+        $ref: "#/definitions/NetworkId"
+      transportStreamId:
+        $ref: "#/definitions/TransportStreamId"
       name:
         type: string
       type:
@@ -132,9 +133,9 @@ definitions:
       epgReady:
         type: boolean
       epgUpdatedAt:
-        $ref: '#/definitions/UnixtimeMS'
+        $ref: "#/definitions/UnixtimeMS"
       channel:
-        $ref: '#/definitions/Channel'
+        $ref: "#/definitions/Channel"
 
   # program -------------------------------------------------------------------
 
@@ -150,15 +151,15 @@ definitions:
       - isFree
     properties:
       id:
-        $ref: '#/definitions/ProgramId'
+        $ref: "#/definitions/ProgramId"
       eventId:
-        $ref: '#/definitions/EventId'
+        $ref: "#/definitions/EventId"
       serviceId:
-        $ref: '#/definitions/ServiceId'
+        $ref: "#/definitions/ServiceId"
       networkId:
-        $ref: '#/definitions/NetworkId'
+        $ref: "#/definitions/NetworkId"
       startAt:
-        $ref: '#/definitions/UnixtimeMS'
+        $ref: "#/definitions/UnixtimeMS"
       duration:
         type: integer
       isFree:
@@ -170,7 +171,7 @@ definitions:
       genres:
         type: array
         items:
-          $ref: '#/definitions/ProgramGenre'
+          $ref: "#/definitions/ProgramGenre"
       #attributes:
       #  type: array
       #  items:
@@ -179,9 +180,9 @@ definitions:
         type: object
         properties:
           type:
-            $ref: '#/definitions/ProgramVideoType'
+            $ref: "#/definitions/ProgramVideoType"
           resolution:
-            $ref: '#/definitions/ProgramVideoResolution'
+            $ref: "#/definitions/ProgramVideoResolution"
           streamContent:
             type: integer
           componentType:
@@ -198,7 +199,7 @@ definitions:
             isMain:
               type: boolean
             samplingRate:
-              $ref: '#/definitions/ProgramAudioSamplingRate'
+              $ref: "#/definitions/ProgramAudioSamplingRate"
             langs:
               type: array
               items:
@@ -219,7 +220,7 @@ definitions:
       relatedItems:
         type: array
         items:
-          $ref: '#/definitions/RelatedItem'
+          $ref: "#/definitions/RelatedItem"
       series:
         type: object
         properties:
@@ -229,13 +230,13 @@ definitions:
             type: integer
             minimum: 0
           pattern:
-            $ref: '#/definitions/ProgramPattern'
+            $ref: "#/definitions/ProgramPattern"
           expiresAt:
-            $ref: '#/definitions/UnixtimeMS'
+            $ref: "#/definitions/UnixtimeMS"
           episode:
-            $ref: '#/definitions/ProgramEpisodeNumber'
+            $ref: "#/definitions/ProgramEpisodeNumber"
           lastEpisode:
-            $ref: '#/definitions/ProgramEpisodeNumber'
+            $ref: "#/definitions/ProgramEpisodeNumber"
           name:
             type: string
 
@@ -338,7 +339,7 @@ definitions:
       types:
         type: array
         items:
-          $ref: '#/definitions/ChannelType'
+          $ref: "#/definitions/ChannelType"
       command:
         type: string
       pid:
@@ -346,7 +347,7 @@ definitions:
       users:
         type: array
         items:
-          $ref: '#/definitions/TunerUser'
+          $ref: "#/definitions/TunerUser"
       isAvailable:
         type: boolean
       isRemote:
@@ -381,7 +382,7 @@ definitions:
           - channel
         properties:
           channel:
-            $ref: '#/definitions/ConfigChannelsItem'
+            $ref: "#/definitions/ConfigChannelsItem"
           networkId:
             type: integer
           serviceId:
@@ -428,13 +429,13 @@ definitions:
       - time
     properties:
       resource:
-        $ref: '#/definitions/EventResource'
+        $ref: "#/definitions/EventResource"
       type:
-        $ref: '#/definitions/EventType'
+        $ref: "#/definitions/EventType"
       data:
         type: object
       time:
-        $ref: '#/definitions/UnixtimeMS'
+        $ref: "#/definitions/UnixtimeMS"
 
   EventResource:
     type: string
@@ -501,7 +502,7 @@ definitions:
   ConfigTuners:
     type: array
     items:
-      $ref: '#/definitions/ConfigTunersItem'
+      $ref: "#/definitions/ConfigTunersItem"
 
   ConfigTunersItem:
     type: object
@@ -514,7 +515,7 @@ definitions:
       types:
         type: array
         items:
-          $ref: '#/definitions/ChannelType'
+          $ref: "#/definitions/ChannelType"
       command:
         type: string
       dvbDevicePath:
@@ -533,7 +534,7 @@ definitions:
   ConfigChannels:
     type: array
     items:
-      $ref: '#/definitions/ConfigChannelsItem'
+      $ref: "#/definitions/ConfigChannelsItem"
 
   ConfigChannelsItem:
     type: object
@@ -545,11 +546,11 @@ definitions:
       name:
         type: string
       type:
-        $ref: '#/definitions/ChannelType'
+        $ref: "#/definitions/ChannelType"
       channel:
         type: string
       serviceId:
-        $ref: '#/definitions/ServiceId'
+        $ref: "#/definitions/ServiceId"
       satellite:
         type: string
       space:
@@ -607,7 +608,7 @@ definitions:
           gatheringNetworks:
             type: array
             items:
-              $ref: '#/definitions/NetworkId'
+              $ref: "#/definitions/NetworkId"
           storedEvents:
             type: integer
       rpcCount:

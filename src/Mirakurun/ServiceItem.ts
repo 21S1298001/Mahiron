@@ -15,17 +15,19 @@
    limitations under the License.
 */
 import * as stream from "stream";
+import ChannelItem from "./ChannelItem";
 import * as common from "./common";
-import _ from "./_";
 import * as db from "./db";
 import Event from "./Event";
-import ChannelItem from "./ChannelItem";
 import TSFilter from "./TSFilter";
+import _ from "./_";
 
 export default class ServiceItem {
-
     static getId(networkId: number, serviceId: number): number {
-        return parseInt(networkId + (serviceId / 100000).toFixed(5).slice(2), 10);
+        return parseInt(
+            networkId + (serviceId / 100000).toFixed(5).slice(2),
+            10
+        );
     }
 
     private _id: number;
@@ -34,6 +36,7 @@ export default class ServiceItem {
         private _channel: ChannelItem,
         private _networkId: number,
         private _serviceId: number,
+        private _transportStreamId: number,
         private _name?: string,
         private _type?: number,
         private _logoId?: number,
@@ -56,12 +59,15 @@ export default class ServiceItem {
         return this._serviceId;
     }
 
+    get transportStreamId(): number {
+        return this._transportStreamId;
+    }
+
     get name(): string {
         return this._name || "";
     }
 
     set name(name: string) {
-
         if (this._name !== name) {
             this._name = name;
 
@@ -75,7 +81,6 @@ export default class ServiceItem {
     }
 
     set type(type: number) {
-
         if (this._type !== type) {
             this._type = type;
 
@@ -89,7 +94,6 @@ export default class ServiceItem {
     }
 
     set logoId(logoId: number) {
-
         if (this._logoId !== logoId) {
             this._logoId = logoId;
 
@@ -103,7 +107,6 @@ export default class ServiceItem {
     }
 
     set remoteControlKeyId(id: number) {
-
         if (this._remoteControlKeyId !== id) {
             this._remoteControlKeyId = id;
 
@@ -117,7 +120,6 @@ export default class ServiceItem {
     }
 
     set epgReady(epgReady: boolean) {
-
         if (this._epgReady !== epgReady) {
             this._epgReady = epgReady;
 
@@ -131,7 +133,6 @@ export default class ServiceItem {
     }
 
     set epgUpdatedAt(time: number) {
-
         if (this._epgUpdatedAt !== time) {
             this._epgUpdatedAt = time;
 
@@ -145,11 +146,11 @@ export default class ServiceItem {
     }
 
     export(): db.Service {
-
         const ret: db.Service = {
             id: this._id,
             serviceId: this._serviceId,
             networkId: this._networkId,
+            transportStreamId: this._transportStreamId,
             name: this._name || "",
             type: this._type,
             logoId: this._logoId,
@@ -158,19 +159,21 @@ export default class ServiceItem {
             epgUpdatedAt: this._epgUpdatedAt,
             channel: {
                 type: this._channel.type,
-                channel: this._channel.channel
-            }
+                channel: this._channel.channel,
+            },
         };
 
         return ret;
     }
 
-    getStream(userRequest: common.UserRequest, output: stream.Writable): Promise<TSFilter> {
+    getStream(
+        userRequest: common.UserRequest,
+        output: stream.Writable
+    ): Promise<TSFilter> {
         return _.tuner.initServiceStream(this, userRequest, output);
     }
 
     getOrder(): number {
-
         let order: string;
 
         switch (this._channel.type) {

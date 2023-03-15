@@ -15,17 +15,16 @@
    limitations under the License.
 */
 import * as stream from "stream";
-import _ from "./_";
-import queue from "./queue";
-import * as db from "./db";
-import * as log from "./log";
 import * as common from "./common";
 import * as config from "./config";
+import * as db from "./db";
+import * as log from "./log";
+import queue from "./queue";
 import ServiceItem from "./ServiceItem";
 import TSFilter from "./TSFilter";
+import _ from "./_";
 
 export default class ChannelItem {
-
     private _name: string;
     private _type: common.ChannelType;
     private _channel: string;
@@ -36,7 +35,6 @@ export default class ChannelItem {
     private _tsmfRelTs: number;
 
     constructor(config: config.Channel) {
-
         this._name = config.name;
         this._type = config.type;
         this._channel = config.channel;
@@ -100,49 +98,83 @@ export default class ChannelItem {
             space: this._space,
             freq: this._freq,
             polarity: this._polarity,
-            tsmfRelTs: this._tsmfRelTs
+            tsmfRelTs: this._tsmfRelTs,
         };
     }
 
     addService(serviceId: number): void {
-
         if (!_.service) {
             process.nextTick(() => this.addService(serviceId));
             return;
         }
 
-        if (_.service.findByChannel(this).some(service => service.serviceId === serviceId) === true) {
+        if (
+            _.service
+                .findByChannel(this)
+                .some((service) => service.serviceId === serviceId) === true
+        ) {
             return;
         }
 
-        log.debug("ChannelItem#'%s' serviceId=%d check has queued", this._name, serviceId);
+        log.debug(
+            "ChannelItem#'%s' serviceId=%d check has queued",
+            this._name,
+            serviceId
+        );
 
         queue.add(async () => {
-
-            log.info("ChannelItem#'%s' serviceId=%d check has started", this._name, serviceId);
+            log.info(
+                "ChannelItem#'%s' serviceId=%d check has started",
+                this._name,
+                serviceId
+            );
 
             let services;
             try {
                 services = await _.tuner.getServices(this);
             } catch (e) {
-                log.warn("ChannelItem#'%s' serviceId=%d check has failed [%s]", this._name, serviceId, e);
+                log.warn(
+                    "ChannelItem#'%s' serviceId=%d check has failed [%s]",
+                    this._name,
+                    serviceId,
+                    e
+                );
 
                 setTimeout(() => this.addService(serviceId), 180000);
                 return;
             }
 
-            const service = services.find(service => service.serviceId === serviceId);
+            const service = services.find(
+                (service) => service.serviceId === serviceId
+            );
             if (!service) {
-                log.warn("ChannelItem#'%s' serviceId=%d check has failed [no service]", this._name, serviceId);
+                log.warn(
+                    "ChannelItem#'%s' serviceId=%d check has failed [no service]",
+                    this._name,
+                    serviceId
+                );
 
                 setTimeout(() => this.addService(serviceId), 3600000);
                 return;
             }
 
-            log.debug("ChannelItem#'%s' serviceId=%d: %s", this._name, serviceId, JSON.stringify(service, null, "  "));
+            log.debug(
+                "ChannelItem#'%s' serviceId=%d: %s",
+                this._name,
+                serviceId,
+                JSON.stringify(service, null, "  ")
+            );
 
             _.service.add(
-                new ServiceItem(this, service.networkId, service.serviceId, service.name, service.type, service.logoId)
+                new ServiceItem(
+                    this,
+                    service.networkId,
+                    service.serviceId,
+                    service.transportStreamId,
+                    service.name,
+                    service.type,
+                    service.logoId
+                )
             );
         });
     }
@@ -156,28 +188,36 @@ export default class ChannelItem {
     }
 
     serviceScan(add: boolean): void {
-
         log.debug("ChannelItem#'%s' service scan has queued", this._name);
 
         queue.add(async () => {
-
             log.info("ChannelItem#'%s' service scan has started", this._name);
 
             let services: db.Service[];
             try {
                 services = await _.tuner.getServices(this);
             } catch (e) {
-                log.warn("ChannelItem#'%s' service scan has failed [%s]", this._name, e);
+                log.warn(
+                    "ChannelItem#'%s' service scan has failed [%s]",
+                    this._name,
+                    e
+                );
 
                 setTimeout(() => this.serviceScan(add), add ? 180000 : 3600000);
                 return;
             }
 
-            log.debug("ChannelItem#'%s' services: %s", this._name, JSON.stringify(services, null, "  "));
+            log.debug(
+                "ChannelItem#'%s' services: %s",
+                this._name,
+                JSON.stringify(services, null, "  ")
+            );
 
-            services.forEach(service => {
-
-                const item = _.service.get(service.networkId, service.serviceId);
+            services.forEach((service) => {
+                const item = _.service.get(
+                    service.networkId,
+                    service.serviceId
+                );
                 if (item !== null) {
                     item.name = service.name;
                     item.type = service.type;
@@ -191,6 +231,7 @@ export default class ChannelItem {
                             this,
                             service.networkId,
                             service.serviceId,
+                            service.transportStreamId,
                             service.name,
                             service.type,
                             service.logoId,

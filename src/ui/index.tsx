@@ -254,6 +254,10 @@ const Content = () => {
                             Mahiron
                         </Link>{" "}
                         {state.version}
+                        &nbsp;&copy; 2016-{" "}
+                        <Link href="https://github.com/kanreisa" target="_blank">
+                            kanreisa
+                        </Link>
                         &nbsp;&copy; 2023
                         <Link href="https://github.com/21S1298001" target="_blank">
                             21S1298001

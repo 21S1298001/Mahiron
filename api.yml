@@ -61,6 +61,10 @@ definitions:
   UnixtimeMS:
     type: integer
 
+  TransportStreamId:
+    type: integer
+    maximum: 65535
+
   # channel -------------------------------------------------------------------
 
   Channel:

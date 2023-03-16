@@ -217,7 +217,7 @@ const Content = () => {
             <Stack tokens={{ childrenGap: "8 0" }}>
                 <Stack horizontal verticalAlign="center" tokens={{ childrenGap: "0 8" }}>
                     <img style={{ height: "96px" }} src={iconSrcMap[state.statusIconName as keyof typeof iconSrcMap]} />
-                    <div className="ms-fontSize-42">Mirakurun</div>
+                    <div className="ms-fontSize-42">Mahiron</div>
                     <Text variant="mediumPlus" nowrap block className={ColorClassNames.themePrimary}>
                         {state.status?.version}
                     </Text>

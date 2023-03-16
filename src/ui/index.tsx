@@ -20,7 +20,7 @@ import EventEmitter from "eventemitter3";
 import { Client as RPCClient } from "jsonrpc2-ws";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Service, Status, TunerDevice } from "../../api.d";
 import { EventMessage } from "../../lib/Mirakurun/Event.d";
 import { JoinParams, NotifyParams } from "../../lib/Mirakurun/rpc.d";
@@ -283,7 +283,8 @@ const Content = () => {
     );
 };
 
-ReactDOM.render(<Content />, document.getElementById("root"));
+const root = createRoot(document.getElementById("root")!);
+root.render(<Content />);
 
 // dark theme
 const myTheme = createTheme({

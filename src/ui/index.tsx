@@ -20,7 +20,7 @@ import EventEmitter from "eventemitter3";
 import { Client as RPCClient } from "jsonrpc2-ws";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Service, Status, TunerDevice } from "../../api.d";
 import { EventMessage } from "../../lib/Mirakurun/Event.d";
 import { JoinParams, NotifyParams } from "../../lib/Mirakurun/rpc.d";
@@ -85,7 +85,7 @@ function idleStatusChecker(): boolean {
 }
 uiStateEvents.on("update:tuners", idleStatusChecker);
 
-const rpc = new RPCClient(`${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}/rpc`);
+const rpc = new RPCClient(`${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}/rpc`, { protocols: null as any });
 
 rpc.on("connecting", () => {
     console.log("rpc:connecting");
@@ -217,7 +217,7 @@ const Content = () => {
             <Stack tokens={{ childrenGap: "8 0" }}>
                 <Stack horizontal verticalAlign="center" tokens={{ childrenGap: "0 8" }}>
                     <img style={{ height: "96px" }} src={iconSrcMap[state.statusIconName as keyof typeof iconSrcMap]} />
-                    <div className="ms-fontSize-42">Mirakurun</div>
+                    <div className="ms-fontSize-42">Mahiron</div>
                     <Text variant="mediumPlus" nowrap block className={ColorClassNames.themePrimary}>
                         {state.status?.version}
                     </Text>
@@ -254,15 +254,22 @@ const Content = () => {
                             Mahiron
                         </Link>{" "}
                         {state.version}
+                        &nbsp;&copy; 2023{" "}
+                        <Link href="https://github.com/21S1298001" target="_blank">
+                            21S1298001
+                        </Link>
+                        , Forked from{" "}
+                        <Link href="https://chinachu.moe/" target="_blank">
+                            Chinachu
+                        </Link>
+                        /
+                        <Link href="https://github.com/Chinachu/Mirakurun" target="_blank">
+                            Mirakurun
+                        </Link>
                         &nbsp;&copy; 2016-{" "}
                         <Link href="https://github.com/kanreisa" target="_blank">
                             kanreisa
                         </Link>
-                        &nbsp;&copy; 2023
-                        <Link href="https://github.com/21S1298001" target="_blank">
-                            21S1298001
-                        </Link>
-                        .
                     </Text>
                 </Stack>
 
@@ -276,7 +283,8 @@ const Content = () => {
     );
 };
 
-ReactDOM.render(<Content />, document.getElementById("root"));
+const root = createRoot(document.getElementById("root")!);
+root.render(<Content />);
 
 // dark theme
 const myTheme = createTheme({

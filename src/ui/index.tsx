@@ -254,15 +254,22 @@ const Content = () => {
                             Mahiron
                         </Link>{" "}
                         {state.version}
+                        &nbsp;&copy; 2023{" "}
+                        <Link href="https://github.com/21S1298001" target="_blank">
+                            21S1298001
+                        </Link>
+                        , Forked from{" "}
+                        <Link href="https://chinachu.moe/" target="_blank">
+                            Chinachu
+                        </Link>
+                        /
+                        <Link href="https://github.com/Chinachu/Mirakurun" target="_blank">
+                            Mirakurun
+                        </Link>
                         &nbsp;&copy; 2016-{" "}
                         <Link href="https://github.com/kanreisa" target="_blank">
                             kanreisa
                         </Link>
-                        &nbsp;&copy; 2023
-                        <Link href="https://github.com/21S1298001" target="_blank">
-                            21S1298001
-                        </Link>
-                        .
                     </Text>
                 </Stack>
 

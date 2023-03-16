@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "mirakurun-server",
-      "script": "lib/server.js",
+      "script": "dist/src/server.js",
       "node_args": "-r source-map-support/register",
       "error_file": "/usr/local/var/log/mirakurun.stderr.log",
       "out_file": "/usr/local/var/log/mirakurun.stdout.log",

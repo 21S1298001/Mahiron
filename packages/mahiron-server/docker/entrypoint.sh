@@ -7,7 +7,6 @@ export SERVICES_DB_PATH=/app-data/services.json
 export PROGRAMS_DB_PATH=/app-data/programs.json
 export LOGO_DATA_DIR_PATH=/app-data/logo-data
 
-export PATH=/opt/bin:$PATH
 export DOCKER=YES
 export INIT_PID=$$
 
@@ -25,10 +24,6 @@ function trap_exit() {
 trap "exit 0" 2 3 15
 trap trap_exit 0
 
-if [ ! -e "/opt/bin" ]; then
-  mkdir -pv /opt/bin
-fi
-
 # rename wrong filename (migration from <= 3.1.1 >= 3.0.0)
 if [ -f "/app-data/services.yml" -a ! -f "$SERVICES_DB_PATH" ]; then
   cp -v "/app-data/services.yml" "$SERVICES_DB_PATH"
@@ -42,12 +37,6 @@ if [ -e "/opt/bin/startup" ]; then
   echo "executing /opt/bin/startup..."
   /opt/bin/startup
   echo "done."
-fi
-
-# only for test purpose
-if !(type "arib-b25-stream-test" > /dev/null 2>&1); then
-  npm --prefix /opt install arib-b25-stream-test
-  ln -sv /opt/node_modules/arib-b25-stream-test/bin/b25 /opt/bin/arib-b25-stream-test
 fi
 
 if [ -e "/etc/init.d/pcscd" ]; then
@@ -66,7 +55,7 @@ fi
 function start() {
   if [ "$DEBUG" != "true" ]; then
     export NODE_ENV=production
-    node -r source-map-support/register lib/server.js &
+    node -r source-map-support/register dist/src/server.js &
   else
     npm run debug &
   fi

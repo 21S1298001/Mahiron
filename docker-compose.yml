@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mahiron:
+    build:
+      target: development
+    ports:
+      - '40772:40772/tcp'
+    environment:
+      TZ: Asia/Tokyo
+      LOG_LEVEL: '3'
+      DEBUG: 'true'
+    volumes:
+      - ./.yarn/releases:/app/.yarn/releases:ro
+      - ./bin:/app/bin:ro
+      - ./config:/app/config:ro
+      - ./docker:/app/docker:ro
+      - ./src:/app/src:ro
+      - ./index.d.ts:/app/index.d.ts:ro
+      - ./api.d.ts:/app/api.d.ts:ro
+      - ./api.yml:/app/api.yml:ro
+      - ./package.json:/app/package.json:ro
+      - ./.yarnrc.yml:/app/.yarnrc.yml:ro
+      - ./yarn.lock:/app/yarn.lock:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./tsconfig.webpack:/app/tsconfig.webpack:ro
+      - ./webpack.config.js:/app/webpack.config.js:ro
+      - yarn-cache:/app/.yarn/cache
+      - node-modules:/app/node_modules
+
+volumes:
+  yarn-cache:
+    driver: local
+  node-modules:
+    driver: local

@@ -20,10 +20,10 @@ Copyright 2023 21S1298001
 
 Licensed under the Apache License, Version 2.0.
 
-### Mirakurun
+Original copyright of Mirakurun:
 
-&copy; 2016- [kanreisa](https://github.com/kanreisa).
-
--   Code: [Apache License, Version 2.0](LICENSE)
--   Docs: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
--   Logo: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+> &copy; 2016- [kanreisa](https://github.com/kanreisa).
+>
+> -   Code: [Apache License, Version 2.0](LICENSE)
+> -   Docs: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+> -   Logo: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)

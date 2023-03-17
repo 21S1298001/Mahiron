@@ -191,7 +191,7 @@ const Content = () => {
     const [state, setState] = useState<UIState>(uiState);
 
     useEffect(() => {
-        const title = `${state.statusName} - Mirakurun ${state.version}`;
+        const title = `${state.statusName} - Mahiron ${state.version}`;
         if (document.title !== title) {
             document.title = title;
         }

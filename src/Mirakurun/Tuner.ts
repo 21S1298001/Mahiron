@@ -126,7 +126,7 @@ export default class Tuner {
         networkId = services[0].networkId;
 
         const tsFilter = await this._initTS({
-            id: "Mirakurun:getEPG()",
+            id: "Mahiron:getEPG()",
             priority: -1,
             disableDecoder: true,
             streamSetting: {
@@ -156,7 +156,7 @@ export default class Tuner {
 
     async getServices(channel: ChannelItem): Promise<db.Service[]> {
         const tsFilter = await this._initTS({
-            id: "Mirakurun:getServices()",
+            id: "Mahiron:getServices()",
             priority: -1,
             disableDecoder: true,
             streamSetting: {

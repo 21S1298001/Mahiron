@@ -14,13 +14,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { Operation } from "express-openapi";
 import { spawn } from "child_process";
+import { Operation } from "express-openapi";
 import * as api from "../api";
 
 export const put: Operation = (req, res) => {
     if (process.env.pm_uptime) {
-        const cmd = spawn("mirakurun", ["restart"], {
+        const cmd = spawn("mahiron", ["restart"], {
             detached: true,
             stdio: "ignore"
         });
@@ -30,7 +30,7 @@ export const put: Operation = (req, res) => {
         res.status(202);
         res.end(JSON.stringify({ _cmd_pid: cmd.pid }));
     } else if (process.env.USING_WINSER) {
-        const cmd = spawn("cmd", ["/c", "net stop mirakurun & sc start mirakurun"], {
+        const cmd = spawn("cmd", ["/c", "net stop mahiron & sc start mahiron"], {
             detached: true,
             stdio: "ignore"
         });
@@ -50,7 +50,7 @@ export const put: Operation = (req, res) => {
 
 put.apiDoc = {
     tags: ["misc"],
-    summary: "Restart Mirakurun",
+    summary: "Restart Mahiron",
     operationId: "restart",
     produces: ["application/json"],
     responses: {

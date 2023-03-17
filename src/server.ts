@@ -19,7 +19,7 @@ Buffer.poolSize = 0; // disable memory pool
 require("dotenv").config();
 import { createHash } from "crypto";
 
-process.title = "Mirakurun: Server";
+process.title = "Mahiron: Server";
 
 process.on("uncaughtException", err => {
     ++status.errorCount.uncaughtException;
@@ -30,12 +30,12 @@ process.on("unhandledRejection", err => {
     console.error(err);
 });
 
-setEnv("SERVER_CONFIG_PATH", "/usr/local/etc/mirakurun/server.yml");
-setEnv("TUNERS_CONFIG_PATH", "/usr/local/etc/mirakurun/tuners.yml");
-setEnv("CHANNELS_CONFIG_PATH", "/usr/local/etc/mirakurun/channels.yml");
-setEnv("SERVICES_DB_PATH", "/usr/local/var/db/mirakurun/services.json");
-setEnv("PROGRAMS_DB_PATH", "/usr/local/var/db/mirakurun/programs.json");
-setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mirakurun/logo-data");
+setEnv("SERVER_CONFIG_PATH", "/usr/local/etc/mahiron/server.yml");
+setEnv("TUNERS_CONFIG_PATH", "/usr/local/etc/mahiron/tuners.yml");
+setEnv("CHANNELS_CONFIG_PATH", "/usr/local/etc/mahiron/channels.yml");
+setEnv("SERVICES_DB_PATH", "/usr/local/var/db/mahiron/services.json");
+setEnv("PROGRAMS_DB_PATH", "/usr/local/var/db/mahiron/programs.json");
+setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mahiron/logo-data");
 
 import Channel from "./Mirakurun/Channel";
 import * as config from "./Mirakurun/config";

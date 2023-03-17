@@ -25,8 +25,8 @@ const path = require("path");
 const spawn = require("child_process").spawn;
 
 const proc = require("../processes.json").apps[0];
-const configDir = path.join(process.env.USERPROFILE, ".Mirakurun");
-const dataDir = path.join(process.env.LOCALAPPDATA, "Mirakurun");
+const configDir = path.join(process.env.USERPROFILE, ".Mahiron");
+const dataDir = path.join(process.env.LOCALAPPDATA, "Mahiron");
 
 for (const key in proc.env) {
     setEnv(key, proc.env[key]);

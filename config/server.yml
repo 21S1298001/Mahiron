@@ -2,7 +2,7 @@
 logLevel: 2
 
 # path: <string>
-path: /var/run/mirakurun.sock
+path: /var/run/mahiron.sock
 
 # port: <number>
 # You can change this if port conflicted.

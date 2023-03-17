@@ -2,7 +2,7 @@
 logLevel: 2
 
 # path: <string>
-path: \\.\pipe\mirakurun
+path: \\.\pipe\mahiron
 
 # port: <number>
 # You can change this if port conflicted.

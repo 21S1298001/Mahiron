@@ -23,13 +23,13 @@ export const get: Operation = (req, res) => {
     const apiRoot = `${req.protocol}://${req.headers.host}/api`;
 
     api.responseJSON(res, {
-        FriendlyName: `Mirakurun`,
-        ModelNumber: `MIRAKURUN`,
-        FirmwareName: `mirakurun_${process.arch}_${process.platform}`,
+        FriendlyName: `Mahiron`,
+        ModelNumber: `MAHIRON`,
+        FirmwareName: `mahiron_${process.arch}_${process.platform}`,
         FirmwareVersion: pkg.version,
-        Manufacturer: "Chinachu Project",
+        Manufacturer: "21S1298001",
         DeviceID: req.headers.host.replace(/[\[\].:]/g, ""),
-        DeviceAuth: "MIRAKURUN",
+        DeviceAuth: "MAHIRON",
         TunerCount: _.tuner.devices.length,
         BaseURL: `${apiRoot}/iptv`,
         LineupURL: `${apiRoot}/iptv/lineup.json`

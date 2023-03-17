@@ -16,11 +16,11 @@
 */
 import * as fs from "fs";
 import * as http from "http";
-import * as querystring from "querystring";
+import { IncomingHttpHeaders } from "http";
 import * as yaml from "js-yaml";
 import { OpenAPIV2 } from "openapi-types";
+import * as querystring from "querystring";
 import * as apid from "../api";
-import { IncomingHttpHeaders } from "http";
 const pkg = require("../package.json");
 const spec = yaml.load(fs.readFileSync(__dirname + "/../api.yml", "utf8")) as OpenAPIV2.Document;
 
@@ -109,12 +109,12 @@ export default class Client {
     priority = 0;
     host = "";
     port = 40772;
-    socketPath = process.platform === "win32" ? "\\\\.\\pipe\\mirakurun" : "/var/run/mirakurun.sock";
+    socketPath = process.platform === "win32" ? "\\\\.\\pipe\\mahiron" : "/var/run/mahiron.sock";
     agent: http.Agent | boolean;
     /** provide User-Agent string to identify client. */
     userAgent = "";
 
-    private _userAgent = `MirakurunClient/${pkg.version} Node/${process.version} (${process.platform})`;
+    private _userAgent = `MahironClient/${pkg.version} Node/${process.version} (${process.platform})`;
     private _docs: OpenAPIV2.Document;
 
     request(method: RequestMethod, path: string, option: RequestOption = {}): Promise<Response> | Promise<ErrorResponse> {

@@ -15,9 +15,9 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../../../../../api";
-import _ from "../../../../../../_";
+import { responseError, responseStreamErrorHandler } from "../../../../../../api";
 import { ChannelType, ChannelTypes } from "../../../../../../common";
+import _ from "../../../../../../_";
 
 export const parameters = [
     {
@@ -59,7 +59,7 @@ export const get: Operation = (req, res) => {
     const channel = _.channel.get(req.params.type as ChannelType, req.params.channel);
 
     if (channel === null) {
-        api.responseError(res, 404);
+        responseError(res, 404);
         return;
     }
 
@@ -67,7 +67,7 @@ export const get: Operation = (req, res) => {
     const service = _.service.findByChannel(channel).find(sv => sv.id === reqId || sv.serviceId === reqId);
 
     if (!service) {
-        api.responseError(res, 404);
+        responseError(res, 404);
         return;
     }
 
@@ -101,7 +101,7 @@ export const get: Operation = (req, res) => {
             res.setHeader("X-Mirakurun-Tuner-User-ID", userId);
             res.status(200);
         })
-        .catch(err => api.responseStreamErrorHandler(res, err));
+        .catch(err => responseStreamErrorHandler(res, err));
 };
 
 get.apiDoc = {

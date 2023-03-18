@@ -15,10 +15,10 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../../api";
-import * as common from "../../../common";
-import * as config from "../../../config";
-import * as db from "../../../db";
+import { responseError } from "../../../api";
+import { ChannelType, ChannelTypes } from "../../../common";
+import { Channel, loadChannels, saveChannels } from "../../../config";
+import { Service } from "../../../db";
 import _ from "../../../_";
 
 let isScanning = false;
@@ -66,7 +66,7 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
     // delete undefined from option
     Object.keys(option).forEach(key => option[key] === undefined && delete option[key]);
 
-    if (option.type === common.ChannelTypes.GR) {
+    if (option.type === ChannelTypes.GR) {
         option = {
             startCh: 13,
             endCh: 62,
@@ -88,7 +88,7 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
         ...option
     };
 
-    if (option.type === common.ChannelTypes.BS) {
+    if (option.type === ChannelTypes.BS) {
         if (option.useSubCh) {
             option = {
                 startCh: 1,
@@ -125,7 +125,7 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
         };
     }
 
-    if (option.type === common.ChannelTypes.CS) {
+    if (option.type === ChannelTypes.CS) {
         option = {
             startCh: 2,
             endCh: 24,
@@ -140,7 +140,7 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
     }
 }
 
-export function generateChannelItemForService(type: common.ChannelType, channel: string, service: db.Service, setDisabledOnAdd: boolean): config.Channel {
+export function generateChannelItemForService(type: ChannelType, channel: string, service: Service, setDisabledOnAdd: boolean): Channel {
     let name = service.name;
     name = name.trim();
     if (name.length === 0) {
@@ -156,7 +156,7 @@ export function generateChannelItemForService(type: common.ChannelType, channel:
     };
 }
 
-export function generateChannelItemForChannel(type: common.ChannelType, channel: string, services: db.Service[], setDisabledOnAdd: boolean): config.Channel {
+export function generateChannelItemForChannel(type: ChannelType, channel: string, services: Service[], setDisabledOnAdd: boolean): Channel {
     const baseName = services[0].name;
     let matchIndex = baseName.length;
 
@@ -193,9 +193,9 @@ export function generateChannelItemForChannel(type: common.ChannelType, channel:
     };
 }
 
-export function generateChannelItems(scanMode: ScanMode, type: common.ChannelType, channel: string, services: db.Service[], setDisabledOnAdd: boolean): config.Channel[] {
+export function generateChannelItems(scanMode: ScanMode, type: ChannelType, channel: string, services: Service[], setDisabledOnAdd: boolean): Channel[] {
     if (scanMode === ScanMode.Service) {
-        const channelItems: config.Channel[] = [];
+        const channelItems: Channel[] = [];
         for (const service of services) {
             channelItems.push(generateChannelItemForService(type, channel, service, setDisabledOnAdd));
         }
@@ -207,7 +207,7 @@ export function generateChannelItems(scanMode: ScanMode, type: common.ChannelTyp
 
 export const put: Operation = async (req, res) => {
     if (isScanning === true) {
-        api.responseError(res, 409, "Already Scanning");
+        responseError(res, 409, "Already Scanning");
         return;
     }
     isScanning = true;
@@ -215,10 +215,10 @@ export const put: Operation = async (req, res) => {
     req.setTimeout(1000 * 60 * 10); // 10 minites
 
     const dryRun = req.query.dryRun as any as boolean;
-    const type = req.query.type as common.ChannelType;
+    const type = req.query.type as ChannelType;
     const refresh = req.query.refresh as any as boolean;
-    const oldChannelItems = config.loadChannels();
-    const result: config.Channel[] = oldChannelItems.filter(channel => channel.type !== type);
+    const oldChannelItems = loadChannels();
+    const result: Channel[] = oldChannelItems.filter(channel => channel.type !== type);
     let newCount = 0;
     let takeoverCount = 0;
 
@@ -260,7 +260,7 @@ export const put: Operation = async (req, res) => {
             }
         }
 
-        let services: db.Service[];
+        let services: Service[];
         try {
             services = await _.tuner.getServices(<any>{
                 type: type,
@@ -305,7 +305,7 @@ export const put: Operation = async (req, res) => {
     res.write(`-> total ${newCount + takeoverCount}/${result.length} (${type}/Any) channels configured.\n\n`);
 
     if (!dryRun) {
-        config.saveChannels(result);
+        saveChannels(result);
     }
 
     isScanning = false;
@@ -352,8 +352,8 @@ About BS Subchannel Style:
             in: "query",
             name: "type",
             type: "string",
-            enum: [common.ChannelTypes.GR, common.ChannelTypes.BS, common.ChannelTypes.CS],
-            default: common.ChannelTypes.GR,
+            enum: [ChannelTypes.GR, ChannelTypes.BS, ChannelTypes.CS],
+            default: ChannelTypes.GR,
             description: "Specifies the channel type to scan."
         },
         {

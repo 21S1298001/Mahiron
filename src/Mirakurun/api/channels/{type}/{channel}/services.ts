@@ -15,9 +15,9 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../../../api";
-import _ from "../../../../_";
+import { responseError } from "../../../../api";
 import { ChannelType, ChannelTypes } from "../../../../common";
+import _ from "../../../../_";
 
 export const parameters = [
     {
@@ -39,7 +39,7 @@ export const get: Operation = (req, res) => {
     const channel = _.channel.get(req.params.type as ChannelType, req.params.channel);
 
     if (channel === null) {
-        api.responseError(res, 404);
+        responseError(res, 404);
         return;
     }
 

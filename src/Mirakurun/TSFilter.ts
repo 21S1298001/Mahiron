@@ -19,7 +19,7 @@ import { EventEmitter } from "eventemitter3";
 import { Writable } from "stream";
 import { getTimeFromMJD, StreamInfo } from "./common";
 import EPG from "./EPG";
-import * as log from "./log";
+import { log } from "./log";
 import { getProgramItemId } from "./Program";
 import Service from "./Service";
 import ServiceItem from "./ServiceItem";

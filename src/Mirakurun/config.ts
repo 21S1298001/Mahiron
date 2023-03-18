@@ -14,13 +14,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as fs from "fs";
-import * as ipnum from "ip-num";
-import * as yaml from "js-yaml";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFile } from "fs";
+import { Validator } from "ip-num";
+import { dump, load as yamlLoad } from "js-yaml";
 import { hostname } from "os";
 import { dirname } from "path";
-import * as common from "./common";
-import * as log from "./log";
+import { ChannelType } from "./common";
+import { log, LogLevel } from "./log";
 
 type Writable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -61,7 +61,7 @@ export interface Server {
     /** `true` to disable IPv6 listening */
     readonly disableIPv6?: boolean;
 
-    readonly logLevel?: log.LogLevel;
+    readonly logLevel?: LogLevel;
     readonly maxLogHistory?: number;
 
     readonly maxBufferBytesBeforeReady?: number;
@@ -82,7 +82,7 @@ export interface Tuner {
     readonly name: string;
 
     // GR / BS / CS / SKY
-    readonly types: common.ChannelType[];
+    readonly types: ChannelType[];
 
     // for chardev / dvb
     readonly command?: string;
@@ -105,7 +105,7 @@ export interface Channel {
     readonly name: string;
 
     // GR / BS / CS / SKY
-    readonly type: common.ChannelType;
+    readonly type: ChannelType;
 
     // passed to tuning command
     readonly channel: string;
@@ -131,11 +131,11 @@ export function loadServer(): Server {
 
     // mkdir if not exists
     const dirPath = dirname(path);
-    if (fs.existsSync(dirPath) === false) {
+    if (existsSync(dirPath) === false) {
         log.info("missing directory `%s`", dirPath);
         try {
             log.info("making directory `%s`", dirPath);
-            fs.mkdirSync(dirPath, { recursive: true });
+            mkdirSync(dirPath, { recursive: true });
         } catch (e) {
             log.fatal("failed to make directory `%s`", dirPath);
             console.error(e);
@@ -144,15 +144,15 @@ export function loadServer(): Server {
     }
 
     // copy if not exists
-    if (fs.existsSync(path) === false) {
+    if (existsSync(path) === false) {
         log.info("missing server config `%s`", path);
         // copy if not exists
         try {
             log.info("copying default server config to `%s`", path);
             if (process.platform === "win32") {
-                fs.copyFileSync("config/server.win32.yml", path);
+                copyFileSync("config/server.win32.yml", path);
             } else {
-                fs.copyFileSync("config/server.yml", path);
+                copyFileSync("config/server.yml", path);
             }
         } catch (e) {
             log.fatal("failed to copy server config to `%s`", path);
@@ -235,7 +235,7 @@ export function loadServer(): Server {
         const validRanges: string[] = [];
 
         for (const range of config.allowIPv4CidrRanges) {
-            const [valid, errors] = ipnum.Validator.isValidIPv4CidrRange(range);
+            const [valid, errors] = Validator.isValidIPv4CidrRange(range);
             if (valid) {
                 validRanges.push(range);
                 continue;
@@ -253,7 +253,7 @@ export function loadServer(): Server {
         const validRanges: string[] = [];
 
         for (const range of config.allowIPv6CidrRanges) {
-            const [valid, errors] = ipnum.Validator.isValidIPv6CidrRange(range);
+            const [valid, errors] = Validator.isValidIPv6CidrRange(range);
             if (valid) {
                 validRanges.push(range);
                 continue;
@@ -278,11 +278,11 @@ export function loadTuners(): Tuner[] {
 
     // mkdir if not exists
     const dirPath = dirname(path);
-    if (fs.existsSync(dirPath) === false) {
+    if (existsSync(dirPath) === false) {
         log.info("missing directory `%s`", dirPath);
         try {
             log.info("making directory `%s`", dirPath);
-            fs.mkdirSync(dirPath, { recursive: true });
+            mkdirSync(dirPath, { recursive: true });
         } catch (e) {
             log.fatal("failed to make directory `%s`", dirPath);
             console.error(e);
@@ -291,14 +291,14 @@ export function loadTuners(): Tuner[] {
     }
 
     // copy if not exists
-    if (fs.existsSync(path) === false) {
+    if (existsSync(path) === false) {
         log.info("missing tuners config `%s`", path);
         try {
             log.info("copying default tuners config to `%s`", path);
             if (process.platform === "win32") {
-                fs.copyFileSync("config/tuners.win32.yml", path);
+                copyFileSync("config/tuners.win32.yml", path);
             } else {
-                fs.copyFileSync("config/tuners.yml", path);
+                copyFileSync("config/tuners.yml", path);
             }
         } catch (e) {
             log.fatal("failed to copy tuners config to `%s`", path);
@@ -319,11 +319,11 @@ export function loadChannels(): Channel[] {
 
     // mkdir if not exists
     const dirPath = dirname(path);
-    if (fs.existsSync(dirPath) === false) {
+    if (existsSync(dirPath) === false) {
         log.info("missing directory `%s`", dirPath);
         try {
             log.info("making directory `%s`", dirPath);
-            fs.mkdirSync(dirPath, { recursive: true });
+            mkdirSync(dirPath, { recursive: true });
         } catch (e) {
             log.fatal("failed to make directory `%s`", dirPath);
             console.error(e);
@@ -332,14 +332,14 @@ export function loadChannels(): Channel[] {
     }
 
     // copy if not exists
-    if (fs.existsSync(path) === false) {
+    if (existsSync(path) === false) {
         log.info("missing channels config `%s`", path);
         try {
             log.info("copying default channels config to `%s`", path);
             if (process.platform === "win32") {
-                fs.copyFileSync("config/channels.win32.yml", path);
+                copyFileSync("config/channels.win32.yml", path);
             } else {
-                fs.copyFileSync("config/channels.yml", path);
+                copyFileSync("config/channels.yml", path);
             }
         } catch (e) {
             log.fatal("failed to copy channels config to `%s`", path);
@@ -361,7 +361,7 @@ function load(name: "channels", path: string): Channel[];
 function load(name: string, path: string) {
     log.info("load %s config `%s`", name, path);
 
-    return yaml.load(fs.readFileSync(path, "utf8"));
+    return yamlLoad(readFileSync(path, "utf8"));
 }
 
 function save(name: "server", path: string, data: Server): Promise<void>;
@@ -371,7 +371,7 @@ function save(name: string, path: string, data: object): Promise<void> {
     log.info("save %s config `%s`", name, path);
 
     return new Promise<void>((resolve, reject) => {
-        fs.writeFile(path, yaml.dump(data), err => {
+        writeFile(path, dump(data), err => {
             if (err) {
                 return reject(err);
             }

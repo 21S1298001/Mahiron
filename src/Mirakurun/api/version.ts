@@ -16,16 +16,16 @@
 */
 import { Operation } from "express-openapi";
 import { Version } from "../../../api";
-import * as api from "../api";
+import { responseJSON } from "../api";
 const pkg = require("../../../package.json");
 
-export const get: Operation = async (req, res) => {
+export const get: Operation = async (_req, res) => {
     const version: Version = {
         current: pkg.version,
         latest: ""
     };
 
-    api.responseJSON(res, version);
+    responseJSON(res, version);
 };
 
 get.apiDoc = {

@@ -15,10 +15,10 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../api";
-import * as apid from "../../../../api";
-import _ from "../../_";
+import { Service as IService } from "../../../../api";
+import { responseError } from "../../api";
 import Service from "../../Service";
+import _ from "../../_";
 
 export const parameters = [
     {
@@ -34,11 +34,11 @@ export const get: Operation = async (req, res) => {
     const serviceItem = _.service.get(req.params.id as any as number);
 
     if (serviceItem === null || serviceItem === undefined) {
-        api.responseError(res, 404);
+        responseError(res, 404);
         return;
     }
 
-    const service: apid.Service = {
+    const service: IService = {
         ...serviceItem.export(),
         hasLogoData: await Service.isLogoDataExists(serviceItem.networkId, serviceItem.logoId)
     };

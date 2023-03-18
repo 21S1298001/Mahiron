@@ -18,8 +18,7 @@ import { ActionButton, ColorClassNames, createTheme, Fabric, Link, loadTheme, Pi
 import { initializeIcons } from "@fluentui/react/lib/Icons";
 import EventEmitter from "eventemitter3";
 import { Client as RPCClient } from "jsonrpc2-ws";
-import * as React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Service, Status, TunerDevice } from "../../api.d";
 import { EventMessage } from "../../lib/Mirakurun/Event.d";

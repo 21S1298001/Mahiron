@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../api";
+import { responseError } from "../../api";
 import _ from "../../_";
 
 export const parameters = [
@@ -33,7 +33,7 @@ export const get: Operation = (req, res) => {
     const program = _.program.get(req.params.id as any as number);
 
     if (program === null) {
-        api.responseError(res, 404);
+        responseError(res, 404);
         return;
     }
 

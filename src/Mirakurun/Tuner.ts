@@ -16,9 +16,9 @@
 */
 import { Writable } from "stream";
 import ChannelItem from "./ChannelItem";
-import * as common from "./common";
-import * as db from "./db";
-import * as log from "./log";
+import { ChannelType, sleep, User, UserRequest } from "./common";
+import { Program, Service } from "./db";
+import { log } from "./log";
 import ServiceItem from "./ServiceItem";
 import TSDecoder from "./TSDecoder";
 import TSFilter from "./TSFilter";
@@ -47,7 +47,7 @@ export default class Tuner {
         return null;
     }
 
-    typeExists(type: common.ChannelType): boolean {
+    typeExists(type: ChannelType): boolean {
         const l = this._devices.length;
         for (let i = 0; i < l; i++) {
             if (this._devices[i].config.types.includes(type) === true) {
@@ -58,7 +58,7 @@ export default class Tuner {
         return false;
     }
 
-    initChannelStream(channel: ChannelItem, userReq: common.UserRequest, output: Writable): Promise<TSFilter> {
+    initChannelStream(channel: ChannelItem, userReq: UserRequest, output: Writable): Promise<TSFilter> {
         let networkId: number;
 
         const services = channel.getServices();
@@ -79,7 +79,7 @@ export default class Tuner {
         );
     }
 
-    initServiceStream(service: ServiceItem, userReq: common.UserRequest, output: Writable): Promise<TSFilter> {
+    initServiceStream(service: ServiceItem, userReq: UserRequest, output: Writable): Promise<TSFilter> {
         return this._initTS(
             {
                 ...userReq,
@@ -94,7 +94,7 @@ export default class Tuner {
         );
     }
 
-    initProgramStream(program: db.Program, userReq: common.UserRequest, output: Writable): Promise<TSFilter> {
+    initProgramStream(program: Program, userReq: UserRequest, output: Writable): Promise<TSFilter> {
         return this._initTS(
             {
                 ...userReq,
@@ -154,7 +154,7 @@ export default class Tuner {
         });
     }
 
-    async getServices(channel: ChannelItem): Promise<db.Service[]> {
+    async getServices(channel: ChannelItem): Promise<Service[]> {
         const tsFilter = await this._initTS({
             id: "Mahiron:getServices()",
             priority: -1,
@@ -165,13 +165,13 @@ export default class Tuner {
                 parseSDT: true
             }
         });
-        return new Promise<db.Service[]>((resolve, reject) => {
+        return new Promise<Service[]>((resolve, reject) => {
             let network = {
                 networkId: -1,
                 areaCode: -1,
                 remoteControlKeyId: -1
             };
-            let services: db.Service[] = null;
+            let services: Service[] = null;
 
             setTimeout(() => tsFilter.close(), 20000);
 
@@ -270,7 +270,7 @@ export default class Tuner {
         return this;
     }
 
-    private _initTS(user: common.User, dest?: Writable): Promise<TSFilter> {
+    private _initTS(user: User, dest?: Writable): Promise<TSFilter> {
         return new Promise<TSFilter>((resolve, reject) => {
             const setting = user.streamSetting;
 
@@ -304,12 +304,12 @@ export default class Tuner {
                                     networkId: setting.networkId
                                 })
                                 .then(async programs => {
-                                    await common.sleep(1000);
+                                    await sleep(1000);
                                     _.program.findByNetworkIdAndReplace(setting.networkId, programs);
                                     for (const service of _.service.findByNetworkId(setting.networkId)) {
                                         service.epgReady = true;
                                     }
-                                    await common.sleep(1000);
+                                    await sleep(1000);
                                 })
                                 .then(() => resolve(null))
                                 .catch(err => reject(err));
@@ -401,7 +401,7 @@ export default class Tuner {
         });
     }
 
-    private _getDevicesByType(type: common.ChannelType): TunerDevice[] {
+    private _getDevicesByType(type: ChannelType): TunerDevice[] {
         const devices = [];
 
         const l = this._devices.length;

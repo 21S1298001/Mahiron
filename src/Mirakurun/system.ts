@@ -14,17 +14,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as os from "os";
-import { Validator } from "ip-num/Validator";
 import { IPv4, IPv6 } from "ip-num/IPNumber";
-import { IPv4Prefix, IPv6Prefix } from "ip-num/Prefix";
 import { IPv4CidrRange, IPv6CidrRange } from "ip-num/IPRange";
+import { IPv4Prefix, IPv6Prefix } from "ip-num/Prefix";
+import { Validator } from "ip-num/Validator";
+import { networkInterfaces } from "os";
 import _ from "./_";
 
 export function getIPv4AddressesForListen(): string[] {
     const addresses = [];
 
-    const interfaces = os.networkInterfaces();
+    const interfaces = networkInterfaces();
     Object.keys(interfaces).forEach(k => {
         interfaces[k]
             .filter(a => {
@@ -39,7 +39,7 @@ export function getIPv4AddressesForListen(): string[] {
 export function getIPv6AddressesForListen(): string[] {
     const addresses = [];
 
-    const interfaces = os.networkInterfaces();
+    const interfaces = networkInterfaces();
     Object.keys(interfaces).forEach(k => {
         interfaces[k]
             .filter(a => {

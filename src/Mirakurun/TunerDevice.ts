@@ -14,45 +14,45 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as child_process from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import { EventEmitter } from "eventemitter3";
-import * as stream from "stream";
-import * as util from "util";
-import * as apid from "../../api";
+import { Readable } from "stream";
+import { format } from "util";
+import { Program } from "../../api";
 import Client, { ProgramsQuery } from "../client";
 import ChannelItem from "./ChannelItem";
-import * as common from "./common";
-import * as config from "./config";
+import { ChannelType, User as IUser } from "./common";
+import { Tuner } from "./config";
 import Event from "./Event";
-import * as log from "./log";
+import { log } from "./log";
 import status from "./status";
 import TSFilter from "./TSFilter";
 
-interface User extends common.User {
+interface User extends IUser {
     _stream?: TSFilter;
 }
 
 interface Status {
     readonly index: number;
     readonly name: string;
-    readonly types: common.ChannelType[];
+    readonly types: ChannelType[];
     readonly command: string;
     readonly pid: number;
-    readonly users: common.User[];
+    readonly users: IUser[];
     readonly isAvailable: boolean;
     readonly isRemote: boolean;
     readonly isFree: boolean;
     readonly isUsing: boolean;
     readonly isFault: boolean;
-    readonly currentChannelType?: common.ChannelType;
+    readonly currentChannelType?: ChannelType;
     readonly currentChannel?: string;
 }
 
 export default class TunerDevice extends EventEmitter {
     private _channel: ChannelItem = null;
     private _command: string = null;
-    private _process: child_process.ChildProcess = null;
-    private _stream: stream.Readable = null;
+    private _process: ChildProcess = null;
+    private _stream: Readable = null;
 
     private _users = new Set<User>();
 
@@ -63,7 +63,7 @@ export default class TunerDevice extends EventEmitter {
     private _exited = false;
     private _closing = false;
 
-    constructor(private _index: number, private _config: config.Tuner) {
+    constructor(private _index: number, private _config: Tuner) {
         super();
         this._isRemote = !!this._config.remoteMirakurunHost;
         Event.emit("tuner", "create", this.toJSON());
@@ -74,7 +74,7 @@ export default class TunerDevice extends EventEmitter {
         return this._index;
     }
 
-    get config(): config.Tuner {
+    get config(): Tuner {
         return this._config;
     }
 
@@ -128,7 +128,7 @@ export default class TunerDevice extends EventEmitter {
         return this._isFault;
     }
 
-    get currentChannelType(): common.ChannelType {
+    get currentChannelType(): ChannelType {
         return this._channel?.type;
     }
 
@@ -174,22 +174,22 @@ export default class TunerDevice extends EventEmitter {
         log.debug("TunerDevice#%d start stream for user `%s` (priority=%d)...", this._index, user.id, user.priority);
 
         if (this._isAvailable === false) {
-            throw new Error(util.format("TunerDevice#%d is not available", this._index));
+            throw new Error(format("TunerDevice#%d is not available", this._index));
         }
 
         if (!channel && !this._stream) {
-            throw new Error(util.format("TunerDevice#%d has not stream", this._index));
+            throw new Error(format("TunerDevice#%d has not stream", this._index));
         }
 
         if (channel) {
             if (this._config.types.includes(channel.type) === false) {
-                throw new Error(util.format("TunerDevice#%d is not supported for channel type `%s`", this._index, channel.type));
+                throw new Error(format("TunerDevice#%d is not supported for channel type `%s`", this._index, channel.type));
             }
 
             if (this._stream) {
                 if (channel.channel !== this._channel.channel) {
                     if (user.priority <= this.getPriority()) {
-                        throw new Error(util.format("TunerDevice#%d has higher priority user", this._index));
+                        throw new Error(format("TunerDevice#%d has higher priority user", this._index));
                     }
 
                     await this._kill(true);
@@ -232,9 +232,9 @@ export default class TunerDevice extends EventEmitter {
         this._updated();
     }
 
-    async getRemotePrograms(query?: ProgramsQuery): Promise<apid.Program[]> {
+    async getRemotePrograms(query?: ProgramsQuery): Promise<Program[]> {
         if (!this._isRemote) {
-            throw new Error(util.format("TunerDevice#%d is not remote device", this._index));
+            throw new Error(format("TunerDevice#%d is not remote device", this._index));
         }
 
         const client = new Client();
@@ -255,7 +255,7 @@ export default class TunerDevice extends EventEmitter {
         log.debug("TunerDevice#%d spawn...", this._index);
 
         if (this._process) {
-            throw new Error(util.format("TunerDevice#%d has process", this._index));
+            throw new Error(format("TunerDevice#%d has process", this._index));
         }
 
         let cmd: string;
@@ -296,12 +296,12 @@ export default class TunerDevice extends EventEmitter {
             cmd = cmd.replace("<polarity>", ch.polarity);
         }
 
-        this._process = child_process.spawn(cmd.split(" ")[0], cmd.split(" ").slice(1));
+        this._process = spawn(cmd.split(" ")[0], cmd.split(" ").slice(1));
         this._command = cmd;
         this._channel = ch;
 
         if (this._config.dvbDevicePath) {
-            const cat = child_process.spawn("cat", [this._config.dvbDevicePath]);
+            const cat = spawn("cat", [this._config.dvbDevicePath]);
 
             cat.once("error", err => {
                 log.error("TunerDevice#%d cat process error `%s` (pid=%d)", this._index, err.name, cat.pid);
@@ -383,7 +383,7 @@ export default class TunerDevice extends EventEmitter {
         log.debug("TunerDevice#%d kill...", this._index);
 
         if (!this._process || !this._process.pid) {
-            throw new Error(util.format("TunerDevice#%d has not process", this._index));
+            throw new Error(format("TunerDevice#%d has not process", this._index));
         } else if (this._closing) {
             log.debug("TunerDevice#%d return because it is closing", this._index);
             return;

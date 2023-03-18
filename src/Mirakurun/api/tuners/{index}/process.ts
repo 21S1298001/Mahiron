@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../../api";
+import { responseError, responseJSON } from "../../../api";
 import _ from "../../../_";
 
 export const parameters = [
@@ -32,11 +32,11 @@ export const get: Operation = (req, res) => {
     const tuner = _.tuner.get(req.params.index as any as number);
 
     if (tuner === null || Number.isInteger(tuner.pid) === false) {
-        api.responseError(res, 404);
+        responseError(res, 404);
         return;
     }
 
-    api.responseJSON(res, { pid: tuner.pid });
+    responseJSON(res, { pid: tuner.pid });
 };
 
 get.apiDoc = {
@@ -69,14 +69,14 @@ export const del: Operation = (req, res) => {
     const tuner = _.tuner.get(req.params.index as any as number);
 
     if (tuner === null || Number.isInteger(tuner.pid) === false) {
-        api.responseError(res, 404);
+        responseError(res, 404);
         return;
     }
 
     tuner
         .kill()
-        .then(() => api.responseJSON(res, { pid: null }))
-        .catch((error: Error) => api.responseError(res, 500, error.message));
+        .then(() => responseJSON(res, { pid: null }))
+        .catch((error: Error) => responseError(res, 500, error.message));
 };
 
 del.apiDoc = {

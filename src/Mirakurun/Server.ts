@@ -14,27 +14,27 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as cors from "cors";
-import * as express from "express";
-import * as openapi from "express-openapi";
-import * as fs from "fs";
-import * as http from "http";
-import * as yaml from "js-yaml";
+import cors, { CorsOptions } from "cors";
+import express, { json, NextFunction, Request, Response, static as expressStatic, urlencoded } from "express";
+import { initialize } from "express-openapi";
+import { chmodSync, existsSync, readFileSync, unlinkSync } from "fs";
+import { createServer, Server as HttpServer } from "http";
+import { load } from "js-yaml";
 import RPCServer from "jsonrpc2-ws/lib/server";
-import * as morgan from "morgan";
+import morgan from "morgan";
 import { OpenAPIV2 } from "openapi-types";
 import { sleep } from "./common";
-import * as log from "./log";
+import { log } from "./log";
 import regexp from "./regexp";
 import { createRPCServer, initRPCNotifier } from "./rpc";
-import * as system from "./system";
+import { getIPv4AddressesForListen, getIPv6AddressesForListen, isPermittedHost, isPermittedIPAddress } from "./system";
 import _ from "./_";
 
 const pkg = require("../../package.json");
 
 class Server {
     private _isRunning = false;
-    private _servers = new Set<http.Server>();
+    private _servers = new Set<HttpServer>();
     private _rpcs = new Set<RPCServer>();
 
     async init() {
@@ -54,7 +54,7 @@ class Server {
         if (serverConfig.port) {
             while (true) {
                 try {
-                    if (system.getIPv4AddressesForListen().length > 0) {
+                    if (getIPv4AddressesForListen().length > 0) {
                         break;
                     }
                 } catch (e) {
@@ -64,10 +64,10 @@ class Server {
                 await sleep(5000);
             }
 
-            addresses = [...addresses, ...system.getIPv4AddressesForListen(), "127.0.0.1"];
+            addresses = [...addresses, ...getIPv4AddressesForListen(), "127.0.0.1"];
 
             if (serverConfig.disableIPv6 !== true) {
-                addresses = [...addresses, ...system.getIPv6AddressesForListen(), "::1"];
+                addresses = [...addresses, ...getIPv6AddressesForListen(), "::1"];
             }
         }
 
@@ -76,12 +76,12 @@ class Server {
         app.disable("x-powered-by");
         app.disable("etag");
 
-        const corsOptions: cors.CorsOptions = {
+        const corsOptions: CorsOptions = {
             origin: (origin, callback) => {
                 if (!origin) {
                     return callback(null, true);
                 }
-                if (system.isPermittedHost(origin, serverConfig.hostname)) {
+                if (isPermittedHost(origin, serverConfig.hostname)) {
                     return callback(null, true);
                 }
                 return callback(new Error("Not allowed by CORS"));
@@ -91,27 +91,27 @@ class Server {
 
         app.use(
             morgan(":remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :response-time ms :user-agent", {
-                stream: log.event as any
+                stream: log as any
             })
         );
-        app.use(express.urlencoded({ extended: false }));
-        app.use(express.json());
+        app.use(urlencoded({ extended: false }));
+        app.use(json());
 
-        app.use((req: express.Request, res: express.Response, next) => {
-            if (req.ip && system.isPermittedIPAddress(req.ip) === false) {
+        app.use((req: Request, res: Response, next: NextFunction) => {
+            if (req.ip && isPermittedIPAddress(req.ip) === false) {
                 req.socket.end();
                 return;
             }
 
             if (req.get("Origin") !== undefined) {
-                if (!system.isPermittedHost(req.get("Origin"), serverConfig.hostname)) {
+                if (!isPermittedHost(req.get("Origin"), serverConfig.hostname)) {
                     res.status(403).end();
                     return;
                 }
             }
 
             if (req.get("Referer") !== undefined) {
-                if (!system.isPermittedHost(req.get("Referer"), serverConfig.hostname)) {
+                if (!isPermittedHost(req.get("Referer"), serverConfig.hostname)) {
                     res.status(403).end();
                     return;
                 }
@@ -123,29 +123,29 @@ class Server {
 
         if (!serverConfig.disableWebUI) {
             app.use(
-                express.static("lib/ui", {
+                expressStatic("lib/ui", {
                     setHeaders: (res, path) => {
-                        if (express.static.mime.lookup(path) === "image/svg+xml") {
+                        if (expressStatic.mime.lookup(path) === "image/svg+xml") {
                             res.setHeader("Cache-Control", "public, max-age=86400");
                         }
                     }
                 })
             );
-            app.use("/swagger-ui", express.static("node_modules/swagger-ui-dist"));
-            app.use("/api/debug", express.static("lib/ui/swagger-ui.html"));
+            app.use("/swagger-ui", expressStatic("node_modules/swagger-ui-dist"));
+            app.use("/api/debug", expressStatic("lib/ui/swagger-ui.html"));
         }
 
-        const api = yaml.load(fs.readFileSync("api.yml", "utf8")) as OpenAPIV2.Document;
+        const api = load(readFileSync("api.yml", "utf8")) as OpenAPIV2.Document;
         api.info.version = pkg.version;
 
-        openapi.initialize({
+        initialize({
             app: app,
             apiDoc: api,
             docsPath: "/docs",
             paths: "./lib/Mirakurun/api"
         });
 
-        app.use((err, req, res: express.Response, next) => {
+        app.use((err, _req: Request, res: Response, next: NextFunction) => {
             if (err.message === "Not allowed by CORS") {
                 res.status(403).end();
                 return;
@@ -172,13 +172,13 @@ class Server {
         });
 
         addresses.forEach(address => {
-            const server = http.createServer(app);
+            const server = createServer(app);
 
             server.timeout = 1000 * 15; // 15 sec.
 
             if (regexp.unixDomainSocket.test(address) === true || regexp.windowsNamedPipe.test(address) === true) {
-                if (process.platform !== "win32" && fs.existsSync(address) === true) {
-                    fs.unlinkSync(address);
+                if (process.platform !== "win32" && existsSync(address) === true) {
+                    unlinkSync(address);
                 }
 
                 server.listen(address, () => {
@@ -186,7 +186,7 @@ class Server {
                 });
 
                 if (process.platform !== "win32") {
-                    fs.chmodSync(address, "777");
+                    chmodSync(address, "777");
                 }
             } else {
                 server.listen(serverConfig.port, address, () => {

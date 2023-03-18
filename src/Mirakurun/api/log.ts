@@ -15,14 +15,13 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../api";
-import { event } from "../log";
+import { log } from "../log";
 
-export const get: Operation = (req, res) => {
+export const get: Operation = (_req, res) => {
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.status(200);
 
-    const logs = event.logs;
+    const logs = log.logs;
     const len = logs.length;
     for (let i = 0; i < len; i++) {
         res.write(logs[i] + "\n");

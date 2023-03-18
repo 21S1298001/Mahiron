@@ -14,19 +14,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as config from "./config";
-import Event from "./Event";
-import Tuner from "./Tuner";
 import Channel from "./Channel";
-import Service from "./Service";
+import { Channel as IChannel, Server as IServer, Tuner as ITuner } from "./config";
+import Event from "./Event";
 import Program from "./Program";
 import Server from "./Server";
+import Service from "./Service";
+import Tuner from "./Tuner";
 
 interface Shared {
     readonly config: {
-        server?: config.Server;
-        channels?: config.Channel[];
-        tuners?: config.Tuner[];
+        server?: IServer;
+        channels?: IChannel[];
+        tuners?: ITuner[];
     };
     readonly configIntegrity: {
         channels: string;

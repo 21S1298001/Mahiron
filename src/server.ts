@@ -16,7 +16,9 @@
 */
 Buffer.poolSize = 0; // disable memory pool
 
-require("dotenv").config();
+import { config } from "dotenv";
+config();
+
 import { createHash } from "crypto";
 
 process.title = "Mahiron: Server";
@@ -37,16 +39,16 @@ setEnv("SERVICES_DB_PATH", "/usr/local/var/db/mahiron/services.json");
 setEnv("PROGRAMS_DB_PATH", "/usr/local/var/db/mahiron/programs.json");
 setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mahiron/logo-data");
 
-import Channel from "./Mirakurun/Channel";
-import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config";
-import Event from "./Mirakurun/Event";
-import { log } from "./Mirakurun/log";
-import Program from "./Mirakurun/Program";
-import Server from "./Mirakurun/Server";
-import Service from "./Mirakurun/Service";
-import status from "./Mirakurun/status";
-import Tuner from "./Mirakurun/Tuner";
-import _ from "./Mirakurun/_";
+import Channel from "./Mirakurun/Channel.js";
+import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config.js";
+import Event from "./Mirakurun/Event.js";
+import { log } from "./Mirakurun/log.js";
+import Program from "./Mirakurun/Program.js";
+import Server from "./Mirakurun/Server.js";
+import Service from "./Mirakurun/Service.js";
+import status from "./Mirakurun/status.js";
+import Tuner from "./Mirakurun/Tuner.js";
+import _ from "./Mirakurun/_.js";
 
 _.config.server = loadServer();
 _.config.channels = loadChannels();

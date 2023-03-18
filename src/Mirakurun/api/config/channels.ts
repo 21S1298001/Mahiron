@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { Channel, loadChannels, saveChannels } from "../../config";
+import { Channel, loadChannels, saveChannels } from "../../config.js";
 
 export const get: Operation = (_req, res) => {
     res.status(200);

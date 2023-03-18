@@ -14,12 +14,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import ChannelItem from "./ChannelItem";
-import { ChannelType } from "./common";
-import { log } from "./log";
-import queue from "./queue";
-import status from "./status";
-import _ from "./_";
+import ChannelItem from "./ChannelItem.js";
+import { ChannelType } from "./common.js";
+import { log } from "./log.js";
+import queue from "./queue.js";
+import status from "./status.js";
+import _ from "./_.js";
 
 export default class Channel {
     private _items: ChannelItem[] = [];

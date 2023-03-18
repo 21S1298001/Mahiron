@@ -15,9 +15,9 @@
    limitations under the License.
 */
 import { EventEmitter } from "eventemitter3";
-import rfdc = require("rfdc");
+import rfdc from "rfdc";
+import _ from "./_.js";
 const clone = rfdc();
-import _ from "./_";
 
 export interface EventMessage<T = any> {
     readonly resource: EventResource;

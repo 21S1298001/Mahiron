@@ -15,8 +15,8 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { responseJSON } from "../api";
-import Event from "../Event";
+import { responseJSON } from "../api.js";
+import Event from "../Event.js";
 
 export const get: Operation = (_req, res) => {
     responseJSON(res, Event.log);

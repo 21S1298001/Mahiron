@@ -15,11 +15,11 @@
    limitations under the License.
 */
 import { TsChar } from "@chinachu/aribts";
-import { EIT } from "@chinachu/aribts/lib/table/eit";
-import { getTimeFromBCD24, getTimeFromMJD } from "./common";
-import { ProgramAudio, ProgramAudioLanguageCode, ProgramGenre, ProgramRelatedItem, ProgramVideoResolution, ProgramVideoType } from "./db";
-import { getProgramItemId } from "./Program";
-import _ from "./_";
+import { EIT } from "@chinachu/aribts/lib/table/eit.js";
+import { getTimeFromBCD24, getTimeFromMJD } from "./common.js";
+import { ProgramAudio, ProgramAudioLanguageCode, ProgramGenre, ProgramRelatedItem, ProgramVideoResolution, ProgramVideoType } from "./db.js";
+import { getProgramItemId } from "./Program.js";
+import _ from "./_.js";
 
 const STREAM_CONTENT = {
     1: "mpeg2",

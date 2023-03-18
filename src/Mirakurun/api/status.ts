@@ -15,11 +15,12 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { Status } from "../../../api";
-import status from "../status";
-import _ from "../_";
+import { readFile } from "fs/promises";
+import { Status } from "../../../api.js";
+import status from "../status.js";
+import _ from "../_.js";
 
-const pkg = require("../../../package.json");
+const pkg = JSON.parse(await readFile("./package.json", { encoding: "utf-8" }));
 
 export const get: Operation = (_req, res) => {
     res.setHeader("Content-Type", "application/json; charset=utf-8");

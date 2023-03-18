@@ -15,8 +15,8 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { responseJSON } from "../../api";
-import _ from "../../_";
+import { responseJSON } from "../../api.js";
+import _ from "../../_.js";
 
 interface HDHRChannel {
     GuideNumber: string;

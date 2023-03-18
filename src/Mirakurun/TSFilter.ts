@@ -17,14 +17,14 @@
 import { TsChar, TsCrc32, tsDataModule, TsLogo, TsStreamLite } from "@chinachu/aribts";
 import { EventEmitter } from "eventemitter3";
 import { Writable } from "stream";
-import { getTimeFromMJD, StreamInfo } from "./common";
-import EPG from "./EPG";
-import { log } from "./log";
-import { getProgramItemId } from "./Program";
-import Service from "./Service";
-import ServiceItem from "./ServiceItem";
-import status from "./status";
-import _ from "./_";
+import { getTimeFromMJD, StreamInfo } from "./common.js";
+import EPG from "./EPG.js";
+import { log } from "./log.js";
+import { getProgramItemId } from "./Program.js";
+import Service from "./Service.js";
+import ServiceItem from "./ServiceItem.js";
+import status from "./status.js";
+import _ from "./_.js";
 
 interface TSFilterOptions {
     readonly output?: Writable;

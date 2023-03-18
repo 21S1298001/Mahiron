@@ -15,8 +15,8 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import _ from "../../../_";
-import Service from "../../../Service";
+import Service from "../../../Service.js";
+import _ from "../../../_.js";
 
 export const parameters = [
     {

@@ -16,7 +16,7 @@
 */
 import { ColorClassNames, DefaultButton, DetailsRow, Dialog, DialogFooter, DialogType, GroupedList, IColumn, Icon, IconButton, IGroup, PrimaryButton, Selection, Text } from "@fluentui/react";
 import React, { useState } from "react";
-import { TunerDevice } from "../../../api";
+import { TunerDevice } from "../../../api.js";
 
 interface Item {
     _group: string;

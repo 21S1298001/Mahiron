@@ -15,9 +15,9 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { responseError, responseStreamErrorHandler } from "../../../../../../api";
-import { ChannelType, ChannelTypes } from "../../../../../../common";
-import _ from "../../../../../../_";
+import { responseError, responseStreamErrorHandler } from "../../../../../../api.js";
+import { ChannelType, ChannelTypes } from "../../../../../../common.js";
+import _ from "../../../../../../_.js";
 
 export const parameters = [
     {

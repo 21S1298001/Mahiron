@@ -16,8 +16,8 @@
 */
 import { existsSync, mkdirSync, promises as fsPromises, readFileSync } from "fs";
 import { dirname } from "path";
-import { ChannelType } from "./common";
-import { log } from "./log";
+import { ChannelType } from "./common.js";
+import { log } from "./log.js";
 
 export interface Service {
     id: number;

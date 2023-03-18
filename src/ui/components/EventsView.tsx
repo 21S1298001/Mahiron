@@ -17,8 +17,8 @@
 import EventEmitter from "eventemitter3";
 import { Client as RPCClient } from "jsonrpc2-ws";
 import React, { useEffect, useRef, useState } from "react";
-import { Event } from "../../../api";
-import { JoinParams } from "../../../lib/Mirakurun/rpc.d";
+import { Event } from "../../../api.js";
+import { JoinParams } from "../../../lib/Mirakurun/rpc.js";
 import "./Logs.css";
 
 let _itemId = 0;

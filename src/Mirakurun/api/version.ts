@@ -15,9 +15,11 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { Version } from "../../../api";
-import { responseJSON } from "../api";
-const pkg = require("../../../package.json");
+import { readFile } from "fs/promises";
+import { Version } from "../../../api.js";
+import { responseJSON } from "../api.js";
+
+const pkg = JSON.parse(await readFile("./package.json", { encoding: "utf-8" }));
 
 export const get: Operation = async (_req, res) => {
     const version: Version = {

@@ -15,9 +15,9 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { responseJSON } from "../api";
-import { Program } from "../db";
-import _ from "../_";
+import { responseJSON } from "../api.js";
+import { Program } from "../db.js";
+import _ from "../_.js";
 
 export const get: Operation = (req, res) => {
     let programs: Program[];

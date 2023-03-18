@@ -16,11 +16,11 @@
 */
 import { Operation } from "express-openapi";
 import sift from "sift";
-import { Service as IService } from "../../../api";
-import { responseJSON } from "../api";
-import { ChannelTypes } from "../common";
-import Service from "../Service";
-import _ from "../_";
+import { Service as IService } from "../../../api.js";
+import { responseJSON } from "../api.js";
+import { ChannelTypes } from "../common.js";
+import Service from "../Service.js";
+import _ from "../_.js";
 
 export const get: Operation = async (req, res) => {
     const serviceItems = [..._.service.items]; // shallow copy
@@ -28,7 +28,7 @@ export const get: Operation = async (req, res) => {
 
     const services: IService[] = [];
 
-    for (const serviceItem of serviceItems.filter(sift(req.query))) {
+    for (const serviceItem of serviceItems.filter(sift.default(req.query))) {
         services.push({
             ...serviceItem.export(),
             hasLogoData: await Service.isLogoDataExists(serviceItem.networkId, serviceItem.logoId)

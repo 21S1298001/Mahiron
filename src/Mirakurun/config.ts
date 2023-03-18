@@ -19,8 +19,8 @@ import { Validator } from "ip-num";
 import { dump, load as yamlLoad } from "js-yaml";
 import { hostname } from "os";
 import { dirname } from "path";
-import { ChannelType } from "./common";
-import { log, LogLevel } from "./log";
+import { ChannelType } from "./common.js";
+import { log, LogLevel } from "./log.js";
 
 type Writable<T> = { -readonly [K in keyof T]: T[K] };
 

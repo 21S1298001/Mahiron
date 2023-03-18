@@ -16,8 +16,8 @@
 */
 import { ChildProcess, spawn } from "child_process";
 import { PassThrough, Readable, TransformOptions, Writable } from "stream";
-import { log } from "./log";
-import status from "./status";
+import { log } from "./log.js";
+import status from "./status.js";
 
 interface StreamOptions extends TransformOptions {
     readonly output: Writable;

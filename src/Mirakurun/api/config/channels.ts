@@ -15,11 +15,11 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as config from "../../config";
+import { Channel, loadChannels, saveChannels } from "../../config";
 
-export const get: Operation = (req, res) => {
+export const get: Operation = (_req, res) => {
     res.status(200);
-    res.json(config.loadChannels());
+    res.json(loadChannels());
 };
 
 get.apiDoc = {
@@ -42,9 +42,9 @@ get.apiDoc = {
 };
 
 export const put: Operation = (req, res) => {
-    const channels: config.Channel[] = req.body;
+    const channels: Channel[] = req.body;
 
-    config.saveChannels(channels);
+    saveChannels(channels);
 
     res.status(200);
     res.json(channels);

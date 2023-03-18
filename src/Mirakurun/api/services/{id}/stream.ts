@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../../api";
+import { responseError, responseStreamErrorHandler } from "../../../api";
 import _ from "../../../_";
 
 export const parameters = [
@@ -45,7 +45,7 @@ export const get: Operation = (req, res) => {
     const service = _.service.get(req.params.id as any as number);
 
     if (service === null || service === undefined) {
-        api.responseError(res, 404);
+        responseError(res, 404);
         return;
     }
 
@@ -79,7 +79,7 @@ export const get: Operation = (req, res) => {
             res.setHeader("X-Mirakurun-Tuner-User-ID", userId);
             res.status(200);
         })
-        .catch(err => api.responseStreamErrorHandler(res, err));
+        .catch(err => responseStreamErrorHandler(res, err));
 };
 
 get.apiDoc = {

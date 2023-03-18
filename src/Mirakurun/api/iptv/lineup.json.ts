@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../api";
+import { responseJSON } from "../../api";
 import _ from "../../_";
 
 interface HDHRChannel {
@@ -55,7 +55,7 @@ export const get: Operation = (req, res) => {
         });
     }
 
-    api.responseJSON(res, channels);
+    responseJSON(res, channels);
 };
 
 get.apiDoc = {

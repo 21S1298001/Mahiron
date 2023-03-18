@@ -16,17 +16,17 @@
 */
 import { Operation } from "express-openapi";
 import sift from "sift";
-import * as api from "../api";
-import * as apid from "../../../api";
-import _ from "../_";
-import Service from "../Service";
+import { Service as IService } from "../../../api";
+import { responseJSON } from "../api";
 import { ChannelTypes } from "../common";
+import Service from "../Service";
+import _ from "../_";
 
 export const get: Operation = async (req, res) => {
     const serviceItems = [..._.service.items]; // shallow copy
     serviceItems.sort((a, b) => a.getOrder() - b.getOrder());
 
-    const services: apid.Service[] = [];
+    const services: IService[] = [];
 
     for (const serviceItem of serviceItems.filter(sift(req.query))) {
         services.push({
@@ -35,7 +35,7 @@ export const get: Operation = async (req, res) => {
         });
     }
 
-    api.responseJSON(res, services);
+    responseJSON(res, services);
 };
 
 get.apiDoc = {

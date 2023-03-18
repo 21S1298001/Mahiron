@@ -15,23 +15,23 @@
    limitations under the License.
 */
 import sift from "sift";
-import * as common from "./common";
-import * as log from "./log";
-import * as db from "./db";
-import _ from "./_";
+import { sleep, updateObject } from "./common";
+import { loadPrograms, Program as IProgram, savePrograms } from "./db";
 import Event, { EventType } from "./Event";
+import { log } from "./log";
 import queue from "./queue";
+import _ from "./_";
 
 export function getProgramItemId(networkId: number, serviceId: number, eventId: number): number {
     return parseInt(`${networkId}${serviceId.toString(10).padStart(5, "0")}${eventId.toString(10).padStart(5, "0")}`, 10);
 }
 
 export default class Program {
-    private _itemMap = new Map<number, db.Program>();
+    private _itemMap = new Map<number, IProgram>();
     private _saveTimerId: NodeJS.Timer;
     private _emitTimerId: NodeJS.Timer;
     private _emitRunning = false;
-    private _emitPrograms = new Map<db.Program, EventType>();
+    private _emitPrograms = new Map<IProgram, EventType>();
     private _programGCInterval = _.config.server.programGCInterval || 1000 * 60 * 60; // 1 hour
 
     constructor() {
@@ -40,11 +40,11 @@ export default class Program {
         setTimeout(this._gc.bind(this), this._programGCInterval);
     }
 
-    get itemMap(): Map<number, db.Program> {
+    get itemMap(): Map<number, IProgram> {
         return this._itemMap;
     }
 
-    add(item: db.Program, firstAdd: boolean = false): void {
+    add(item: IProgram, firstAdd: boolean = false): void {
         if (this.exists(item.id)) {
             return;
         }
@@ -62,13 +62,13 @@ export default class Program {
         this.save();
     }
 
-    get(id: number): db.Program | null {
+    get(id: number): IProgram | null {
         return this._itemMap.get(id) || null;
     }
 
-    set(id: number, props: Partial<db.Program>): void {
+    set(id: number, props: Partial<IProgram>): void {
         const item = this.get(id);
-        if (item && common.updateObject(item, props) === true) {
+        if (item && updateObject(item, props) === true) {
             if (props.startAt || props.duration) {
                 this._findAndRemoveConflicts(item);
             }
@@ -87,11 +87,11 @@ export default class Program {
         return this._itemMap.has(id);
     }
 
-    findByQuery(query: object): db.Program[] {
+    findByQuery(query: object): IProgram[] {
         return Array.from(this._itemMap.values()).filter(sift(query));
     }
 
-    findByNetworkId(networkId: number): db.Program[] {
+    findByNetworkId(networkId: number): IProgram[] {
         const items = [];
 
         for (const item of this._itemMap.values()) {
@@ -103,7 +103,7 @@ export default class Program {
         return items;
     }
 
-    findByNetworkIdAndTime(networkId: number, time: number): db.Program[] {
+    findByNetworkIdAndTime(networkId: number, time: number): IProgram[] {
         const items = [];
 
         for (const item of this._itemMap.values()) {
@@ -115,7 +115,7 @@ export default class Program {
         return items;
     }
 
-    findByNetworkIdAndReplace(networkId: number, programs: db.Program[]): void {
+    findByNetworkIdAndReplace(networkId: number, programs: IProgram[]): void {
         let count = 0;
 
         for (const item of [...this._itemMap.values()].reverse()) {
@@ -150,7 +150,7 @@ export default class Program {
         const now = Date.now();
         let dropped = false;
 
-        db.loadPrograms(_.configIntegrity.channels).forEach(item => {
+        loadPrograms(_.configIntegrity.channels).forEach(item => {
             if (item.networkId === undefined) {
                 dropped = true;
                 return;
@@ -168,7 +168,7 @@ export default class Program {
         }
     }
 
-    private _findAndRemoveConflicts(added: db.Program): void {
+    private _findAndRemoveConflicts(added: IProgram): void {
         const addedEndAt = added.startAt + added.duration;
 
         for (const item of this._itemMap.values()) {
@@ -194,7 +194,7 @@ export default class Program {
             this._emitPrograms.delete(item);
             Event.emit("program", eventType, item);
 
-            await common.sleep(10);
+            await sleep(10);
         }
 
         this._emitRunning = false;
@@ -206,7 +206,7 @@ export default class Program {
     private _save(): void {
         log.debug("saving programs...");
 
-        db.savePrograms(Array.from(this._itemMap.values()), _.configIntegrity.channels);
+        savePrograms(Array.from(this._itemMap.values()), _.configIntegrity.channels);
     }
 
     private _gc(): void {

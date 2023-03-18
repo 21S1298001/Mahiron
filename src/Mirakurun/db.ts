@@ -14,11 +14,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as fs from "fs";
-import { promises as fsPromises } from "fs";
+import { existsSync, mkdirSync, promises as fsPromises, readFileSync } from "fs";
 import { dirname } from "path";
-import * as common from "./common";
-import * as log from "./log";
+import { ChannelType } from "./common";
+import { log } from "./log";
 
 export interface Service {
     id: number;
@@ -38,7 +37,7 @@ export interface Service {
 }
 
 export interface Channel {
-    type: common.ChannelType;
+    type: ChannelType;
     channel: string;
 }
 
@@ -156,8 +155,8 @@ export async function savePrograms(data: Program[], integrity: string): Promise<
 function load(path: string, integrity: string) {
     log.info("load db `%s` w/ integrity (%s)", path, integrity);
 
-    if (fs.existsSync(path) === true) {
-        const json = fs.readFileSync(path, "utf8");
+    if (existsSync(path) === true) {
+        const json = readFileSync(path, "utf8");
         try {
             const array: any[] = JSON.parse(json);
             if (array.length > 0 && array[0].__integrity__) {
@@ -190,9 +189,9 @@ async function save(path: string, data: any[], integrity: string, retrying = fal
         if (retrying === false) {
             // mkdir if not exists
             const dirPath = dirname(path);
-            if (fs.existsSync(dirPath) === false) {
+            if (existsSync(dirPath) === false) {
                 try {
-                    fs.mkdirSync(dirPath, { recursive: true });
+                    mkdirSync(dirPath, { recursive: true });
                 } catch (e) {
                     throw e;
                 }

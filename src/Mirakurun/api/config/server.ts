@@ -15,11 +15,11 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as config from "../../config";
+import { loadServer, saveServer, Server } from "../../config";
 
-export const get: Operation = (req, res) => {
+export const get: Operation = (_req, res) => {
     res.status(200);
-    res.json(config.loadServer());
+    res.json(loadServer());
 };
 
 get.apiDoc = {
@@ -42,9 +42,9 @@ get.apiDoc = {
 };
 
 export const put: Operation = (req, res) => {
-    const server: config.Server = req.body;
+    const server: Server = req.body;
 
-    config.saveServer(server);
+    saveServer(server);
 
     res.status(200);
     res.json(server);

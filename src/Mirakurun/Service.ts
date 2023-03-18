@@ -14,13 +14,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as fs from "fs";
-import { promises as fsPromises } from "fs";
+import { existsSync, mkdirSync, promises as fsPromises } from "fs";
 import { dirname, join } from "path";
 import ChannelItem from "./ChannelItem";
-import * as db from "./db";
+import { loadServices, saveServices } from "./db";
 import Event from "./Event";
-import * as log from "./log";
+import { log } from "./log";
 import ServiceItem from "./ServiceItem";
 import _ from "./_";
 
@@ -82,10 +81,10 @@ export default class Service {
             if (retrying === false) {
                 // mkdir if not exists
                 const dirPath = dirname(path);
-                if (fs.existsSync(dirPath) === false) {
+                if (existsSync(dirPath) === false) {
                     log.warn("Service.saveLogoData(): making directory `%s`... (networkId=%d logoId=%d)", dirPath, networkId, logoId);
                     try {
-                        fs.mkdirSync(dirPath, { recursive: true });
+                        mkdirSync(dirPath, { recursive: true });
                     } catch (e) {
                         throw e;
                     }
@@ -200,7 +199,7 @@ export default class Service {
 
         let updated = false;
 
-        const services = db.loadServices(_.configIntegrity.channels);
+        const services = loadServices(_.configIntegrity.channels);
         for (const service of services) {
             const channelItem = _.channel.get(service.channel.type, service.channel.channel);
 
@@ -240,7 +239,7 @@ export default class Service {
     private _save(): void {
         log.debug("saving services...");
 
-        db.saveServices(
+        saveServices(
             this._items.map(service => service.export()),
             _.configIntegrity.channels
         );

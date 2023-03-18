@@ -14,10 +14,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as stream from "stream";
+import { Writable } from "stream";
 import ChannelItem from "./ChannelItem";
-import * as common from "./common";
-import * as db from "./db";
+import { UserRequest } from "./common";
+import { Service } from "./db";
 import Event from "./Event";
 import TSFilter from "./TSFilter";
 import _ from "./_";
@@ -142,8 +142,8 @@ export default class ServiceItem {
         return this._channel;
     }
 
-    export(): db.Service {
-        const ret: db.Service = {
+    export(): Service {
+        const ret: Service = {
             id: this._id,
             serviceId: this._serviceId,
             networkId: this._networkId,
@@ -163,7 +163,7 @@ export default class ServiceItem {
         return ret;
     }
 
-    getStream(userRequest: common.UserRequest, output: stream.Writable): Promise<TSFilter> {
+    getStream(userRequest: UserRequest, output: Writable): Promise<TSFilter> {
         return _.tuner.initServiceStream(this, userRequest, output);
     }
 

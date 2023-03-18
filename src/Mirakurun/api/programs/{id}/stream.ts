@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../../api";
+import { responseError, responseStreamErrorHandler } from "../../../api";
 import _ from "../../../_";
 
 export const parameters = [
@@ -46,7 +46,7 @@ export const get: Operation = (req, res) => {
     const program = _.program.get(req.params.id as any as number);
 
     if (program === null) {
-        api.responseError(res, 404);
+        responseError(res, 404);
         return;
     }
 
@@ -83,7 +83,7 @@ export const get: Operation = (req, res) => {
 
             req.setTimeout(1000 * 60 * 10); // 10 minites
         })
-        .catch(err => api.responseStreamErrorHandler(res, err));
+        .catch(err => responseStreamErrorHandler(res, err));
 };
 
 get.apiDoc = {

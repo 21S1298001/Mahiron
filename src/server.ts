@@ -38,9 +38,9 @@ setEnv("PROGRAMS_DB_PATH", "/usr/local/var/db/mahiron/programs.json");
 setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mahiron/logo-data");
 
 import Channel from "./Mirakurun/Channel";
-import * as config from "./Mirakurun/config";
+import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config";
 import Event from "./Mirakurun/Event";
-import * as log from "./Mirakurun/log";
+import { log } from "./Mirakurun/log";
 import Program from "./Mirakurun/Program";
 import Server from "./Mirakurun/Server";
 import Service from "./Mirakurun/Service";
@@ -48,10 +48,10 @@ import status from "./Mirakurun/status";
 import Tuner from "./Mirakurun/Tuner";
 import _ from "./Mirakurun/_";
 
-_.config.server = config.loadServer();
-_.config.channels = config.loadChannels();
+_.config.server = loadServer();
+_.config.channels = loadChannels();
 _.configIntegrity.channels = createHash("sha256").update(JSON.stringify(_.config.channels)).digest("base64");
-_.config.tuners = config.loadTuners();
+_.config.tuners = loadTuners();
 
 if (typeof _.config.server.logLevel === "number") {
     (<any>log).logLevel = _.config.server.logLevel;

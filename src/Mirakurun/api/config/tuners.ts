@@ -15,11 +15,11 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as config from "../../config";
+import { loadTuners, saveTuners, Tuner } from "../../config";
 
-export const get: Operation = (req, res) => {
+export const get: Operation = (_req, res) => {
     res.status(200);
-    res.json(config.loadTuners());
+    res.json(loadTuners());
 };
 
 get.apiDoc = {
@@ -42,9 +42,9 @@ get.apiDoc = {
 };
 
 export const put: Operation = (req, res) => {
-    const tuners: config.Tuner[] = req.body;
+    const tuners: Tuner[] = req.body;
 
-    config.saveTuners(tuners);
+    saveTuners(tuners);
 
     res.status(200);
     res.json(tuners);

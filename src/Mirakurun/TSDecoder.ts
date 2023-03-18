@@ -14,27 +14,27 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as stream from "stream";
-import * as child_process from "child_process";
-import * as log from "./log";
+import { ChildProcess, spawn } from "child_process";
+import { PassThrough, Readable, TransformOptions, Writable } from "stream";
+import { log } from "./log";
 import status from "./status";
 
-interface StreamOptions extends stream.TransformOptions {
-    readonly output: stream.Writable;
+interface StreamOptions extends TransformOptions {
+    readonly output: Writable;
     readonly command: string;
 }
 
 let idCounter = 0;
 
-export default class TSDecoder extends stream.Writable {
+export default class TSDecoder extends Writable {
     // output
-    private _output: stream.Writable;
+    private _output: Writable;
 
     private _id: number;
     private _command: string;
-    private _process: child_process.ChildProcess;
-    private _readable: stream.Readable;
-    private _writable: stream.Writable;
+    private _process: ChildProcess;
+    private _readable: Readable;
+    private _writable: Writable;
 
     private _isNew: boolean = false;
     private _timeout: NodeJS.Timeout;
@@ -71,7 +71,7 @@ export default class TSDecoder extends stream.Writable {
         this._spawn();
     }
 
-    _write(chunk: Buffer, encoding: string, callback: Function) {
+    _write(chunk: Buffer, _encoding: string, callback: Function) {
         if (!this._writable) {
             callback();
             return;
@@ -102,7 +102,7 @@ export default class TSDecoder extends stream.Writable {
             log.warn("TSDecoder#%d respawning because dead (count=%d)", this._id, this._deadCount);
         }
 
-        const proc = (this._process = child_process.spawn(this._command));
+        const proc = (this._process = spawn(this._command));
 
         proc.once("close", (code, signal) => {
             log.info("TSDecoder#%d process has closed with exit code=%d by signal `%s` (pid=%d)", this._id, code, signal, proc.pid);
@@ -140,7 +140,7 @@ export default class TSDecoder extends stream.Writable {
     }
 
     private _fallback(): void {
-        const passThrough = new stream.PassThrough({ allowHalfOpen: false });
+        const passThrough = new PassThrough({ allowHalfOpen: false });
 
         passThrough.on("data", chunk => this._output.write(chunk));
 

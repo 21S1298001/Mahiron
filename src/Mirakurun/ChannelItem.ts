@@ -14,11 +14,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as stream from "stream";
-import * as common from "./common";
-import * as config from "./config";
-import * as db from "./db";
-import * as log from "./log";
+import { Writable } from "stream";
+import { ChannelType, User } from "./common";
+import { Channel } from "./config";
+import { Service } from "./db";
+import { log } from "./log";
 import queue from "./queue";
 import ServiceItem from "./ServiceItem";
 import TSFilter from "./TSFilter";
@@ -26,7 +26,7 @@ import _ from "./_";
 
 export default class ChannelItem {
     private _name: string;
-    private _type: common.ChannelType;
+    private _type: ChannelType;
     private _channel: string;
     private _satellite: string;
     private _space: number;
@@ -34,7 +34,7 @@ export default class ChannelItem {
     private _polarity: "H" | "V";
     private _tsmfRelTs: number;
 
-    constructor(config: config.Channel) {
+    constructor(config: Channel) {
         this._name = config.name;
         this._type = config.type;
         this._channel = config.channel;
@@ -61,7 +61,7 @@ export default class ChannelItem {
         return this._name;
     }
 
-    get type(): common.ChannelType {
+    get type(): ChannelType {
         return this._type;
     }
 
@@ -89,7 +89,7 @@ export default class ChannelItem {
         return this._tsmfRelTs;
     }
 
-    toJSON(): config.Channel {
+    toJSON(): Channel {
         return {
             type: this._type,
             channel: this._channel,
@@ -145,7 +145,7 @@ export default class ChannelItem {
         return _.service.findByChannel(this);
     }
 
-    getStream(user: common.User, output: stream.Writable): Promise<TSFilter> {
+    getStream(user: User, output: Writable): Promise<TSFilter> {
         return _.tuner.initChannelStream(this, user, output);
     }
 
@@ -155,7 +155,7 @@ export default class ChannelItem {
         queue.add(async () => {
             log.info("ChannelItem#'%s' service scan has started", this._name);
 
-            let services: db.Service[];
+            let services: Service[];
             try {
                 services = await _.tuner.getServices(this);
             } catch (e) {

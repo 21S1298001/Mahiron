@@ -14,18 +14,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import * as net from "net";
-import * as http from "http";
+import { IncomingMessage, Server } from "http";
 import RPCServer, { Socket } from "jsonrpc2-ws/lib/server";
-import * as log from "./log";
-import _ from "./_";
-import status from "./status";
-import Event from "./Event";
-import { EventMessage } from "./Event";
-import { event as logEvent } from "./log";
-import { isPermittedHost, isPermittedIPAddress } from "./system";
+import { Socket as NetSocket } from "net";
 import { getStatus } from "./api/status";
 import { sleep } from "./common";
+import Event, { EventMessage } from "./Event";
+import { log } from "./log";
+import status from "./status";
+import { isPermittedHost, isPermittedIPAddress } from "./system";
+import _ from "./_";
 
 export interface JoinParams {
     rooms: string[];
@@ -46,7 +44,7 @@ export interface NotifyParams<T> {
  * @internal
  * @experimental
  */
-export function createRPCServer(server: http.Server): RPCServer {
+export function createRPCServer(server: Server): RPCServer {
     const rpc = new RPCServer({
         pingInterval: 1000 * 30,
         wss: {
@@ -86,7 +84,7 @@ export function initRPCNotifier(rpcs: Set<RPCServer>): void {
     }
 
     Event.onEvent(onEventListener);
-    logEvent.on("data", onLogDataListener);
+    log.on("data", onLogDataListener);
 
     _notifierListeners.set(rpcs, [onEventListener, onLogDataListener]);
 }
@@ -117,7 +115,7 @@ class NotifyManager<T> {
     }
 }
 
-function serverOnUpgrade(this: RPCServer["wss"], req: http.IncomingMessage, socket: net.Socket, head: Buffer): void {
+function serverOnUpgrade(this: RPCServer["wss"], req: IncomingMessage, socket: NetSocket, head: Buffer): void {
     if (req.socket.remoteAddress && !isPermittedIPAddress(req.socket.remoteAddress)) {
         socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
         socket.destroy();
@@ -135,7 +133,7 @@ function serverOnUpgrade(this: RPCServer["wss"], req: http.IncomingMessage, sock
     this.handleUpgrade(req, socket, head, ws => this.emit("connection", ws, req));
 }
 
-function rpcConnection(socket: Socket, req: http.IncomingMessage): void {
+function rpcConnection(socket: Socket, req: IncomingMessage): void {
     // connected
     ++status.rpcCount;
 

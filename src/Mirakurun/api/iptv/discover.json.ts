@@ -15,14 +15,14 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import * as api from "../../api";
+import { responseJSON } from "../../api";
 import _ from "../../_";
 const pkg = require("../../../../package.json");
 
 export const get: Operation = (req, res) => {
     const apiRoot = `${req.protocol}://${req.headers.host}/api`;
 
-    api.responseJSON(res, {
+    responseJSON(res, {
         FriendlyName: `Mahiron`,
         ModelNumber: `MAHIRON`,
         FirmwareName: `mahiron_${process.arch}_${process.platform}`,

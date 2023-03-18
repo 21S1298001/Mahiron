@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { event } from "../../log";
+import { log } from "../../log";
 
 export const get: Operation = (req, res) => {
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
@@ -23,10 +23,10 @@ export const get: Operation = (req, res) => {
 
     req.setTimeout(1000 * 60 * 60); // 60 minutes
     req.once("close", () => {
-        event.removeListener("data", _listener);
+        log.removeListener("data", _listener);
     });
 
-    event.on("data", _listener);
+    log.on("data", _listener);
 
     function _listener(data: string) {
         res.write(data + "\n");

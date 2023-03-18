@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { EventEmitter } from "events";
-import * as util from "util";
+import { format } from "util";
 
 export enum LogLevel {
     "FATAL" = -1,
@@ -94,7 +94,7 @@ class LogEvent extends EventEmitter {
     }
 }
 
-export const event = new LogEvent();
+export const log = new LogEvent();
 
 function getLogString(lvstr: string, msgs: any[]) {
     let isoStr: string;
@@ -106,11 +106,5 @@ function getLogString(lvstr: string, msgs: any[]) {
         isoStr = new Date().toISOString();
     }
 
-    return isoStr + " " + lvstr + ": " + util.format.apply(null, msgs);
+    return isoStr + " " + lvstr + ": " + format.apply(null, msgs);
 }
-
-export const debug = (...msgs: any[]) => event.debug(...msgs);
-export const info = (...msgs: any[]) => event.info(...msgs);
-export const warn = (...msgs: any[]) => event.warn(...msgs);
-export const error = (...msgs: any[]) => event.error(...msgs);
-export const fatal = (...msgs: any[]) => event.fatal(...msgs);

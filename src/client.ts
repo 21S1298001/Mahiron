@@ -14,7 +14,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { readFileSync } from "fs";
 import { readFile } from "fs/promises";
 import { Agent, IncomingHttpHeaders, IncomingMessage, request, RequestOptions } from "http";
 import { load } from "js-yaml";
@@ -45,7 +44,7 @@ import {
 
 const pkg = JSON.parse(await readFile("./package.json", { encoding: "utf-8" }));
 
-const spec = load(readFileSync("./api.yml", "utf8")) as OpenAPIV2.Document;
+const spec = load(await readFile("./api.yml", { encoding: "utf8" })) as OpenAPIV2.Document;
 
 export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 

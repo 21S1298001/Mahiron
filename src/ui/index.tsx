@@ -28,7 +28,6 @@ import { ConfigView } from "./components/ConfigView";
 import { ConnectionGuide } from "./components/ConnectionGuide";
 import { EventsView } from "./components/EventsView";
 import { LogsView } from "./components/LogsView";
-import { Restart } from "./components/Restart";
 import { StatusView } from "./components/StatusView";
 import "./index.css";
 
@@ -229,7 +228,6 @@ const Content = () => {
                     </Stack.Item>
                     <ConnectionGuide />
                     <ActionButton iconProps={{ iconName: "KnowledgeArticle" }} text="API Docs" target="_blank" href="/api/debug" />
-                    <Restart uiStateEvents={uiStateEvents} />
                 </Stack>
 
                 <Pivot>

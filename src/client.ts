@@ -505,11 +505,6 @@ export default class Client {
         return res.body as apid.Status;
     }
 
-    async restart(): Promise<{}> {
-        const res = await this.call("restart");
-        return res.body;
-    }
-
     private _httpRequest(method: RequestMethod, path: string, option: RequestOption = {}): Promise<http.IncomingMessage> {
         const opt: http.RequestOptions = {
             method: method,

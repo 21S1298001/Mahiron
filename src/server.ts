@@ -50,10 +50,10 @@ import status from "./Mirakurun/status.js";
 import Tuner from "./Mirakurun/Tuner.js";
 import _ from "./Mirakurun/_.js";
 
-_.config.server = loadServer();
-_.config.channels = loadChannels();
+_.config.server = await loadServer();
+_.config.channels = await loadChannels();
 _.configIntegrity.channels = createHash("sha256").update(JSON.stringify(_.config.channels)).digest("base64");
-_.config.tuners = loadTuners();
+_.config.tuners = await loadTuners();
 
 if (typeof _.config.server.logLevel === "number") {
     (<any>log).logLevel = _.config.server.logLevel;

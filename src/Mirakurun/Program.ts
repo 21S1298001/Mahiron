@@ -144,13 +144,13 @@ export default class Program {
         this._saveTimerId = setTimeout(() => this._save(), 1000 * 10);
     }
 
-    private _load(): void {
+    private async _load(): Promise<void> {
         log.debug("loading programs...");
 
         const now = Date.now();
         let dropped = false;
 
-        loadPrograms(_.configIntegrity.channels).forEach(item => {
+        for (const item of await loadPrograms(_.configIntegrity.channels)) {
             if (item.networkId === undefined) {
                 dropped = true;
                 return;
@@ -161,7 +161,7 @@ export default class Program {
             }
 
             this.add(item, true);
-        });
+        }
 
         if (dropped) {
             this.save();

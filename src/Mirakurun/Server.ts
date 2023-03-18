@@ -17,14 +17,14 @@
 import cors, { CorsOptions } from "cors";
 import express, { json, NextFunction, Request, Response, static as expressStatic, urlencoded } from "express";
 import { initialize } from "express-openapi";
-import { chmodSync, existsSync, readFileSync, unlinkSync } from "fs";
-import { readFile } from "fs/promises";
+import { chmod, readFile, unlink } from "fs/promises";
 import { createServer, Server as HttpServer } from "http";
 import { load } from "js-yaml";
 import { Server as RPCServer } from "jsonrpc2-ws";
 import morgan from "morgan";
 import { OpenAPIV2 } from "openapi-types";
 import { sleep } from "./common.js";
+import { exists } from "./fs.js";
 import { log } from "./log.js";
 import regexp from "./regexp.js";
 import { createRPCServer, initRPCNotifier } from "./rpc.js";
@@ -136,7 +136,7 @@ class Server {
             app.use("/api/debug", expressStatic("lib/ui/swagger-ui.html"));
         }
 
-        const api = load(readFileSync("api.yml", "utf8")) as OpenAPIV2.Document;
+        const api = load(await readFile("api.yml", { encoding: "utf8" })) as OpenAPIV2.Document;
         api.info.version = pkg.version;
 
         initialize({
@@ -172,14 +172,14 @@ class Server {
             next();
         });
 
-        addresses.forEach(address => {
+        for (const address of addresses) {
             const server = createServer(app);
 
             server.timeout = 1000 * 15; // 15 sec.
 
             if (regexp.unixDomainSocket.test(address) === true || regexp.windowsNamedPipe.test(address) === true) {
-                if (process.platform !== "win32" && existsSync(address) === true) {
-                    unlinkSync(address);
+                if (process.platform !== "win32" && (await exists(address))) {
+                    await unlink(address);
                 }
 
                 server.listen(address, () => {
@@ -187,7 +187,7 @@ class Server {
                 });
 
                 if (process.platform !== "win32") {
-                    chmodSync(address, "777");
+                    await chmod(address, "777");
                 }
             } else {
                 server.listen(serverConfig.port, address, () => {
@@ -202,7 +202,7 @@ class Server {
 
             this._servers.add(server);
             this._rpcs.add(createRPCServer(server));
-        });
+        }
 
         // event notifications for RPC
         initRPCNotifier(this._rpcs);

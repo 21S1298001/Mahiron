@@ -217,7 +217,7 @@ export const put: Operation = async (req, res) => {
     const dryRun = req.query.dryRun as any as boolean;
     const type = req.query.type as ChannelType;
     const refresh = req.query.refresh as any as boolean;
-    const oldChannelItems = loadChannels();
+    const oldChannelItems = await loadChannels();
     const result: Channel[] = oldChannelItems.filter(channel => channel.type !== type);
     let newCount = 0;
     let takeoverCount = 0;

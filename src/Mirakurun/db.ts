@@ -14,9 +14,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { existsSync, mkdirSync, promises as fsPromises, readFileSync } from "fs";
+import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname } from "path";
 import { ChannelType } from "./common.js";
+import { exists } from "./fs.js";
 import { log } from "./log.js";
 
 export interface Service {
@@ -136,27 +137,27 @@ export interface ProgramRelatedItem {
     eventId: number;
 }
 
-export function loadServices(integrity: string): Service[] {
-    return load(process.env.SERVICES_DB_PATH, integrity);
+export async function loadServices(integrity: string): Promise<Service[]> {
+    return await load(process.env.SERVICES_DB_PATH, integrity);
 }
 
 export async function saveServices(data: Service[], integrity: string): Promise<void> {
-    return save(process.env.SERVICES_DB_PATH, data, integrity);
+    return await save(process.env.SERVICES_DB_PATH, data, integrity);
 }
 
-export function loadPrograms(integrity: string): Program[] {
-    return load(process.env.PROGRAMS_DB_PATH, integrity);
+export async function loadPrograms(integrity: string): Promise<Program[]> {
+    return await load(process.env.PROGRAMS_DB_PATH, integrity);
 }
 
 export async function savePrograms(data: Program[], integrity: string): Promise<void> {
-    return save(process.env.PROGRAMS_DB_PATH, data, integrity);
+    return await save(process.env.PROGRAMS_DB_PATH, data, integrity);
 }
 
-function load(path: string, integrity: string) {
+async function load(path: string, integrity: string) {
     log.info("load db `%s` w/ integrity (%s)", path, integrity);
 
-    if (existsSync(path) === true) {
-        const json = readFileSync(path, "utf8");
+    if (exists(path)) {
+        const json = await readFile(path, { encoding: "utf8" });
         try {
             const array: any[] = JSON.parse(json);
             if (array.length > 0 && array[0].__integrity__) {
@@ -184,14 +185,14 @@ async function save(path: string, data: any[], integrity: string, retrying = fal
     data.unshift({ __integrity__: integrity });
 
     try {
-        await fsPromises.writeFile(path, JSON.stringify(data));
+        await writeFile(path, JSON.stringify(data));
     } catch (e) {
         if (retrying === false) {
             // mkdir if not exists
             const dirPath = dirname(path);
-            if (existsSync(dirPath) === false) {
+            if (!(await exists(dirPath))) {
                 try {
-                    mkdirSync(dirPath, { recursive: true });
+                    mkdir(dirPath, { recursive: true });
                 } catch (e) {
                     throw e;
                 }

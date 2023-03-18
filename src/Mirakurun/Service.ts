@@ -14,11 +14,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import { existsSync, mkdirSync, promises as fsPromises } from "fs";
+import { mkdir, readFile, stat, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import ChannelItem from "./ChannelItem.js";
 import { loadServices, saveServices } from "./db.js";
 import Event from "./Event.js";
+import { exists } from "./fs.js";
 import { log } from "./log.js";
 import ServiceItem from "./ServiceItem.js";
 import _ from "./_.js";
@@ -40,7 +41,7 @@ export default class Service {
         }
 
         try {
-            return (await fsPromises.stat(Service.getLogoDataPath(networkId, logoId))).mtimeMs;
+            return (await stat(Service.getLogoDataPath(networkId, logoId))).mtimeMs;
         } catch (e) {
             return 0;
         }
@@ -52,7 +53,7 @@ export default class Service {
         }
 
         try {
-            return (await fsPromises.stat(Service.getLogoDataPath(networkId, logoId))).isFile();
+            return (await stat(Service.getLogoDataPath(networkId, logoId))).isFile();
         } catch (e) {
             return false;
         }
@@ -64,7 +65,7 @@ export default class Service {
         }
 
         try {
-            return await fsPromises.readFile(Service.getLogoDataPath(networkId, logoId));
+            return await readFile(Service.getLogoDataPath(networkId, logoId));
         } catch (e) {
             return null;
         }
@@ -76,15 +77,15 @@ export default class Service {
         const path = Service.getLogoDataPath(networkId, logoId);
 
         try {
-            await fsPromises.writeFile(path, data, { encoding: "binary" });
+            await writeFile(path, data, { encoding: "binary" });
         } catch (e) {
             if (retrying === false) {
                 // mkdir if not exists
                 const dirPath = dirname(path);
-                if (existsSync(dirPath) === false) {
+                if (!(await exists(dirPath))) {
                     log.warn("Service.saveLogoData(): making directory `%s`... (networkId=%d logoId=%d)", dirPath, networkId, logoId);
                     try {
-                        mkdirSync(dirPath, { recursive: true });
+                        await mkdir(dirPath, { recursive: true });
                     } catch (e) {
                         throw e;
                     }
@@ -194,12 +195,12 @@ export default class Service {
         this._saveTimerId = setTimeout(() => this._save(), 1000 * 3);
     }
 
-    private _load(): void {
+    private async _load(): Promise<void> {
         log.debug("loading services...");
 
         let updated = false;
 
-        const services = loadServices(_.configIntegrity.channels);
+        const services = await loadServices(_.configIntegrity.channels);
         for (const service of services) {
             const channelItem = _.channel.get(service.channel.type, service.channel.channel);
 

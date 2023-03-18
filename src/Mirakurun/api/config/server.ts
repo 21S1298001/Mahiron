@@ -17,9 +17,9 @@
 import { Operation } from "express-openapi";
 import { loadServer, saveServer, Server } from "../../config.js";
 
-export const get: Operation = (_req, res) => {
+export const get: Operation = async (_req, res) => {
     res.status(200);
-    res.json(loadServer());
+    res.json(await loadServer());
 };
 
 get.apiDoc = {

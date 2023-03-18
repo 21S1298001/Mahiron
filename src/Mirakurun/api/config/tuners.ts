@@ -17,9 +17,9 @@
 import { Operation } from "express-openapi";
 import { loadTuners, saveTuners, Tuner } from "../../config.js";
 
-export const get: Operation = (_req, res) => {
+export const get: Operation = async (_req, res) => {
     res.status(200);
-    res.json(loadTuners());
+    res.json(await loadTuners());
 };
 
 get.apiDoc = {

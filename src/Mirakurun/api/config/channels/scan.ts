@@ -15,11 +15,11 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { responseError } from "../../../api";
-import { ChannelType, ChannelTypes } from "../../../common";
-import { Channel, loadChannels, saveChannels } from "../../../config";
-import { Service } from "../../../db";
-import _ from "../../../_";
+import { responseError } from "../../../api.js";
+import { ChannelType, ChannelTypes } from "../../../common.js";
+import { Channel, loadChannels, saveChannels } from "../../../config.js";
+import { Service } from "../../../db.js";
+import _ from "../../../_.js";
 
 let isScanning = false;
 

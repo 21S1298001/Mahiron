@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import Event, { EventMessage } from "../../Event";
+import Event, { EventMessage } from "../../Event.js";
 
 export const get: Operation = (req, res) => {
     res.setHeader("Content-Type", "application/json; charset=utf-8");

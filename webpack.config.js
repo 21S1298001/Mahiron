@@ -1,8 +1,14 @@
 const { NODE_ENV } = process.env;
-const webpack = require("webpack");
-const CopyPlugin = require("copy-webpack-plugin");
+import CopyPlugin from "copy-webpack-plugin";
+import path from "path";
+import { fileURLToPath } from "url";
+import webpack from "webpack";
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/** @type { import('webpack').Configuration }  */
+const config = {
     mode: NODE_ENV === "production" ? "production" : "development",
     devtool: "source-map",
     watchOptions: {
@@ -42,7 +48,7 @@ module.exports = {
             patterns: [
                 {
                     // globby can't glob Windows-style(contain '\') path
-                    from: `${__dirname}/src/ui/**/*.{html,svg}`.replace(/\\/g, '/'),
+                    from: `${__dirname}/src/ui/**/*.{html,svg}`.replace(/\\/g, "/"),
                     to: `${__dirname}/lib/ui`,
                     context: `${__dirname}/src/ui`
                 }
@@ -68,3 +74,4 @@ module.exports = {
         }
     }
 };
+export default config;

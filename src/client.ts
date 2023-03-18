@@ -15,6 +15,7 @@
    limitations under the License.
 */
 import { readFileSync } from "fs";
+import { readFile } from "fs/promises";
 import { Agent, IncomingHttpHeaders, IncomingMessage, request, RequestOptions } from "http";
 import { load } from "js-yaml";
 import { OpenAPIV2 } from "openapi-types";
@@ -40,9 +41,11 @@ import {
     TunerDevice,
     TunerProcess,
     Version
-} from "../api";
-const pkg = require("../package.json");
-const spec = load(readFileSync(__dirname + "/../api.yml", "utf8")) as OpenAPIV2.Document;
+} from "../api.js";
+
+const pkg = JSON.parse(await readFile("./package.json", { encoding: "utf-8" }));
+
+const spec = load(readFileSync("./api.yml", "utf8")) as OpenAPIV2.Document;
 
 export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 

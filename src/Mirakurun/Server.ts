@@ -18,19 +18,20 @@ import cors, { CorsOptions } from "cors";
 import express, { json, NextFunction, Request, Response, static as expressStatic, urlencoded } from "express";
 import { initialize } from "express-openapi";
 import { chmodSync, existsSync, readFileSync, unlinkSync } from "fs";
+import { readFile } from "fs/promises";
 import { createServer, Server as HttpServer } from "http";
 import { load } from "js-yaml";
-import RPCServer from "jsonrpc2-ws/lib/server";
+import { Server as RPCServer } from "jsonrpc2-ws";
 import morgan from "morgan";
 import { OpenAPIV2 } from "openapi-types";
-import { sleep } from "./common";
-import { log } from "./log";
-import regexp from "./regexp";
-import { createRPCServer, initRPCNotifier } from "./rpc";
-import { getIPv4AddressesForListen, getIPv6AddressesForListen, isPermittedHost, isPermittedIPAddress } from "./system";
-import _ from "./_";
+import { sleep } from "./common.js";
+import { log } from "./log.js";
+import regexp from "./regexp.js";
+import { createRPCServer, initRPCNotifier } from "./rpc.js";
+import { getIPv4AddressesForListen, getIPv6AddressesForListen, isPermittedHost, isPermittedIPAddress } from "./system.js";
+import _ from "./_.js";
 
-const pkg = require("../../package.json");
+const pkg = JSON.parse(await readFile("./package.json", { encoding: "utf-8" }));
 
 class Server {
     private _isRunning = false;

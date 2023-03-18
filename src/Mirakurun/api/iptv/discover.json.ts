@@ -15,9 +15,11 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { responseJSON } from "../../api";
-import _ from "../../_";
-const pkg = require("../../../../package.json");
+import { readFile } from "fs/promises";
+import { responseJSON } from "../../api.js";
+import _ from "../../_.js";
+
+const pkg = JSON.parse(await readFile("./package.json", { encoding: "utf-8" }));
 
 export const get: Operation = (req, res) => {
     const apiRoot = `${req.protocol}://${req.headers.host}/api`;

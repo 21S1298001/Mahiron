@@ -16,9 +16,9 @@
 */
 import { Operation } from "express-openapi";
 import sift from "sift";
-import { responseJSON } from "../../api";
-import { ChannelType, ChannelTypes } from "../../common";
-import _ from "../../_";
+import { responseJSON } from "../../api.js";
+import { ChannelType, ChannelTypes } from "../../common.js";
+import _ from "../../_.js";
 
 export const parameters = [
     {
@@ -45,7 +45,7 @@ export const get: Operation = (req, res) => {
 
             return ch;
         })
-        .filter(sift(req.query));
+        .filter(sift.default(req.query));
 
     responseJSON(res, channels);
 };

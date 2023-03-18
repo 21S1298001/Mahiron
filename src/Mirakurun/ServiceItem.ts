@@ -15,12 +15,12 @@
    limitations under the License.
 */
 import { Writable } from "stream";
-import ChannelItem from "./ChannelItem";
-import { UserRequest } from "./common";
-import { Service } from "./db";
-import Event from "./Event";
-import TSFilter from "./TSFilter";
-import _ from "./_";
+import ChannelItem from "./ChannelItem.js";
+import { UserRequest } from "./common.js";
+import { Service } from "./db.js";
+import Event from "./Event.js";
+import TSFilter from "./TSFilter.js";
+import _ from "./_.js";
 
 export default class ServiceItem {
     static getId(networkId: number, serviceId: number): number {

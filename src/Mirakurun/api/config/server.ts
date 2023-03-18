@@ -15,7 +15,7 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { loadServer, saveServer, Server } from "../../config";
+import { loadServer, saveServer, Server } from "../../config.js";
 
 export const get: Operation = (_req, res) => {
     res.status(200);

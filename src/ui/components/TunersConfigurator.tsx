@@ -17,7 +17,7 @@
 import { ActionButton, Checkbox, DefaultButton, DetailsList, Dialog, DialogFooter, DialogType, Dropdown, IColumn, IconButton, PrimaryButton, Selection, SelectionMode, Spinner, SpinnerSize, Stack, TextField, Toggle } from "@fluentui/react";
 import EventEmitter from "eventemitter3";
 import React, { useEffect, useRef, useState } from "react";
-import { ChannelType, ConfigTuners } from "../../../api";
+import { ChannelType, ConfigTuners } from "../../../api.js";
 import { UIState } from "../index";
 
 const configAPI = "/api/config/tuners";

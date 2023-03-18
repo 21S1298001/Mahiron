@@ -18,15 +18,15 @@ import { ChildProcess, spawn } from "child_process";
 import { EventEmitter } from "eventemitter3";
 import { Readable } from "stream";
 import { format } from "util";
-import { Program } from "../../api";
-import Client, { ProgramsQuery } from "../client";
-import ChannelItem from "./ChannelItem";
-import { ChannelType, User as IUser } from "./common";
-import { Tuner } from "./config";
-import Event from "./Event";
-import { log } from "./log";
-import status from "./status";
-import TSFilter from "./TSFilter";
+import { Program } from "../../api.js";
+import Client, { ProgramsQuery } from "../client.js";
+import ChannelItem from "./ChannelItem.js";
+import { ChannelType, User as IUser } from "./common.js";
+import { Tuner } from "./config.js";
+import Event from "./Event.js";
+import { log } from "./log.js";
+import status from "./status.js";
+import TSFilter from "./TSFilter.js";
 
 interface User extends IUser {
     _stream?: TSFilter;

@@ -15,15 +15,16 @@
    limitations under the License.
 */
 import { IncomingMessage, Server } from "http";
-import RPCServer, { Socket } from "jsonrpc2-ws/lib/server";
+import { Server as RPCServer } from "jsonrpc2-ws";
+import { Socket } from "jsonrpc2-ws/lib/server.js";
 import { Socket as NetSocket } from "net";
-import { getStatus } from "./api/status";
-import { sleep } from "./common";
-import Event, { EventMessage } from "./Event";
-import { log } from "./log";
-import status from "./status";
-import { isPermittedHost, isPermittedIPAddress } from "./system";
-import _ from "./_";
+import { getStatus } from "./api/status.js";
+import { sleep } from "./common.js";
+import Event, { EventMessage } from "./Event.js";
+import { log } from "./log.js";
+import status from "./status.js";
+import { isPermittedHost, isPermittedIPAddress } from "./system.js";
+import _ from "./_.js";
 
 export interface JoinParams {
     rooms: string[];
@@ -133,7 +134,7 @@ function serverOnUpgrade(this: RPCServer["wss"], req: IncomingMessage, socket: N
     this.handleUpgrade(req, socket, head, ws => this.emit("connection", ws, req));
 }
 
-function rpcConnection(socket: Socket, req: IncomingMessage): void {
+function rpcConnection(socket, req: IncomingMessage): void {
     // connected
     ++status.rpcCount;
 

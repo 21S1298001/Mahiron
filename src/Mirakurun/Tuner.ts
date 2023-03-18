@@ -15,15 +15,15 @@
    limitations under the License.
 */
 import { Writable } from "stream";
-import ChannelItem from "./ChannelItem";
-import { ChannelType, sleep, User, UserRequest } from "./common";
-import { Program, Service } from "./db";
-import { log } from "./log";
-import ServiceItem from "./ServiceItem";
-import TSDecoder from "./TSDecoder";
-import TSFilter from "./TSFilter";
-import TunerDevice from "./TunerDevice";
-import _ from "./_";
+import ChannelItem from "./ChannelItem.js";
+import { ChannelType, sleep, User, UserRequest } from "./common.js";
+import { Program, Service } from "./db.js";
+import { log } from "./log.js";
+import ServiceItem from "./ServiceItem.js";
+import TSDecoder from "./TSDecoder.js";
+import TSFilter from "./TSFilter.js";
+import TunerDevice from "./TunerDevice.js";
+import _ from "./_.js";
 
 export default class Tuner {
     private _devices: TunerDevice[] = [];

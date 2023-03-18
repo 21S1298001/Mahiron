@@ -15,14 +15,14 @@
    limitations under the License.
 */
 import { Writable } from "stream";
-import { ChannelType, User } from "./common";
-import { Channel } from "./config";
-import { Service } from "./db";
-import { log } from "./log";
-import queue from "./queue";
-import ServiceItem from "./ServiceItem";
-import TSFilter from "./TSFilter";
-import _ from "./_";
+import { ChannelType, User } from "./common.js";
+import { Channel } from "./config.js";
+import { Service } from "./db.js";
+import { log } from "./log.js";
+import queue from "./queue.js";
+import ServiceItem from "./ServiceItem.js";
+import TSFilter from "./TSFilter.js";
+import _ from "./_.js";
 
 export default class ChannelItem {
     private _name: string;

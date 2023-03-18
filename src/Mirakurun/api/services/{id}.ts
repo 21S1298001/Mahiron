@@ -15,10 +15,10 @@
    limitations under the License.
 */
 import { Operation } from "express-openapi";
-import { Service as IService } from "../../../../api";
-import { responseError } from "../../api";
-import Service from "../../Service";
-import _ from "../../_";
+import { Service as IService } from "../../../../api.js";
+import { responseError } from "../../api.js";
+import Service from "../../Service.js";
+import _ from "../../_.js";
 
 export const parameters = [
     {

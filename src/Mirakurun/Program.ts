@@ -15,12 +15,12 @@
    limitations under the License.
 */
 import sift from "sift";
-import { sleep, updateObject } from "./common";
-import { loadPrograms, Program as IProgram, savePrograms } from "./db";
-import Event, { EventType } from "./Event";
-import { log } from "./log";
-import queue from "./queue";
-import _ from "./_";
+import { sleep, updateObject } from "./common.js";
+import { loadPrograms, Program as IProgram, savePrograms } from "./db.js";
+import Event, { EventType } from "./Event.js";
+import { log } from "./log.js";
+import queue from "./queue.js";
+import _ from "./_.js";
 
 export function getProgramItemId(networkId: number, serviceId: number, eventId: number): number {
     return parseInt(`${networkId}${serviceId.toString(10).padStart(5, "0")}${eventId.toString(10).padStart(5, "0")}`, 10);
@@ -88,7 +88,7 @@ export default class Program {
     }
 
     findByQuery(query: object): IProgram[] {
-        return Array.from(this._itemMap.values()).filter(sift(query));
+        return Array.from(this._itemMap.values()).filter(sift.default(query));
     }
 
     findByNetworkId(networkId: number): IProgram[] {

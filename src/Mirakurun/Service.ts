@@ -16,12 +16,12 @@
 */
 import { existsSync, mkdirSync, promises as fsPromises } from "fs";
 import { dirname, join } from "path";
-import ChannelItem from "./ChannelItem";
-import { loadServices, saveServices } from "./db";
-import Event from "./Event";
-import { log } from "./log";
-import ServiceItem from "./ServiceItem";
-import _ from "./_";
+import ChannelItem from "./ChannelItem.js";
+import { loadServices, saveServices } from "./db.js";
+import Event from "./Event.js";
+import { log } from "./log.js";
+import ServiceItem from "./ServiceItem.js";
+import _ from "./_.js";
 
 const { LOGO_DATA_DIR_PATH } = process.env;
 

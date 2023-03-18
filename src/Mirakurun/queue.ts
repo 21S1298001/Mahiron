@@ -14,6 +14,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import Queue = require("promise-queue");
+import Queue from "promise-queue";
 
 export default new Queue(1, Infinity);

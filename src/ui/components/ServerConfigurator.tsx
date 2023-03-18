@@ -18,7 +18,7 @@ import { DefaultButton, Dialog, DialogFooter, DialogType, Dropdown, Icon, Label,
 import EventEmitter from "eventemitter3";
 import { Validator as IPValidator } from "ip-num/Validator";
 import React, { useEffect, useState } from "react";
-import { ConfigServer } from "../../../api";
+import { ConfigServer } from "../../../api.js";
 import { UIState } from "../index";
 
 const configAPI = "/api/config/server";

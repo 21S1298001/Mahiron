@@ -18,23 +18,17 @@ services:
       - /dev/bus:/dev/bus
       - /dev/dvb:/dev/dvb
     volumes:
-      # ** CAUTION **
-      # (default) `/usr/local/mirakurun/*` has been moved to `/opt/mirakurun/*`
-      # try:
-      #   sudo mv -vf /usr/local/mirakurun /opt/mirakurun
-      #   sudo mkdir -p /opt/mirakurun/run /opt/mirakurun/opt /opt/mirakurun/config /opt/mirakurun/data
-      # you can change to any location if required.
       - type: bind
-        source: /opt/mirakurun/run/
+        source: /opt/mahiron/run/
         target: /var/run/
       - type: bind
-        source: /opt/mirakurun/opt/
+        source: /opt/mahiron/opt/
         target: /opt/
       - type: bind
-        source: /opt/mirakurun/config/
+        source: /opt/mahiron/config/
         target: /app-config/
       - type: bind
-        source: /opt/mirakurun/data/
+        source: /opt/mahiron/data/
         target: /app-data/
     restart: always
     logging:

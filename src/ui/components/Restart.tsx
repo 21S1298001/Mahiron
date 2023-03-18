@@ -42,8 +42,8 @@ export const Restart: React.FC<RestartProps> = ({ uiStateEvents }) => {
                 onDismiss={() => setHideDialog(true)}
                 dialogContentProps={{
                     type: DialogType.largeHeader,
-                    title: "Restart Mirakurun",
-                    subText: "Do you want to restart Mirakurun?"
+                    title: "Restart Mahiron",
+                    subText: "Do you want to restart Mahiron?"
                 }}
             >
                 <DialogFooter>

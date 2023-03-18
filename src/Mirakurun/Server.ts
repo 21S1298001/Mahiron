@@ -14,21 +14,21 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+import * as cors from "cors";
+import * as express from "express";
+import * as openapi from "express-openapi";
 import * as fs from "fs";
 import * as http from "http";
-import * as express from "express";
-import * as cors from "cors";
-import * as openapi from "express-openapi";
-import * as morgan from "morgan";
 import * as yaml from "js-yaml";
-import { OpenAPIV2 } from "openapi-types";
 import RPCServer from "jsonrpc2-ws/lib/server";
+import * as morgan from "morgan";
+import { OpenAPIV2 } from "openapi-types";
 import { sleep } from "./common";
 import * as log from "./log";
-import * as system from "./system";
 import regexp from "./regexp";
-import _ from "./_";
 import { createRPCServer, initRPCNotifier } from "./rpc";
+import * as system from "./system";
+import _ from "./_";
 
 const pkg = require("../../package.json");
 
@@ -117,7 +117,7 @@ class Server {
                 }
             }
 
-            res.setHeader("Server", "Mirakurun/" + pkg.version);
+            res.setHeader("Server", "Mahiron/" + pkg.version);
             next();
         });
 

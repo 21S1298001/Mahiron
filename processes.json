@@ -1,13 +1,13 @@
 {
   "apps": [
     {
-      "name": "mirakurun-server",
+      "name": "mahiron-server",
       "script": "lib/server.js",
       "node_args" : "-r source-map-support/register",
-      "error_file": "/usr/local/var/log/mirakurun.stderr.log",
-      "out_file": "/usr/local/var/log/mirakurun.stdout.log",
+      "error_file": "/usr/local/var/log/mahiron.stderr.log",
+      "out_file": "/usr/local/var/log/mahiron.stdout.log",
       "merge_logs": true,
-      "pid_file": "/usr/local/var/run/mirakurun.pid",
+      "pid_file": "/usr/local/var/run/mahiron.pid",
       "exec_mode": "fork",
       "autorestart": true,
       "env": {

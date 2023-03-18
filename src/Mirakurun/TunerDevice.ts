@@ -240,7 +240,7 @@ export default class TunerDevice extends EventEmitter {
         const client = new Client();
         client.host = this.config.remoteMirakurunHost;
         client.port = this.config.remoteMirakurunPort || 40772;
-        client.userAgent = "Mirakurun (Remote)";
+        client.userAgent = "Mahiron (Remote)";
 
         log.debug("TunerDevice#%d fetching remote programs from %s:%d...", this._index, client.host, client.port);
 

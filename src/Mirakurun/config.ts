@@ -172,7 +172,7 @@ export function loadServer(): Server {
 
     // Docker
     if (IS_DOCKER) {
-        config.path = "/var/run/mirakurun.sock";
+        config.path = "/var/run/mahiron.sock";
         if (DOCKER_NETWORK !== "host") {
             config.port = 40772;
             config.disableIPv6 = true;

@@ -14,14 +14,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import ChannelItem from "./ChannelItem.js";
+import { ChannelItem } from "./ChannelItem.js";
 import { ChannelType } from "./common.js";
 import { log } from "./log.js";
-import queue from "./queue.js";
-import status from "./status.js";
-import _ from "./_.js";
+import { queue } from "./queue.js";
+import { status } from "./status.js";
+import { _ } from "./_.js";
 
-export default class Channel {
+export class Channel {
     private _items: ChannelItem[] = [];
     private _epgGatheringInterval: number = _.config.server.epgGatheringInterval || 1000 * 60 * 30; // 30 mins
 

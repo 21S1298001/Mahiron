@@ -14,9 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-const regexp = {
+export const regexp = {
     windowsNamedPipe: /^\\\\\.\\pipe\\.+/,
     unixDomainSocket: /^\/.+/
 };
-
-export default regexp;

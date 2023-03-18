@@ -17,7 +17,7 @@
 import { Operation } from "express-openapi";
 import { responseError } from "../../../../api.js";
 import { ChannelType, ChannelTypes } from "../../../../common.js";
-import _ from "../../../../_.js";
+import { _ } from "../../../../_.js";
 
 export const parameters = [
     {

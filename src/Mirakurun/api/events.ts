@@ -16,7 +16,7 @@
 */
 import { Operation } from "express-openapi";
 import { responseJSON } from "../api.js";
-import Event from "../Event.js";
+import { Event } from "../Event.js";
 
 export const get: Operation = (_req, res) => {
     responseJSON(res, Event.log);

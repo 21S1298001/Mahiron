@@ -16,7 +16,7 @@
 */
 import { Operation } from "express-openapi";
 import { responseError, responseJSON } from "../../api.js";
-import _ from "../../_.js";
+import { _ } from "../../_.js";
 
 export const parameters = [
     {

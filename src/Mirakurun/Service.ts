@@ -16,17 +16,17 @@
 */
 import { mkdir, readFile, stat, writeFile } from "fs/promises";
 import { dirname, join } from "path";
-import ChannelItem from "./ChannelItem.js";
+import { ChannelItem } from "./ChannelItem.js";
 import { loadServices, saveServices } from "./db.js";
-import Event from "./Event.js";
+import { Event } from "./Event.js";
 import { exists } from "./fs.js";
 import { log } from "./log.js";
-import ServiceItem from "./ServiceItem.js";
-import _ from "./_.js";
+import { ServiceItem } from "./ServiceItem.js";
+import { _ } from "./_.js";
 
 const { LOGO_DATA_DIR_PATH } = process.env;
 
-export default class Service {
+export class Service {
     static getLogoDataPath(networkId: number, logoId: number) {
         if (typeof logoId !== "number" || logoId < 0) {
             throw new Error("Invalid `logoId`");

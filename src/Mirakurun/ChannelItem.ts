@@ -19,12 +19,12 @@ import { ChannelType, User } from "./common.js";
 import { Channel } from "./config.js";
 import { Service } from "./db.js";
 import { log } from "./log.js";
-import queue from "./queue.js";
-import ServiceItem from "./ServiceItem.js";
-import TSFilter from "./TSFilter.js";
-import _ from "./_.js";
+import { queue } from "./queue.js";
+import { ServiceItem } from "./ServiceItem.js";
+import { TSFilter } from "./TSFilter.js";
+import { _ } from "./_.js";
 
-export default class ChannelItem {
+export class ChannelItem {
     private _name: string;
     private _type: ChannelType;
     private _channel: string;

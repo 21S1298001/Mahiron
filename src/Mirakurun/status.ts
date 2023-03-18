@@ -36,7 +36,7 @@ interface Status {
     };
 }
 
-const status: Status = {
+export const status: Status = {
     epg: {},
     rpcCount: 0,
     streamCount: {
@@ -79,5 +79,3 @@ function tick() {
 }
 setTimeout(() => (last = process.hrtime()), 1000 * 9);
 setTimeout(tick, 1000 * 10);
-
-export default status;

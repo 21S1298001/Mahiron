@@ -20,11 +20,11 @@ import { Socket } from "jsonrpc2-ws/lib/server.js";
 import { Socket as NetSocket } from "net";
 import { getStatus } from "./api/status.js";
 import { sleep } from "./common.js";
-import Event, { EventMessage } from "./Event.js";
+import { Event, EventMessage } from "./Event.js";
 import { log } from "./log.js";
-import status from "./status.js";
+import { status } from "./status.js";
 import { isPermittedHost, isPermittedIPAddress } from "./system.js";
-import _ from "./_.js";
+import { _ } from "./_.js";
 
 export interface JoinParams {
     rooms: string[];

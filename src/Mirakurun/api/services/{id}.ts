@@ -17,8 +17,8 @@
 import { Operation } from "express-openapi";
 import { Service as IService } from "../../../../api.js";
 import { responseError } from "../../api.js";
-import Service from "../../Service.js";
-import _ from "../../_.js";
+import { Service } from "../../Service.js";
+import { _ } from "../../_.js";
 
 export const parameters = [
     {

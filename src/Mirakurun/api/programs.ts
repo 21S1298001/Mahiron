@@ -17,7 +17,7 @@
 import { Operation } from "express-openapi";
 import { responseJSON } from "../api.js";
 import { Program } from "../db.js";
-import _ from "../_.js";
+import { _ } from "../_.js";
 
 export const get: Operation = (req, res) => {
     let programs: Program[];

@@ -14,13 +14,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import Channel from "./Channel.js";
+import { Channel } from "./Channel.js";
 import { Channel as IChannel, Server as IServer, Tuner as ITuner } from "./config.js";
-import Event from "./Event.js";
-import Program from "./Program.js";
-import Server from "./Server.js";
-import Service from "./Service.js";
-import Tuner from "./Tuner.js";
+import { Event } from "./Event.js";
+import { Program } from "./Program.js";
+import { Server } from "./Server.js";
+import { Service } from "./Service.js";
+import { Tuner } from "./Tuner.js";
 
 interface Shared {
     readonly config: {
@@ -39,11 +39,9 @@ interface Shared {
     server?: Server;
 }
 
-const _: Shared = {
+export const _: Shared = {
     config: {},
     configIntegrity: {
         channels: ""
     }
 };
-
-export default _;

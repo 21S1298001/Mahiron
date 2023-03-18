@@ -17,8 +17,8 @@
 import { Operation } from "express-openapi";
 import { readFile } from "fs/promises";
 import { Status } from "../../../api.js";
-import status from "../status.js";
-import _ from "../_.js";
+import { status } from "../status.js";
+import { _ } from "../_.js";
 
 const pkg = JSON.parse(await readFile("./package.json", { encoding: "utf-8" }));
 

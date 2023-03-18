@@ -16,8 +16,8 @@
 */
 import { Operation } from "express-openapi";
 import { Program } from "../../db.js";
-import Service from "../../Service.js";
-import _ from "../../_.js";
+import { Service } from "../../Service.js";
+import { _ } from "../../_.js";
 
 const GENRE_LV1: { [key: number]: string } = {
     0x0: "ニュース／報道",

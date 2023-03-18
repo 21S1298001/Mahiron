@@ -32,7 +32,7 @@ let offsetStr: string;
 let offsetMS = 0;
 if (/ GMT\+\d{4} /.test(new Date().toString()) === true) {
     const date = new Date();
-    offsetStr = date.toString().match(/ GMT(\+\d{4}) /)[1];
+    offsetStr = date.toString().match(/ GMT(\+\d{4}) /)![1];
     offsetStr = offsetStr.slice(0, 3) + ":" + offsetStr.slice(3, 5);
     offsetMS = date.getTimezoneOffset() * 60 * 1000;
 }
@@ -42,7 +42,7 @@ class LogEvent extends EventEmitter {
 
     emit(ev: "data", level: LogLevel, log: string): boolean {
         if (logLevel < level) {
-            return;
+            return false;
         }
 
         this.logs.push(log);
@@ -70,26 +70,26 @@ class LogEvent extends EventEmitter {
     }
 
     debug(...msgs: any[]): void {
-        this.emit("data", LogLevel.DEBUG, getLogString.call(null, "debug", arguments));
+        this.emit("data", LogLevel.DEBUG, getLogString.call(null, "debug", msgs));
     }
 
     info(...msgs: any[]): void {
-        this.emit("data", LogLevel.INFO, getLogString.call(null, "info", arguments));
+        this.emit("data", LogLevel.INFO, getLogString.call(null, "info", msgs));
     }
 
     warn(...msgs: any[]): void {
-        this.emit("data", LogLevel.WARN, getLogString.call(null, "warn", arguments));
+        this.emit("data", LogLevel.WARN, getLogString.call(null, "warn", msgs));
     }
 
     error(...msgs: any[]): void {
-        this.emit("data", LogLevel.ERROR, getLogString.call(null, "error", arguments));
+        this.emit("data", LogLevel.ERROR, getLogString.call(null, "error", msgs));
     }
 
     fatal(...msgs: any[]): void {
-        this.emit("data", LogLevel.FATAL, getLogString.call(null, "fatal", arguments));
+        this.emit("data", LogLevel.FATAL, getLogString.call(null, "fatal", msgs));
     }
 
-    write(line): void {
+    write(line: any): void {
         this.emit("data", LogLevel.INFO, getLogString("info", [line.slice(0, -1)]));
     }
 }

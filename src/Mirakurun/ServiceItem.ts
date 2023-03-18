@@ -68,46 +68,46 @@ export class ServiceItem {
         if (this._name !== name) {
             this._name = name;
 
-            _.service.save();
+            _.service!.save();
             this._updated();
         }
     }
 
     get type(): number {
-        return this._type;
+        return this._type!;
     }
 
     set type(type: number) {
         if (this._type !== type) {
             this._type = type;
 
-            _.service.save();
+            _.service!.save();
             this._updated();
         }
     }
 
     get logoId(): number {
-        return this._logoId;
+        return this._logoId!;
     }
 
     set logoId(logoId: number) {
         if (this._logoId !== logoId) {
             this._logoId = logoId;
 
-            _.service.save();
+            _.service!.save();
             this._updated();
         }
     }
 
     get remoteControlKeyId(): number {
-        return this._remoteControlKeyId;
+        return this._remoteControlKeyId!;
     }
 
     set remoteControlKeyId(id: number) {
         if (this._remoteControlKeyId !== id) {
             this._remoteControlKeyId = id;
 
-            _.service.save();
+            _.service!.save();
             this._updated();
         }
     }
@@ -120,7 +120,7 @@ export class ServiceItem {
         if (this._epgReady !== epgReady) {
             this._epgReady = epgReady;
 
-            _.service.save();
+            _.service!.save();
             this._updated();
         }
     }
@@ -133,7 +133,7 @@ export class ServiceItem {
         if (this._epgUpdatedAt !== time) {
             this._epgUpdatedAt = time;
 
-            _.service.save();
+            _.service!.save();
             this._updated();
         }
     }
@@ -149,8 +149,8 @@ export class ServiceItem {
             networkId: this._networkId,
             transportStreamId: this._transportStreamId,
             name: this._name || "",
-            type: this._type,
-            logoId: this._logoId,
+            type: this._type!,
+            logoId: this._logoId!,
             remoteControlKeyId: this._remoteControlKeyId,
             epgReady: this._epgReady,
             epgUpdatedAt: this._epgUpdatedAt,
@@ -164,7 +164,7 @@ export class ServiceItem {
     }
 
     getStream(userRequest: UserRequest, output: Writable): Promise<TSFilter> {
-        return _.tuner.initServiceStream(this, userRequest, output);
+        return _.tuner!.initServiceStream(this, userRequest, output);
     }
 
     getOrder(): number {

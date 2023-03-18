@@ -213,7 +213,7 @@ function getDateTime(time: number): string {
 function getGenreStrings(genres: Program["genres"]) {
     const stringSet = new Set<string>();
 
-    for (const genre of genres) {
+    for (const genre of genres!) {
         if (genre.lv1 === 14) {
             // 拡張
             const text = GENRE_UNEX[genre.lv2 * 0x100 + genre.un1 * 0x10 + genre.un2];
@@ -232,7 +232,7 @@ function getGenreStrings(genres: Program["genres"]) {
 export const get: Operation = async (req, res) => {
     const apiRoot = `${req.protocol}://${req.headers.host}/api`;
 
-    const services = [..._.service.items]; // shallow copy
+    const services = [..._.service!.items]; // shallow copy
     services.sort((a, b) => a.getOrder() - b.getOrder());
 
     let x = `<?xml version="1.0" encoding="UTF-8"?>\n`;
@@ -247,7 +247,7 @@ export const get: Operation = async (req, res) => {
 
         const mainNum = service.remoteControlKeyId || service.serviceId;
         if (countMap.has(mainNum)) {
-            countMap.set(mainNum, countMap.get(mainNum) + 1);
+            countMap.set(mainNum, (countMap.get(mainNum) ?? 0) + 1);
         } else {
             countMap.set(mainNum, 1);
         }
@@ -262,8 +262,8 @@ export const get: Operation = async (req, res) => {
         x += `</channel>\n`;
     }
 
-    for (const program of _.program.itemMap.values()) {
-        const service = _.service.get(program.networkId, program.serviceId);
+    for (const program of _.program!.itemMap.values()) {
+        const service = _.service!.get(program.networkId, program.serviceId);
         if (service === null) {
             continue;
         }

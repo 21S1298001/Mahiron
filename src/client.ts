@@ -132,23 +132,23 @@ export class Client {
     host = "";
     port = 40772;
     socketPath = process.platform === "win32" ? "\\\\.\\pipe\\mahiron" : "/var/run/mahiron.sock";
-    agent: Agent | boolean;
+    agent!: Agent | boolean;
     /** provide User-Agent string to identify client. */
     userAgent = "";
 
     private _userAgent = `MahironClient/${pkg.version} Node/${process.version} (${process.platform})`;
-    private _docs: OpenAPIV2.Document;
+    private _docs!: OpenAPIV2.Document;
 
     request(method: RequestMethod, path: string, option: RequestOption = {}): Promise<Response> | Promise<ErrorResponse> {
         return new Promise((resolve, reject) => {
             this._httpRequest(method, path, option).then(
                 res => {
                     const ret: Response = {
-                        status: res.statusCode,
-                        statusText: res.statusMessage,
-                        contentType: res.headers["content-type"].split(";")[0],
+                        status: res.statusCode!,
+                        statusText: res.statusMessage!,
+                        contentType: res.headers["content-type"]!.split(";")[0],
                         headers: res.headers,
-                        isSuccess: res.statusCode >= 200 && res.statusCode <= 202
+                        isSuccess: res.statusCode! >= 200 && res.statusCode! <= 202
                     };
 
                     const chunks: Buffer[] = [];
@@ -201,31 +201,31 @@ export class Client {
             const p = this._docs.paths[path] as OpenAPIV2.PathItemObject;
             if (p.post?.operationId === operationId) {
                 method = "POST";
-                parameters = [...p.parameters, ...(p.post.parameters || [])] as any;
+                parameters = [...p.parameters!, ...(p.post.parameters || [])] as any;
                 operation = p.post;
                 break;
             }
             if (p.get?.operationId === operationId) {
                 method = "GET";
-                parameters = [...p.parameters, ...(p.get.parameters || [])] as any;
+                parameters = [...p.parameters!, ...(p.get.parameters || [])] as any;
                 operation = p.get;
                 break;
             }
             if (p.put?.operationId === operationId) {
                 method = "PUT";
-                parameters = [...p.parameters, ...(p.put.parameters || [])] as any;
+                parameters = [...p.parameters!, ...(p.put.parameters || [])] as any;
                 operation = p.put;
                 break;
             }
             if (p.delete?.operationId === operationId) {
                 method = "DELETE";
-                parameters = [...p.parameters, ...(p.delete.parameters || [])] as any;
+                parameters = [...p.parameters!, ...(p.delete.parameters || [])] as any;
                 operation = p.delete;
                 break;
             }
         }
 
-        if (!operation) {
+        if (!operation!) {
             throw new Error(`operationId "${operationId}" is not found.`);
         }
 
@@ -235,7 +235,7 @@ export class Client {
             ...option
         };
 
-        for (const p of parameters) {
+        for (const p of parameters!) {
             if (param[p.name] === undefined || param[p.name] === null) {
                 if (p.required) {
                     throw new Error(`Required parameter "${p.name}" is undefined.`);
@@ -243,20 +243,20 @@ export class Client {
                 continue;
             }
             if (p.in === "path") {
-                path = path.replace(`{${p.name}}`, param[p.name]);
+                path = path!.replace(`{${p.name}}`, param[p.name]);
             } else if (p.in === "header") {
-                option.headers[p.name] = param[p.name];
+                option.headers![p.name] = param[p.name];
             } else if (p.in === "query") {
-                option.query[p.name] = param[p.name];
+                option.query![p.name] = param[p.name];
             } else if (p.in === "body" && p.name === "body") {
                 option.body = param.body;
             }
         }
 
-        if (operation.tags.indexOf("stream") !== -1) {
-            return this._requestStream(method, path, option);
+        if (operation.tags!.indexOf("stream") !== -1) {
+            return this._requestStream(method!, path!, option);
         }
-        return this.request(method, path, option);
+        return this.request(method!, path!, option);
     }
 
     async getChannels(query?: ChannelsQuery): Promise<Channel[]> {
@@ -308,6 +308,7 @@ export class Client {
             sid = args[2];
             decode = args[3];
             priority = args[4];
+            signal = null as any;
         }
 
         return this.call(
@@ -343,6 +344,7 @@ export class Client {
             channel = args[1];
             decode = args[2];
             priority = args[3];
+            signal = null as any;
         }
 
         return this.call(
@@ -384,6 +386,7 @@ export class Client {
             id = args[0];
             decode = args[1];
             priority = args[2];
+            signal = null as any;
         }
 
         return this.call(
@@ -429,6 +432,7 @@ export class Client {
             id = args[0];
             decode = args[1];
             priority = args[2];
+            signal = null as any;
         }
 
         return this.call(
@@ -531,7 +535,7 @@ export class Client {
         const opt: RequestOptions = {
             method: method,
             path: this.basePath + path,
-            headers: option.headers || {},
+            headers: option.headers ?? {},
             agent: this.agent
         };
 
@@ -544,16 +548,16 @@ export class Client {
 
         // tslint:disable-next-line:prefer-conditional-expression
         if (this.userAgent === "") {
-            opt.headers["User-Agent"] = this._userAgent;
+            opt.headers!["User-Agent"] = this._userAgent;
         } else {
-            opt.headers["User-Agent"] = this.userAgent + " " + this._userAgent;
+            opt.headers!["User-Agent"] = this.userAgent + " " + this._userAgent;
         }
 
-        if (opt.headers["X-Mirakurun-Priority"] === undefined) {
+        if (opt.headers!["X-Mirakurun-Priority"] === undefined) {
             if (option.priority === undefined) {
                 option.priority = this.priority;
             }
-            opt.headers["X-Mirakurun-Priority"] = option.priority.toString(10);
+            opt.headers!["X-Mirakurun-Priority"] = option.priority.toString(10);
         }
 
         if (typeof option.query === "object") {
@@ -561,7 +565,7 @@ export class Client {
         }
 
         if (typeof option.body === "object") {
-            opt.headers["Content-Type"] = "application/json; charset=utf-8";
+            opt.headers!["Content-Type"] = "application/json; charset=utf-8";
             option.body = JSON.stringify(option.body);
         }
 
@@ -573,7 +577,7 @@ export class Client {
 
         return new Promise((resolve, reject) => {
             const req = request(opt, res => {
-                if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location) {
+                if (res.statusCode! > 300 && res.statusCode! < 400 && res.headers.location) {
                     if (/^\//.test(res.headers.location) === false) {
                         reject(new Error(`Redirecting location "${res.headers.location}" isn't supported.`));
                         return;
@@ -612,7 +616,7 @@ export class Client {
     private async _requestStream(method: RequestMethod, path: string, option: RequestOption = {}): Promise<IncomingMessage> {
         const res = await this._httpRequest(method, path, option);
 
-        if (res.statusCode >= 200 && res.statusCode <= 202) {
+        if (res.statusCode! >= 200 && res.statusCode! <= 202) {
             return res;
         } else {
             if (res.statusCode) {

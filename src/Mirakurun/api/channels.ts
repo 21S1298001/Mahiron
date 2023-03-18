@@ -21,20 +21,18 @@ import { ChannelTypes } from "../common.js";
 import { _ } from "../_.js";
 
 export const get: Operation = (req, res) => {
-    const channels = _.channel.items
-        .map(channel => {
-            const ch: any = channel.toJSON();
+    const channels = _.channel!.items.map(channel => {
+        const ch: any = channel.toJSON();
 
-            ch.services = channel.getServices().map(service => ({
-                id: service.id,
-                serviceId: service.serviceId,
-                networkId: service.networkId,
-                name: service.name
-            }));
+        ch.services = channel.getServices().map(service => ({
+            id: service.id,
+            serviceId: service.serviceId,
+            networkId: service.networkId,
+            name: service.name
+        }));
 
-            return ch;
-        })
-        .filter(sift.default(req.query));
+        return ch;
+    }).filter(sift.default(req.query));
 
     responseJSON(res, channels);
 };

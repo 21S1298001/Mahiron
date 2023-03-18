@@ -76,11 +76,11 @@ export function getStatus(): Status {
         },
         epg: {
             gatheringNetworks: [],
-            storedEvents: _.program.itemMap.size
+            storedEvents: _.program!.itemMap.size
         },
         rpcCount: status.rpcCount,
         streamCount: {
-            tunerDevice: _.tuner.devices.filter(td => td.isUsing === true).length,
+            tunerDevice: _.tuner!.devices.filter(td => td.isUsing === true).length,
             tsFilter: status.streamCount.tsFilter,
             decoder: status.streamCount.decoder
         },

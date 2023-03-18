@@ -124,7 +124,7 @@ function serverOnUpgrade(this: RPCServer["wss"], req: IncomingMessage, socket: N
     }
 
     if (req.headers.origin !== undefined) {
-        if (!isPermittedHost(req.headers.origin, _.config.server.hostname)) {
+        if (!isPermittedHost(req.headers.origin, _.config.server!.hostname)) {
             socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
             socket.destroy();
             return;
@@ -134,12 +134,12 @@ function serverOnUpgrade(this: RPCServer["wss"], req: IncomingMessage, socket: N
     this.handleUpgrade(req, socket, head, ws => this.emit("connection", ws, req));
 }
 
-function rpcConnection(socket, req: IncomingMessage): void {
+function rpcConnection(socket: Socket, req?: IncomingMessage): void {
     // connected
     ++status.rpcCount;
 
-    const ip = req.socket.remoteAddress || "unix";
-    const ua = "" + req.headers["user-agent"];
+    const ip = req!.socket.remoteAddress || "unix";
+    const ua = "" + req!.headers["user-agent"];
 
     socket.data.set("ip", ip);
     socket.data.set("ua", ua);
@@ -176,5 +176,5 @@ function onLeave(socket: Socket, params: JoinParams) {
 }
 
 function getTuners() {
-    return _.tuner.devices;
+    return _.tuner!.devices;
 }

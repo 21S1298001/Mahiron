@@ -59,12 +59,12 @@ interface ScanConfig {
 }
 
 function range(start: number, end: number): string[] {
-    return Array.from({ length: end - start + 1 }, (v, index) => (index + start).toString(10));
+    return Array.from({ length: end - start + 1 }, (_v, index) => (index + start).toString(10));
 }
 
 export function generateScanConfig(option: ChannelScanOption): ScanConfig {
     // delete undefined from option
-    Object.keys(option).forEach(key => option[key] === undefined && delete option[key]);
+    (Object.keys(option) as (keyof ChannelScanOption)[]).forEach(key => option[key] === undefined && delete option[key]);
 
     if (option.type === ChannelTypes.GR) {
         option = {
@@ -76,9 +76,9 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
         };
 
         return {
-            channels: range(option.startCh, option.endCh).map(ch => ch),
-            scanMode: option.scanMode,
-            setDisabledOnAdd: option.setDisabledOnAdd
+            channels: range(option.startCh!, option.endCh!).map(ch => ch),
+            scanMode: option.scanMode!,
+            setDisabledOnAdd: option.setDisabledOnAdd!
         };
     }
 
@@ -99,16 +99,16 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
             };
 
             const channels: string[] = [];
-            for (const ch of range(option.startCh, option.endCh)) {
-                for (const subCh of range(option.startSubCh, option.endSubCh)) {
+            for (const ch of range(option.startCh!, option.endCh!)) {
+                for (const subCh of range(option.startSubCh!, option.endSubCh!)) {
                     channels.push(`BS${ch.toString().padStart(2, "0")}_${subCh}`);
                 }
             }
 
             return {
                 channels: channels,
-                scanMode: option.scanMode,
-                setDisabledOnAdd: option.setDisabledOnAdd
+                scanMode: option.scanMode!,
+                setDisabledOnAdd: option.setDisabledOnAdd!
             };
         }
 
@@ -119,9 +119,9 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
         };
 
         return {
-            channels: range(option.startCh, option.endCh).map(ch => ch),
-            scanMode: option.scanMode,
-            setDisabledOnAdd: option.setDisabledOnAdd
+            channels: range(option.startCh!, option.endCh!).map(ch => ch),
+            scanMode: option.scanMode!,
+            setDisabledOnAdd: option.setDisabledOnAdd!
         };
     }
 
@@ -133,11 +133,13 @@ export function generateScanConfig(option: ChannelScanOption): ScanConfig {
         };
 
         return {
-            channels: range(option.startCh, option.endCh).map(ch => `CS${ch}`),
-            scanMode: option.scanMode,
-            setDisabledOnAdd: option.setDisabledOnAdd
+            channels: range(option.startCh!, option.endCh!).map(ch => `CS${ch}`),
+            scanMode: option.scanMode!,
+            setDisabledOnAdd: option.setDisabledOnAdd!
         };
     }
+
+    throw new Error();
 }
 
 export function generateChannelItemForService(type: ChannelType, channel: string, service: Service, setDisabledOnAdd: boolean): Channel {
@@ -262,13 +264,13 @@ export const put: Operation = async (req, res) => {
 
         let services: Service[];
         try {
-            services = await _.tuner.getServices(<any>{
+            services = await _.tuner!.getServices(<any>{
                 type: type,
                 channel: channel
             });
         } catch (e) {
             res.write("-> no signal.");
-            if (/stream has closed before get network/.test(e) === false) {
+            if (typeof e === "string" && /stream has closed before get network/.test(e) === false) {
                 res.write(` [${e}]`);
             }
             res.write("\n\n");

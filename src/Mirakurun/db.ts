@@ -138,25 +138,25 @@ export interface ProgramRelatedItem {
 }
 
 export async function loadServices(integrity: string): Promise<Service[]> {
-    return await load(process.env.SERVICES_DB_PATH, integrity);
+    return await load(process.env.SERVICES_DB_PATH!, integrity);
 }
 
 export async function saveServices(data: Service[], integrity: string): Promise<void> {
-    return await save(process.env.SERVICES_DB_PATH, data, integrity);
+    return await save(process.env.SERVICES_DB_PATH!, data, integrity);
 }
 
 export async function loadPrograms(integrity: string): Promise<Program[]> {
-    return await load(process.env.PROGRAMS_DB_PATH, integrity);
+    return await load(process.env.PROGRAMS_DB_PATH!, integrity);
 }
 
 export async function savePrograms(data: Program[], integrity: string): Promise<void> {
-    return await save(process.env.PROGRAMS_DB_PATH, data, integrity);
+    return await save(process.env.PROGRAMS_DB_PATH!, data, integrity);
 }
 
 async function load(path: string, integrity: string) {
     log.info("load db `%s` w/ integrity (%s)", path, integrity);
 
-    if (exists(path)) {
+    if (await exists(path)) {
         const json = await readFile(path, { encoding: "utf8" });
         try {
             const array: any[] = JSON.parse(json);
@@ -170,7 +170,7 @@ async function load(path: string, integrity: string) {
             }
             return array;
         } catch (e) {
-            log.error("db `%s` is broken (%s: %s)", path, e.name, e.message);
+            if (e instanceof Error) log.error("db `%s` is broken (%s: %s)", path, e.name, e.message);
             return [];
         }
     } else {

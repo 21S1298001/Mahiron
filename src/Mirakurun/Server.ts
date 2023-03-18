@@ -44,7 +44,7 @@ export class Server {
         }
         this._isRunning = true;
 
-        const serverConfig = _.config.server;
+        const serverConfig = _.config.server!;
 
         let addresses: string[] = [];
 
@@ -105,14 +105,14 @@ export class Server {
             }
 
             if (req.get("Origin") !== undefined) {
-                if (!isPermittedHost(req.get("Origin"), serverConfig.hostname)) {
+                if (!isPermittedHost(req.get("Origin") ?? "", serverConfig.hostname)) {
                     res.status(403).end();
                     return;
                 }
             }
 
             if (req.get("Referer") !== undefined) {
-                if (!isPermittedHost(req.get("Referer"), serverConfig.hostname)) {
+                if (!isPermittedHost(req.get("Referer") ?? "", serverConfig.hostname)) {
                     res.status(403).end();
                     return;
                 }
@@ -146,7 +146,7 @@ export class Server {
             paths: "./lib/Mirakurun/api"
         });
 
-        app.use((err, _req: Request, res: Response, next: NextFunction) => {
+        app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
             if (err.message === "Not allowed by CORS") {
                 res.status(403).end();
                 return;

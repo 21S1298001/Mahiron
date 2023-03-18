@@ -43,7 +43,7 @@ export const parameters = [
 ];
 
 export const get: Operation = (req, res) => {
-    const program = _.program.get(req.params.id as any as number);
+    const program = _.program!.get(req.params.id as any as number);
 
     if (program === null) {
         responseError(res, 404);
@@ -54,22 +54,21 @@ export const get: Operation = (req, res) => {
     req.once("close", () => (requestAborted = true));
 
     (<any>res.socket)._writableState.highWaterMark = Math.max(res.writableHighWaterMark, 1024 * 1024 * 16);
-    res.socket.setNoDelay(true);
+    res.socket!.setNoDelay(true);
 
     const userId = (req.ip || "unix") + ":" + (req.socket.remotePort || Date.now());
 
-    _.tuner
-        .initProgramStream(
-            program,
-            {
-                id: userId,
-                priority: parseInt(req.get("X-Mirakurun-Priority"), 10) || 0,
-                agent: req.get("User-Agent"),
-                url: req.url,
-                disableDecoder: <number>(<any>req.query.decode) === 0
-            },
-            res
-        )
+    _.tuner!.initProgramStream(
+        program,
+        {
+            id: userId,
+            priority: parseInt(req.get("X-Mirakurun-Priority") ?? "0", 10),
+            agent: req.get("User-Agent"),
+            url: req.url,
+            disableDecoder: <number>(<any>req.query.decode) === 0
+        },
+        res
+    )
         .then(tsFilter => {
             if (requestAborted === true || req.aborted === true) {
                 return tsFilter.close();

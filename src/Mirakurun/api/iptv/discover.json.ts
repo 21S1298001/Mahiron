@@ -30,9 +30,9 @@ export const get: Operation = (req, res) => {
         FirmwareName: `mahiron_${process.arch}_${process.platform}`,
         FirmwareVersion: pkg.version,
         Manufacturer: "21S1298001",
-        DeviceID: req.headers.host.replace(/[\[\].:]/g, ""),
+        DeviceID: req.headers.host!.replace(/[\[\].:]/g, ""),
         DeviceAuth: "MAHIRON",
-        TunerCount: _.tuner.devices.length,
+        TunerCount: _.tuner!.devices.length,
         BaseURL: `${apiRoot}/iptv`,
         LineupURL: `${apiRoot}/iptv/lineup.json`
     });

@@ -23,12 +23,12 @@ import { _ } from "./_.js";
 
 export class Channel {
     private _items: ChannelItem[] = [];
-    private _epgGatheringInterval: number = _.config.server.epgGatheringInterval || 1000 * 60 * 30; // 30 mins
+    private _epgGatheringInterval: number = _.config.server!.epgGatheringInterval || 1000 * 60 * 30; // 30 mins
 
     constructor() {
         this._load();
 
-        if (_.config.server.disableEITParsing !== true) {
+        if (_.config.server!.disableEITParsing !== true) {
             setTimeout(this._epgGatherer.bind(this), 1000 * 60);
         }
     }
@@ -43,7 +43,7 @@ export class Channel {
         }
     }
 
-    get(type: ChannelType, channel: string): ChannelItem {
+    get(type: ChannelType, channel: string): ChannelItem | null {
         const l = this._items.length;
         for (let i = 0; i < l; i++) {
             if (this._items[i].channel === channel && this._items[i].type === type) {
@@ -70,7 +70,7 @@ export class Channel {
     private _load(): void {
         log.debug("loading channels...");
 
-        const channels = _.config.channels;
+        const channels = _.config.channels!;
 
         channels.forEach((channel, i) => {
             if (typeof channel.name !== "string") {
@@ -127,7 +127,7 @@ export class Channel {
                 return;
             }
 
-            if (_.tuner.typeExists(channel.type) === false) {
+            if (_.tuner!.typeExists(channel.type) === false) {
                 return;
             }
 
@@ -147,10 +147,10 @@ export class Channel {
 
     private _epgGatherer(): void {
         queue.add(async () => {
-            const networkIds = [...new Set(_.service.items.map(item => item.networkId))];
+            const networkIds = [...new Set(_.service!.items.map(item => item.networkId))];
 
             networkIds.forEach(networkId => {
-                const services = _.service.findByNetworkId(networkId);
+                const services = _.service!.findByNetworkId(networkId);
 
                 if (services.length === 0) {
                     return;
@@ -169,9 +169,9 @@ export class Channel {
                             log.info("Network#%d EPG gathering is resuming forcibly because reached maximum pause time", networkId);
                             service.epgReady = false;
                         } else {
-                            const currentPrograms = _.program.findByNetworkIdAndTime(networkId, now).filter(program => !!program.name && program.name !== "放送休止");
+                            const currentPrograms = _.program!.findByNetworkIdAndTime(networkId, now).filter(program => !!program.name && program.name !== "放送休止");
                             if (currentPrograms.length === 0) {
-                                const networkPrograms = _.program.findByNetworkId(networkId);
+                                const networkPrograms = _.program!.findByNetworkId(networkId);
                                 if (networkPrograms.length > 0) {
                                     log.info("Network#%d EPG gathering has skipped because broadcast is off", networkId);
                                     return;
@@ -189,7 +189,7 @@ export class Channel {
                     log.info("Network#%d EPG gathering has started", networkId);
 
                     try {
-                        await _.tuner.getEPG(service.channel);
+                        await _.tuner!.getEPG(service.channel);
                         log.info("Network#%d EPG gathering has finished", networkId);
                     } catch (e) {
                         log.warn("Network#%d EPG gathering has failed [%s]", networkId, e);

@@ -42,7 +42,7 @@ export const parameters = [
 ];
 
 export const get: Operation = (req, res) => {
-    const service = _.service.get(req.params.id as any as number);
+    const service = _.service!.get(req.params.id as any as number);
 
     if (service === null || service === undefined) {
         responseError(res, 404);
@@ -53,7 +53,7 @@ export const get: Operation = (req, res) => {
     req.once("close", () => (requestAborted = true));
 
     (<any>res.socket)._writableState.highWaterMark = Math.max(res.writableHighWaterMark, 1024 * 1024 * 16);
-    res.socket.setNoDelay(true);
+    res.socket!.setNoDelay(true);
 
     const userId = (req.ip || "unix") + ":" + (req.socket.remotePort || Date.now());
 
@@ -61,7 +61,7 @@ export const get: Operation = (req, res) => {
         .getStream(
             {
                 id: userId,
-                priority: parseInt(req.get("X-Mirakurun-Priority"), 10) || 0,
+                priority: parseInt(req.get("X-Mirakurun-Priority") ?? "0", 10),
                 agent: req.get("User-Agent"),
                 url: req.url,
                 disableDecoder: <number>(<any>req.query.decode) === 0

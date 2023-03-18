@@ -28,7 +28,7 @@ interface HDHRChannel {
 export const get: Operation = (req, res) => {
     const apiRoot = `${req.protocol}://${req.headers.host}/api`;
 
-    const services = [..._.service.items]; // shallow copy
+    const services = [..._.service!.items]; // shallow copy
     services.sort((a, b) => a.getOrder() - b.getOrder());
 
     const channels: HDHRChannel[] = [];
@@ -41,7 +41,7 @@ export const get: Operation = (req, res) => {
 
         const mainNum = service.remoteControlKeyId || service.serviceId;
         if (countMap.has(mainNum)) {
-            countMap.set(mainNum, countMap.get(mainNum) + 1);
+            countMap.set(mainNum, (countMap.get(mainNum) ?? 0) + 1);
         } else {
             countMap.set(mainNum, 1);
         }

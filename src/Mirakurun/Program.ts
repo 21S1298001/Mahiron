@@ -28,11 +28,11 @@ export function getProgramItemId(networkId: number, serviceId: number, eventId: 
 
 export class Program {
     private _itemMap = new Map<number, IProgram>();
-    private _saveTimerId: NodeJS.Timer;
-    private _emitTimerId: NodeJS.Timer;
+    private _saveTimerId?: NodeJS.Timer;
+    private _emitTimerId?: NodeJS.Timer;
     private _emitRunning = false;
     private _emitPrograms = new Map<IProgram, EventType>();
-    private _programGCInterval = _.config.server.programGCInterval || 1000 * 60 * 60; // 1 hour
+    private _programGCInterval = _.config.server!.programGCInterval || 1000 * 60 * 60; // 1 hour
 
     constructor() {
         this._load();

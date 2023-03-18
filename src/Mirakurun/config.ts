@@ -128,7 +128,7 @@ export interface Channel {
 }
 
 export async function loadServer(): Promise<Server> {
-    const path = SERVER_CONFIG_PATH;
+    const path = SERVER_CONFIG_PATH!;
 
     // mkdir if not exists
     const dirPath = dirname(path);
@@ -271,11 +271,11 @@ export async function loadServer(): Promise<Server> {
 }
 
 export async function saveServer(data: Server): Promise<void> {
-    return await save("server", SERVER_CONFIG_PATH, data);
+    return await save("server", SERVER_CONFIG_PATH!, data);
 }
 
 export async function loadTuners(): Promise<Tuner[]> {
-    const path = TUNERS_CONFIG_PATH;
+    const path = TUNERS_CONFIG_PATH!;
 
     // mkdir if not exists
     const dirPath = dirname(path);
@@ -312,11 +312,11 @@ export async function loadTuners(): Promise<Tuner[]> {
 }
 
 export async function saveTuners(data: Tuner[]): Promise<void> {
-    return await save("tuners", TUNERS_CONFIG_PATH, data);
+    return await save("tuners", TUNERS_CONFIG_PATH!, data);
 }
 
 export async function loadChannels(): Promise<Channel[]> {
-    const path = CHANNELS_CONFIG_PATH;
+    const path = CHANNELS_CONFIG_PATH!;
 
     // mkdir if not exists
     const dirPath = dirname(path);
@@ -353,7 +353,7 @@ export async function loadChannels(): Promise<Channel[]> {
 }
 
 export async function saveChannels(data: Channel[]): Promise<void> {
-    return save("channels", CHANNELS_CONFIG_PATH, data);
+    return save("channels", CHANNELS_CONFIG_PATH!, data);
 }
 
 async function load(name: "server", path: string): Promise<Server>;

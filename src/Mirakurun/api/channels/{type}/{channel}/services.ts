@@ -36,7 +36,7 @@ export const parameters = [
 ];
 
 export const get: Operation = (req, res) => {
-    const channel = _.channel.get(req.params.type as ChannelType, req.params.channel);
+    const channel = _.channel!.get(req.params.type as ChannelType, req.params.channel);
 
     if (channel === null) {
         responseError(res, 404);

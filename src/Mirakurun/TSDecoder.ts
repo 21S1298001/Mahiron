@@ -17,7 +17,7 @@
 import { ChildProcess, spawn } from "child_process";
 import { PassThrough, Readable, TransformOptions, Writable } from "stream";
 import { log } from "./log.js";
-import status from "./status.js";
+import { status } from "./status.js";
 
 interface StreamOptions extends TransformOptions {
     readonly output: Writable;
@@ -26,7 +26,7 @@ interface StreamOptions extends TransformOptions {
 
 let idCounter = 0;
 
-export default class TSDecoder extends Writable {
+export class TSDecoder extends Writable {
     // output
     private _output: Writable;
 

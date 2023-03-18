@@ -16,7 +16,8 @@
 */
 import { EventEmitter } from "eventemitter3";
 import rfdc from "rfdc";
-import _ from "./_.js";
+import { _ } from "./_.js";
+
 const clone = rfdc();
 
 export interface EventMessage<T = any> {
@@ -29,7 +30,7 @@ export interface EventMessage<T = any> {
 export type EventResource = "program" | "service" | "tuner";
 export type EventType = "create" | "update" | "remove";
 
-export default class Event extends EventEmitter {
+export class Event extends EventEmitter {
     static get log(): EventMessage[] {
         return _.event.log;
     }

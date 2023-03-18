@@ -19,8 +19,8 @@ import sift from "sift";
 import { Service as IService } from "../../../api.js";
 import { responseJSON } from "../api.js";
 import { ChannelTypes } from "../common.js";
-import Service from "../Service.js";
-import _ from "../_.js";
+import { Service } from "../Service.js";
+import { _ } from "../_.js";
 
 export const get: Operation = async (req, res) => {
     const serviceItems = [..._.service.items]; // shallow copy

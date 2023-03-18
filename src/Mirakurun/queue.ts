@@ -14,6 +14,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import Queue from "promise-queue";
+import PromiseQueue from "promise-queue";
 
-export default new Queue(1, Infinity);
+export const queue = new PromiseQueue(1, Infinity);

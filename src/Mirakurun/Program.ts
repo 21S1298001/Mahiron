@@ -17,16 +17,16 @@
 import sift from "sift";
 import { sleep, updateObject } from "./common.js";
 import { loadPrograms, Program as IProgram, savePrograms } from "./db.js";
-import Event, { EventType } from "./Event.js";
+import { Event, EventType } from "./Event.js";
 import { log } from "./log.js";
-import queue from "./queue.js";
-import _ from "./_.js";
+import { queue } from "./queue.js";
+import { _ } from "./_.js";
 
 export function getProgramItemId(networkId: number, serviceId: number, eventId: number): number {
     return parseInt(`${networkId}${serviceId.toString(10).padStart(5, "0")}${eventId.toString(10).padStart(5, "0")}`, 10);
 }
 
-export default class Program {
+export class Program {
     private _itemMap = new Map<number, IProgram>();
     private _saveTimerId: NodeJS.Timer;
     private _emitTimerId: NodeJS.Timer;

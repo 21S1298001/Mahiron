@@ -19,7 +19,7 @@ import { IPv4CidrRange, IPv6CidrRange } from "ip-num/IPRange.js";
 import { IPv4Prefix, IPv6Prefix } from "ip-num/Prefix.js";
 import { Validator } from "ip-num/Validator.js";
 import { networkInterfaces } from "os";
-import _ from "./_.js";
+import { _ } from "./_.js";
 
 export function getIPv4AddressesForListen(): string[] {
     const addresses = [];

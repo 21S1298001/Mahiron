@@ -124,7 +124,7 @@ export class ErrorResponse implements ErrorResponse {
     }
 }
 
-export default class Client {
+export class Client {
     basePath = spec.basePath;
     docsPath = "/docs";
     /** positive integer */

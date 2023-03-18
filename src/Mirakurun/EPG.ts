@@ -19,7 +19,7 @@ import { EIT } from "@chinachu/aribts/lib/table/eit.js";
 import { getTimeFromBCD24, getTimeFromMJD } from "./common.js";
 import { ProgramAudio, ProgramAudioLanguageCode, ProgramGenre, ProgramRelatedItem, ProgramVideoResolution, ProgramVideoType } from "./db.js";
 import { getProgramItemId } from "./Program.js";
-import _ from "./_.js";
+import { _ } from "./_.js";
 
 const STREAM_CONTENT = {
     1: "mpeg2",
@@ -132,7 +132,7 @@ interface EventState {
 }
 
 // forked from rndomhack/node-aribts/blob/1e7ef94bba3d6ac26aec764bf24dde2c2852bfcb/lib/epg.js
-export default class EPG {
+export class EPG {
     private _epg: { [networkId: number]: { [serviceId: number]: { [eventId: number]: EventState } } } = {};
 
     write(eit: EIT) {

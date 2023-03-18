@@ -39,16 +39,16 @@ setEnv("SERVICES_DB_PATH", "/usr/local/var/db/mahiron/services.json");
 setEnv("PROGRAMS_DB_PATH", "/usr/local/var/db/mahiron/programs.json");
 setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mahiron/logo-data");
 
-import Channel from "./Mirakurun/Channel.js";
+import { Channel } from "./Mirakurun/Channel.js";
 import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config.js";
-import Event from "./Mirakurun/Event.js";
+import { Event } from "./Mirakurun/Event.js";
 import { log } from "./Mirakurun/log.js";
-import Program from "./Mirakurun/Program.js";
-import Server from "./Mirakurun/Server.js";
-import Service from "./Mirakurun/Service.js";
-import status from "./Mirakurun/status.js";
-import Tuner from "./Mirakurun/Tuner.js";
-import _ from "./Mirakurun/_.js";
+import { Program } from "./Mirakurun/Program.js";
+import { Server } from "./Mirakurun/Server.js";
+import { Service } from "./Mirakurun/Service.js";
+import { status } from "./Mirakurun/status.js";
+import { Tuner } from "./Mirakurun/Tuner.js";
+import { _ } from "./Mirakurun/_.js";
 
 _.config.server = await loadServer();
 _.config.channels = await loadChannels();

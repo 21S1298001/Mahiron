@@ -26,14 +26,14 @@ import { OpenAPIV2 } from "openapi-types";
 import { sleep } from "./common.js";
 import { exists } from "./fs.js";
 import { log } from "./log.js";
-import regexp from "./regexp.js";
+import { regexp } from "./regexp.js";
 import { createRPCServer, initRPCNotifier } from "./rpc.js";
 import { getIPv4AddressesForListen, getIPv6AddressesForListen, isPermittedHost, isPermittedIPAddress } from "./system.js";
-import _ from "./_.js";
+import { _ } from "./_.js";
 
 const pkg = JSON.parse(await readFile("./package.json", { encoding: "utf-8" }));
 
-class Server {
+export class Server {
     private _isRunning = false;
     private _servers = new Set<HttpServer>();
     private _rpcs = new Set<RPCServer>();
@@ -210,5 +210,3 @@ class Server {
         log.info("RPC interface is enabled");
     }
 }
-
-export default Server;

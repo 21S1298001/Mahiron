@@ -18,7 +18,7 @@ import { Operation } from "express-openapi";
 import sift from "sift";
 import { responseJSON } from "../../api.js";
 import { ChannelType, ChannelTypes } from "../../common.js";
-import _ from "../../_.js";
+import { _ } from "../../_.js";
 
 export const parameters = [
     {

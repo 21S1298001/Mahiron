@@ -19,7 +19,7 @@ import { responseError } from "../../../api.js";
 import { ChannelType, ChannelTypes } from "../../../common.js";
 import { Channel, loadChannels, saveChannels } from "../../../config.js";
 import { Service } from "../../../db.js";
-import _ from "../../../_.js";
+import { _ } from "../../../_.js";
 
 let isScanning = false;
 

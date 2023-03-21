@@ -43,6 +43,8 @@ Copyright 2023 21S1298001
 
 Licensed under the Apache License, Version 2.0.
 
+Mahiron's logo is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+
 Original copyright of Mirakurun:
 
 > &copy; 2016- [kanreisa](https://github.com/kanreisa).

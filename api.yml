@@ -580,6 +580,8 @@ definitions:
         type: string
       latest:
         type: string
+      server:
+        type: string
 
   Status:
     type: object

@@ -286,6 +286,7 @@ export interface ConfigChannelsItem {
 export interface Version {
     current: string;
     latest: string;
+    server: string;
 }
 
 export interface Status {

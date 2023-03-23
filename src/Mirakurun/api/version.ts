@@ -24,7 +24,8 @@ const pkg = JSON.parse(await readFile("./package.json", { encoding: "utf-8" }));
 export const get: Operation = async (_req, res) => {
     const version: Version = {
         current: pkg.version,
-        latest: ""
+        latest: "",
+        server: "mahiron"
     };
 
     responseJSON(res, version);

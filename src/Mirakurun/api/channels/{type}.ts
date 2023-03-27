@@ -31,8 +31,7 @@ export const parameters = [
 ];
 
 export const get: Operation = (req, res) => {
-    const channels = _.channel
-        .findByType(req.params.type as ChannelType)
+    const channels = _.channel!.findByType(req.params.type as ChannelType)
         .map(channel => {
             const ch: any = channel.toJSON();
 

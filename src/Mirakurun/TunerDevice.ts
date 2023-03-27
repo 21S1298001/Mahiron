@@ -49,10 +49,10 @@ interface Status {
 }
 
 export class TunerDevice extends EventEmitter {
-    private _channel: ChannelItem = null;
-    private _command: string = null;
-    private _process: ChildProcess = null;
-    private _stream: Readable = null;
+    private _channel: ChannelItem | null = null;
+    private _command: string | null = null;
+    private _process: ChildProcess | null = null;
+    private _stream: Readable | null = null;
 
     private _users = new Set<User>();
 
@@ -79,15 +79,15 @@ export class TunerDevice extends EventEmitter {
     }
 
     get channel(): ChannelItem {
-        return this._channel;
+        return this._channel!;
     }
 
     get command(): string {
-        return this._command;
+        return this._command!;
     }
 
     get pid(): number {
-        return this._process ? this._process.pid : null;
+        return this._process ? this._process.pid : (null as any);
     }
 
     get users(): User[] {
@@ -105,7 +105,7 @@ export class TunerDevice extends EventEmitter {
     }
 
     get decoder(): string {
-        return this._config.decoder || null;
+        return this._config.decoder ?? (null as any);
     }
 
     get isAvailable(): boolean {
@@ -129,11 +129,11 @@ export class TunerDevice extends EventEmitter {
     }
 
     get currentChannelType(): ChannelType {
-        return this._channel?.type;
+        return this._channel?.type!;
     }
 
     get currentChannel(): string {
-        return this._channel?.channel;
+        return this._channel?.channel!;
     }
 
     getPriority(): number {
@@ -153,7 +153,7 @@ export class TunerDevice extends EventEmitter {
             index: this._index,
             name: this._config.name,
             types: this._config.types,
-            command: this._command,
+            command: this._command!,
             pid: this.pid,
             users: this.users,
             isAvailable: this.isAvailable,
@@ -187,7 +187,7 @@ export class TunerDevice extends EventEmitter {
             }
 
             if (this._stream) {
-                if (channel.channel !== this._channel.channel) {
+                if (channel.channel !== this._channel!.channel) {
                     if (user.priority <= this.getPriority()) {
                         throw new Error(format("TunerDevice#%d has higher priority user", this._index));
                     }
@@ -216,7 +216,7 @@ export class TunerDevice extends EventEmitter {
     endStream(user: User): void {
         log.debug("TunerDevice#%d end stream for user `%s` (priority=%d)...", this._index, user.id, user.priority);
 
-        user._stream.end();
+        user._stream!.end();
         this._users.delete(user);
 
         if (this._users.size === 0) {
@@ -238,8 +238,8 @@ export class TunerDevice extends EventEmitter {
         }
 
         const client = new Client();
-        client.host = this.config.remoteMirakurunHost;
-        client.port = this.config.remoteMirakurunPort || 40772;
+        client.host = this.config.remoteMirakurunHost!;
+        client.port = this.config.remoteMirakurunPort ?? 40772;
         client.userAgent = "Mahiron (Remote)";
 
         log.debug("TunerDevice#%d fetching remote programs from %s:%d...", this._index, client.host, client.port);
@@ -270,7 +270,7 @@ export class TunerDevice extends EventEmitter {
                 cmd += " decode";
             }
         } else {
-            cmd = this._config.command;
+            cmd = this._config.command!;
         }
 
         cmd = cmd.replace("<channel>", ch.channel);
@@ -327,7 +327,7 @@ export class TunerDevice extends EventEmitter {
         this._process.once("exit", () => (this._exited = true));
 
         this._process.once("error", err => {
-            log.fatal("TunerDevice#%d process error `%s` (pid=%d)", this._index, err.name, this._process.pid);
+            log.fatal("TunerDevice#%d process error `%s` (pid=%d)", this._index, err.name, this._process!.pid);
 
             ++this._fatalCount;
             if (this._fatalCount >= 3) {
@@ -341,18 +341,18 @@ export class TunerDevice extends EventEmitter {
         });
 
         this._process.once("close", (code, signal) => {
-            log.info("TunerDevice#%d process has closed with exit code=%d by signal `%s` (pid=%d)", this._index, code, signal, this._process.pid);
+            log.info("TunerDevice#%d process has closed with exit code=%d by signal `%s` (pid=%d)", this._index, code, signal, this._process!.pid);
 
             this._end();
             setTimeout(this._release.bind(this), this._config.dvbDevicePath ? 1000 : 100);
         });
 
-        this._process.stderr.on("data", data => {
+        this._process.stderr!.on("data", data => {
             log.debug("TunerDevice#%d > %s", this._index, data.toString().trim());
         });
 
         // flowing start
-        this._stream.on("data", this._streamOnData.bind(this));
+        this._stream!.on("data", this._streamOnData.bind(this));
 
         this._updated();
         log.info("TunerDevice#%d process has spawned by command `%s` (pid=%d)", this._index, cmd, this._process.pid);
@@ -360,18 +360,18 @@ export class TunerDevice extends EventEmitter {
 
     private _streamOnData(chunk: Buffer): void {
         for (const user of this._users) {
-            user._stream.write(chunk);
+            user._stream!.write(chunk);
         }
     }
 
     private _end(): void {
         this._isAvailable = false;
 
-        this._stream.removeAllListeners("data");
+        this._stream!.removeAllListeners("data");
 
         if (this._closing === true) {
             for (const user of this._users) {
-                user._stream.end();
+                user._stream!.end();
             }
             this._users.clear();
         }
@@ -398,28 +398,28 @@ export class TunerDevice extends EventEmitter {
             this.once("release", resolve);
 
             if (process.platform === "win32") {
-                const timer = setTimeout(() => this._process.kill(), 3000);
-                this._process.once("exit", () => clearTimeout(timer));
+                const timer = setTimeout(() => this._process!.kill(), 3000);
+                this._process!.once("exit", () => clearTimeout(timer));
 
-                this._process.stdin.write("\n");
-            } else if (/^dvbv5-zap /.test(this._command) === true) {
-                this._process.kill("SIGKILL");
+                this._process!.stdin!.write("\n");
+            } else if (/^dvbv5-zap /.test(this._command!) === true) {
+                this._process!.kill("SIGKILL");
             } else {
                 const timer = setTimeout(() => {
                     log.warn("TunerDevice#%d will force killed because SIGTERM timed out...", this._index);
-                    this._process.kill("SIGKILL");
+                    this._process!.kill("SIGKILL");
                 }, 6000);
-                this._process.once("exit", () => clearTimeout(timer));
+                this._process!.once("exit", () => clearTimeout(timer));
 
                 // regular way
-                this._process.kill("SIGTERM");
+                this._process!.kill("SIGTERM");
             }
         });
     }
 
     private _release(): void {
         if (this._process) {
-            this._process.stderr.removeAllListeners();
+            this._process.stderr!.removeAllListeners();
             this._process.removeAllListeners();
         }
         if (this._stream) {
@@ -434,7 +434,7 @@ export class TunerDevice extends EventEmitter {
             log.warn("TunerDevice#%d respawning because request has not closed", this._index);
             ++status.errorCount.tunerDeviceRespawn;
 
-            this._spawn(this._channel);
+            this._spawn(this._channel!);
             return;
         }
 

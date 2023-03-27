@@ -35,7 +35,7 @@ export function responseError(res: Response, code: number, reason?: string): Res
 
     const error: Error = {
         code: code,
-        reason: reason || null,
+        reason: reason ?? "",
         errors: []
     };
 

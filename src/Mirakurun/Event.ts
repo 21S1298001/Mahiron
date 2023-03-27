@@ -32,19 +32,19 @@ export type EventType = "create" | "update" | "remove";
 
 export class Event extends EventEmitter {
     static get log(): EventMessage[] {
-        return _.event.log;
+        return _.event!.log;
     }
 
     static onEvent(listener: (message: EventMessage) => void): void {
-        _.event.on("event", listener);
+        _.event!.on("event", listener);
     }
 
     static onceEvent(listener: (message: EventMessage) => void): void {
-        _.event.once("event", listener);
+        _.event!.once("event", listener);
     }
 
     static removeListener(listener: (...args: any[]) => void): void {
-        _.event.removeListener("event", listener);
+        _.event!.removeListener("event", listener);
     }
 
     static emit(resource: EventResource, type: EventType, data: any): boolean {
@@ -55,7 +55,7 @@ export class Event extends EventEmitter {
             time: Date.now()
         };
 
-        return _.event.emit("event", message);
+        return _.event!.emit("event", message);
     }
 
     private _log: EventMessage[] = [];

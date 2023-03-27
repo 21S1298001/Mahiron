@@ -23,7 +23,7 @@ import { Service } from "../Service.js";
 import { _ } from "../_.js";
 
 export const get: Operation = async (req, res) => {
-    const serviceItems = [..._.service.items]; // shallow copy
+    const serviceItems = [..._.service!.items]; // shallow copy
     serviceItems.sort((a, b) => a.getOrder() - b.getOrder());
 
     const services: IService[] = [];

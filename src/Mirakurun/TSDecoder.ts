@@ -28,16 +28,16 @@ let idCounter = 0;
 
 export class TSDecoder extends Writable {
     // output
-    private _output: Writable;
+    private _output: Writable | null = null;
 
     private _id: number;
     private _command: string;
-    private _process: ChildProcess;
-    private _readable: Readable;
-    private _writable: Writable;
+    private _process?: ChildProcess;
+    private _readable?: Readable;
+    private _writable?: Writable;
 
     private _isNew: boolean = false;
-    private _timeout: NodeJS.Timeout;
+    private _timeout?: NodeJS.Timeout;
     private _closed: boolean = false;
     private _deadCount: number = 0;
 
@@ -111,7 +111,7 @@ export class TSDecoder extends Writable {
 
         proc.stderr.pipe(process.stderr);
         proc.stdout.once("data", () => clearTimeout(this._timeout));
-        proc.stdout.on("data", chunk => this._output.write(chunk));
+        proc.stdout.on("data", chunk => this._output?.write(chunk));
 
         this._readable = proc.stdout;
         this._writable = proc.stdin;
@@ -142,7 +142,7 @@ export class TSDecoder extends Writable {
     private _fallback(): void {
         const passThrough = new PassThrough({ allowHalfOpen: false });
 
-        passThrough.on("data", chunk => this._output.write(chunk));
+        passThrough.on("data", chunk => this._output?.write(chunk));
 
         this._readable = passThrough;
         this._writable = passThrough;
@@ -175,11 +175,11 @@ export class TSDecoder extends Writable {
 
         this._kill();
 
-        if (this._output.writableEnded === false) {
+        if (this._output?.writableEnded === false) {
             this._output.end();
         }
-        this._output.removeAllListeners();
-        delete this._output;
+        this._output?.removeAllListeners();
+        this._output = null;
 
         --status.streamCount.decoder;
 

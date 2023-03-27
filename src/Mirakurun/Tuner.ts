@@ -36,7 +36,7 @@ export class Tuner {
         return this._devices;
     }
 
-    get(index: number): TunerDevice {
+    get(index: number): TunerDevice | null {
         const l = this._devices.length;
         for (let i = 0; i < l; i++) {
             if (this._devices[i].index === index) {
@@ -59,12 +59,14 @@ export class Tuner {
     }
 
     initChannelStream(channel: ChannelItem, userReq: UserRequest, output: Writable): Promise<TSFilter> {
-        let networkId: number;
+        let networkId: number = -1;
 
         const services = channel.getServices();
         if (services.length !== 0) {
             networkId = services[0].networkId;
         }
+
+        if (networkId < 0) throw new Error();
 
         return this._initTS(
             {
@@ -99,7 +101,7 @@ export class Tuner {
             {
                 ...userReq,
                 streamSetting: {
-                    channel: _.service.get(program.networkId, program.serviceId).channel,
+                    channel: _.service!.get(program.networkId, program.serviceId).channel,
                     serviceId: program.serviceId,
                     eventId: program.eventId,
                     networkId: program.networkId,
@@ -113,7 +115,7 @@ export class Tuner {
     async getEPG(channel: ChannelItem, time?: number): Promise<void> {
         let timeout: NodeJS.Timer;
         if (!time) {
-            time = _.config.server.epgRetrievalTime || 1000 * 60 * 10;
+            time = _.config.server!.epgRetrievalTime || 1000 * 60 * 10;
         }
 
         let networkId: number;
@@ -171,7 +173,7 @@ export class Tuner {
                 areaCode: -1,
                 remoteControlKeyId: -1
             };
-            let services: Service[] = null;
+            let services: Service[] = [];
 
             setTimeout(() => tsFilter.close(), 20000);
 
@@ -214,7 +216,7 @@ export class Tuner {
     private _load(): this {
         log.debug("loading tuners...");
 
-        const tuners = _.config.tuners;
+        const tuners = _.config.tuners!;
 
         tuners.forEach((tuner, i) => {
             if (!tuner.name || !tuner.types || (!tuner.remoteMirakurunHost && !tuner.command)) {
@@ -272,9 +274,9 @@ export class Tuner {
 
     private _initTS(user: User, dest?: Writable): Promise<TSFilter> {
         return new Promise<TSFilter>((resolve, reject) => {
-            const setting = user.streamSetting;
+            const setting = user.streamSetting!;
 
-            if (_.config.server.disableEITParsing === true) {
+            if (_.config.server!.disableEITParsing === true) {
                 setting.parseEIT = false;
             }
 
@@ -284,7 +286,7 @@ export class Tuner {
             const length = devices.length;
 
             function find() {
-                let device: TunerDevice = null;
+                let device: TunerDevice | null = null;
 
                 // 1. join to existing
                 for (let i = 0; i < length; i++) {
@@ -305,13 +307,13 @@ export class Tuner {
                                 })
                                 .then(async programs => {
                                     await sleep(1000);
-                                    _.program.findByNetworkIdAndReplace(setting.networkId, programs);
-                                    for (const service of _.service.findByNetworkId(setting.networkId)) {
+                                    _.program!.findByNetworkIdAndReplace(setting.networkId!, programs);
+                                    for (const service of _.service!.findByNetworkId(setting.networkId!)) {
                                         service.epgReady = true;
                                     }
                                     await sleep(1000);
                                 })
-                                .then(() => resolve(null))
+                                .then(() => resolve(null as any))
                                 .catch(err => reject(err));
 
                             return;
@@ -363,10 +365,10 @@ export class Tuner {
                 } else {
                     let output: Writable;
                     if (user.disableDecoder === true || device.decoder === null) {
-                        output = dest;
+                        output = dest!;
                     } else {
                         output = new TSDecoder({
-                            output: dest,
+                            output: dest!,
                             command: device.decoder
                         });
                     }
@@ -411,7 +413,7 @@ export class Tuner {
             }
         }
 
-        if (_.config.server.randomizeTuners === true) {
+        if (_.config.server!.randomizeTuners === true) {
             return devices.sort(() => Math.random() - 0.5);
         }
 

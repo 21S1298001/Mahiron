@@ -87,18 +87,18 @@ interface DownloadData {
 }
 
 export class TSFilter extends EventEmitter {
-    streamInfo: StreamInfo = {};
+    streamInfo: StreamInfo | null = null;
 
     // output
-    private _output: Writable;
+    private _output: Writable | null = null;
 
     // options
-    private _provideServiceId: number;
-    private _provideEventId: number;
+    private _provideServiceId: number | null = null;
+    private _provideEventId: number | null = null;
     private _parseNIT = false;
     private _parseSDT = false;
     private _parseEIT = false;
-    private _targetNetworkId: number;
+    private _targetNetworkId: number | null = null;
     private _enableParseCDT = false;
     private _enableParseDSMCC = false;
 
@@ -109,60 +109,60 @@ export class TSFilter extends EventEmitter {
     private _tsmfTsNumber = 0;
 
     // aribts
-    private _parser = new TsStreamLite();
+    private _parser: TsStreamLite | null = new TsStreamLite();
 
     // epg
-    private _epg: EPG;
+    private _epg: EPG | null = null;
     private _epgReady = false;
     private _epgState: {
         [networkId: number]: { [serviceId: number]: BasicExtState };
-    } = {};
+    } | null = null;
 
     // buffer
-    private _packet = Buffer.allocUnsafeSlow(PACKET_SIZE).fill(0);
+    private _packet: Buffer | null = Buffer.allocUnsafeSlow(PACKET_SIZE).fill(0);
     private _offset = -1;
     private _buffer: Buffer[] = [];
-    private _patsec = Buffer.allocUnsafeSlow(PACKET_SIZE - 4 - 1).fill(0); // TS header, pointer_field
-    private _patCRC = Buffer.allocUnsafeSlow(4).fill(0);
+    private _patsec: Buffer | null = Buffer.allocUnsafeSlow(PACKET_SIZE - 4 - 1).fill(0); // TS header, pointer_field
+    private _patCRC: Buffer | null = Buffer.allocUnsafeSlow(4).fill(0);
 
     // state
     private _closed = false;
     private _ready = true;
-    private _providePids: Set<number> = null; // `null` to provides all
+    private _providePids: Set<number> | null = null; // `null` to provides all
     private _parsePids = new Set<number>();
     private _tsid = -1;
     private _serviceIds = new Set<number>();
     private _parseServiceIds = new Set<number>();
     private _pmtPid = -1;
-    private _pmtTimer: NodeJS.Timer;
-    private _streamTime: number = null;
+    private _pmtTimer: NodeJS.Timer | null = null;
+    private _streamTime: number | null = null;
     private _essMap = new Map<number, number>(); // <serviceId, pid>
     private _essEsPids = new Set<number>();
     private _dlDataMap = new Map<number, DownloadData>();
-    private _logoDataTimer: NodeJS.Timer;
+    private _logoDataTimer: NodeJS.Timer | null = null;
     private _provideEventLastDetectedAt = -1;
-    private _provideEventTimeout: NodeJS.Timer = null;
+    private _provideEventTimeout: NodeJS.Timer | null = null;
 
     /** Number divisible by a multiple of 188 */
     private _maxBufferBytesBeforeReady: number = (() => {
-        let bytes = _.config.server.maxBufferBytesBeforeReady || 1024 * 1024 * 8;
+        let bytes = _.config.server!.maxBufferBytesBeforeReady || 1024 * 1024 * 8;
         bytes = bytes - (bytes % PACKET_SIZE);
         return Math.max(bytes, PACKET_SIZE);
     })();
-    private _eventEndTimeout = _.config.server.eventEndTimeout || 1000;
+    private _eventEndTimeout = _.config.server!.eventEndTimeout || 1000;
 
     constructor(options: TSFilterOptions) {
         super();
 
-        const enabletsmf = options.tsmfRelTs || 0;
+        const enabletsmf = options.tsmfRelTs ?? 0;
         if (enabletsmf !== 0) {
             this._tsmfEnableTsmfSplit = true;
-            this._tsmfTsNumber = options.tsmfRelTs;
+            this._tsmfTsNumber = enabletsmf;
         }
 
-        this._targetNetworkId = options.networkId || null;
-        this._provideServiceId = options.serviceId || null;
-        this._provideEventId = options.eventId || null;
+        this._targetNetworkId = options.networkId ?? null;
+        this._provideServiceId = options.serviceId ?? null;
+        this._provideEventId = options.eventId ?? null;
 
         if (this._provideServiceId !== null) {
             this._providePids = new Set(PROVIDE_PIDS);
@@ -171,7 +171,7 @@ export class TSFilter extends EventEmitter {
         if (this._provideEventId !== null) {
             this._ready = false;
 
-            const program = _.program.get(getProgramItemId(this._targetNetworkId, this._provideServiceId, this._provideEventId));
+            const program = _.program!.get(getProgramItemId(this._targetNetworkId ?? -1, this._provideServiceId ?? -1, this._provideEventId ?? -1));
             if (program) {
                 let timeout = program.startAt + program.duration - Date.now();
                 if (program.duration === 1) {
@@ -212,12 +212,12 @@ export class TSFilter extends EventEmitter {
             }
         }
 
-        this._parser.on("pat", this._onPAT.bind(this));
-        this._parser.on("pmt", this._onPMT.bind(this));
-        this._parser.on("nit", this._onNIT.bind(this));
-        this._parser.on("sdt", this._onSDT.bind(this));
-        this._parser.on("eit", this._onEIT.bind(this));
-        this._parser.on("tot", this._onTOT.bind(this));
+        this._parser!.on("pat", this._onPAT.bind(this));
+        this._parser!.on("pmt", this._onPMT.bind(this));
+        this._parser!.on("nit", this._onNIT.bind(this));
+        this._parser!.on("sdt", this._onSDT.bind(this));
+        this._parser!.on("eit", this._onEIT.bind(this));
+        this._parser!.on("tot", this._onTOT.bind(this));
 
         this.once("end", this._close.bind(this));
         this.once("close", this._close.bind(this));
@@ -247,10 +247,10 @@ export class TSFilter extends EventEmitter {
         if (this._offset > 0) {
             if (length >= PACKET_SIZE - this._offset) {
                 offset = PACKET_SIZE - this._offset;
-                packets.push(Buffer.concat([this._packet.slice(0, this._offset), chunk.slice(0, offset)]));
+                packets.push(Buffer.concat([this._packet!.slice(0, this._offset), chunk.slice(0, offset)]));
                 this._offset = 0;
             } else {
-                chunk.copy(this._packet, this._offset);
+                chunk.copy(this._packet!, this._offset);
                 this._offset += length;
 
                 // chunk drained
@@ -268,7 +268,7 @@ export class TSFilter extends EventEmitter {
             if (length - offset >= PACKET_SIZE) {
                 packets.push(chunk.slice(offset, offset + PACKET_SIZE));
             } else {
-                chunk.copy(this._packet, 0, offset);
+                chunk.copy(this._packet!, 0, offset);
                 this._offset = length - offset;
             }
         }
@@ -276,8 +276,8 @@ export class TSFilter extends EventEmitter {
         this._processPackets(packets);
 
         if (this._buffer.length !== 0) {
-            if (this._ready && this._output.writableLength < this._output.writableHighWaterMark) {
-                this._output.write(Buffer.concat(this._buffer));
+            if (this._ready && this._output!.writableLength < this._output!.writableHighWaterMark) {
+                this._output!.write(Buffer.concat(this._buffer));
                 this._buffer.length = 0;
             } else {
                 const head = this._buffer.length - this._maxBufferBytesBeforeReady / PACKET_SIZE;
@@ -338,8 +338,8 @@ export class TSFilter extends EventEmitter {
 
             // transport_error_indicator
             if ((packet[1] & 0x80) >> 7 === 1) {
-                if (this.streamInfo[pid]) {
-                    ++this.streamInfo[pid].drop;
+                if (this.streamInfo![pid]) {
+                    ++this.streamInfo![pid].drop;
                 }
                 continue;
             }
@@ -349,13 +349,13 @@ export class TSFilter extends EventEmitter {
                 const targetStart = packet[7] + 4;
                 if (targetStart + 4 > 188) {
                     // out of range. this packet is broken.
-                    if (this.streamInfo[pid]) {
-                        ++this.streamInfo[pid].drop;
+                    if (this.streamInfo![pid]) {
+                        ++this.streamInfo![pid].drop;
                     }
                     continue; // drop
                 }
-                if (this._patCRC.compare(packet, targetStart, targetStart + 4) !== 0) {
-                    packet.copy(this._patCRC, 0, targetStart, targetStart + 4);
+                if (this._patCRC!.compare(packet, targetStart, targetStart + 4) !== 0) {
+                    packet.copy(this._patCRC!, 0, targetStart, targetStart + 4);
                     parsingBuffers.push(packet);
                 }
             } else if ((pid === 0x12 && (this._parseEIT || this._provideEventId !== null)) || pid === 0x14 || this._parsePids.has(pid)) {
@@ -372,17 +372,17 @@ export class TSFilter extends EventEmitter {
             // PAT (0) rewriting
             if (pid === 0 && this._pmtPid !== -1) {
                 packet = Buffer.from(packet);
-                this._patsec.copy(packet, 5, 0);
+                this._patsec!.copy(packet, 5, 0);
             }
 
             // packet counter
-            if (this.streamInfo[pid] === undefined) {
-                this.streamInfo[pid] = {
+            if (this.streamInfo![pid] === undefined) {
+                this.streamInfo![pid] = {
                     packet: 0,
                     drop: 0
                 };
             }
-            ++this.streamInfo[pid].packet;
+            ++this.streamInfo![pid].packet;
 
             this._buffer.push(packet);
         }
@@ -392,7 +392,7 @@ export class TSFilter extends EventEmitter {
                 if (this._closed) {
                     return;
                 }
-                this._parser.write(parsingBuffers);
+                this._parser!.write(parsingBuffers);
                 parsingBuffers.length = 0;
             });
         }
@@ -433,7 +433,7 @@ export class TSFilter extends EventEmitter {
 
             this._serviceIds.add(serviceId);
 
-            const item = this._targetNetworkId === null ? null : _.service.get(this._targetNetworkId, serviceId);
+            const item = this._targetNetworkId === null ? null : _.service!.get(this._targetNetworkId, serviceId);
 
             log.debug("TSFilter#_onPAT: detected PMT PID=%d as serviceId=%d (%s)", program.program_map_PID, serviceId, item ? item.name : "unregistered");
 
@@ -442,8 +442,8 @@ export class TSFilter extends EventEmitter {
                 if (this._pmtPid !== program.program_map_PID) {
                     this._pmtPid = program.program_map_PID;
 
-                    if (this._providePids.has(this._pmtPid) === false) {
-                        this._providePids.add(this._pmtPid);
+                    if (this._providePids!.has(this._pmtPid) === false) {
+                        this._providePids!.add(this._pmtPid);
                     }
                     if (this._parsePids.has(this._pmtPid) === false) {
                         this._parsePids.add(this._pmtPid);
@@ -453,32 +453,32 @@ export class TSFilter extends EventEmitter {
                     data._raw.copy(this._patsec, 0, 0, 8);
 
                     // section_length
-                    this._patsec[2] = 17; // 0x11
+                    this._patsec![2] = 17; // 0x11
 
                     // network_number = 0
-                    this._patsec[8] = 0;
-                    this._patsec[9] = 0;
+                    this._patsec![8] = 0;
+                    this._patsec![9] = 0;
                     // network_PID
-                    this._patsec[10] = 224;
-                    this._patsec[11] = 16;
+                    this._patsec![10] = 224;
+                    this._patsec![11] = 16;
 
                     // program_number
-                    this._patsec[12] = serviceId >> 8;
-                    this._patsec[13] = serviceId & 255;
+                    this._patsec![12] = serviceId >> 8;
+                    this._patsec![13] = serviceId & 255;
                     // program_map_PID
-                    this._patsec[14] = (this._pmtPid >> 8) + 224;
-                    this._patsec[15] = this._pmtPid & 255;
+                    this._patsec![14] = (this._pmtPid >> 8) + 224;
+                    this._patsec![15] = this._pmtPid & 255;
 
                     // calculate CRC32
-                    this._patsec.writeInt32BE(TsCrc32.calc(this._patsec.slice(0, 16)), 16);
+                    this._patsec!.writeInt32BE(TsCrc32.calc(this._patsec!.slice(0, 16)), 16);
 
                     // padding
-                    this._patsec.fill(0xff, 20);
+                    this._patsec!.fill(0xff, 20);
                 }
             }
 
             if (this._parseEIT && item) {
-                for (const service of _.service.findByNetworkId(this._targetNetworkId)) {
+                for (const service of _.service!.findByNetworkId(this._targetNetworkId ?? -1)) {
                     if (this._parseServiceIds.has(service.serviceId) === false) {
                         this._parseServiceIds.add(service.serviceId);
 
@@ -525,13 +525,13 @@ export class TSFilter extends EventEmitter {
         }
 
         if (data.program_info[0]) {
-            this._providePids.add(data.program_info[0].CA_PID);
+            this._providePids?.add(data.program_info[0].CA_PID);
         }
 
-        this._providePids.add(data.PCR_PID);
+        this._providePids?.add(data.PCR_PID);
 
         for (const stream of data.streams) {
-            this._providePids.add(stream.elementary_PID);
+            this._providePids?.add(stream.elementary_PID);
         }
 
         // sleep
@@ -602,7 +602,7 @@ export class TSFilter extends EventEmitter {
                 }
             }
 
-            if (_services.some(_service => _service.id === service.service_id) === false) {
+            if (_services.some(_service => (_service as any).id === service.service_id) === false) {
                 _services.push({
                     networkId: data.original_network_id,
                     serviceId: service.service_id,
@@ -649,8 +649,8 @@ export class TSFilter extends EventEmitter {
 
         // write EPG stream and store result
         if (this._parseEIT && this._parseServiceIds.has(data.service_id)) {
-            if (!this._epg && status.epg[this._targetNetworkId] !== true) {
-                status.epg[this._targetNetworkId] = true;
+            if (!this._epg && status.epg[this._targetNetworkId ?? -1] !== true) {
+                status.epg[this._targetNetworkId ?? -1] = true;
                 this._epg = new EPG();
 
                 // Logo
@@ -723,7 +723,7 @@ export class TSFilter extends EventEmitter {
             const dataModule = new tsDataModule.TsDataModuleLogo(dlData).decode();
             for (const logo of dataModule.logos) {
                 for (const logoService of logo.services) {
-                    const service = _.service.get(logoService.original_network_id, logoService.service_id);
+                    const service = _.service!.get(logoService.original_network_id, logoService.service_id);
                     if (!service) {
                         continue;
                     }
@@ -797,11 +797,11 @@ export class TSFilter extends EventEmitter {
         // target service(s)
         const targetServices: ServiceItem[] = [];
         if (this._provideServiceId === null) {
-            targetServices.push(..._.service.findByNetworkId(this._targetNetworkId));
+            targetServices.push(..._.service!.findByNetworkId(this._targetNetworkId ?? -1));
         } else if (this._enableParseCDT) {
-            targetServices.push(_.service.get(this._targetNetworkId, this._provideServiceId));
+            targetServices.push(_.service!.get(this._targetNetworkId ?? -1, this._provideServiceId));
         } else if (this._enableParseDSMCC && this._targetNetworkId === 4) {
-            targetServices.push(..._.service.findByNetworkId(4), ..._.service.findByNetworkId(6), ..._.service.findByNetworkId(7));
+            targetServices.push(..._.service!.findByNetworkId(4), ..._.service!.findByNetworkId(6), ..._.service!.findByNetworkId(7));
         }
 
         const logoIdNetworkMap: { [networkId: number]: Set<number> } = {};
@@ -816,7 +816,7 @@ export class TSFilter extends EventEmitter {
         }
 
         const now = Date.now();
-        const logoDataInterval = _.config.server.logoDataInterval || 1000 * 60 * 60 * 24 * 7; // 7 days
+        const logoDataInterval = _.config.server!.logoDataInterval || 1000 * 60 * 60 * 24 * 7; // 7 days
 
         for (const networkId in logoIdNetworkMap) {
             for (const logoId of logoIdNetworkMap[networkId]) {
@@ -825,7 +825,7 @@ export class TSFilter extends EventEmitter {
                 }
 
                 // check logoDataInterval
-                if (now - (await Service.getLogoDataMTime(this._targetNetworkId, logoId)) > logoDataInterval) {
+                if (now - (await Service.getLogoDataMTime(this._targetNetworkId ?? -1, logoId)) > logoDataInterval) {
                     if (this._closed) {
                         return; // break all loops
                     }
@@ -837,12 +837,12 @@ export class TSFilter extends EventEmitter {
                         }
 
                         // add listener
-                        this._parser.on("cdt", this._onCDT.bind(this));
+                        this._parser!.on("cdt", this._onCDT.bind(this));
 
                         // add timer
                         this._logoDataTimer = setTimeout(() => {
                             this._parsePids.delete(0x29); // CDT
-                            this._parser.removeAllListeners("cdt");
+                            this._parser!.removeAllListeners("cdt");
 
                             log.info("TSFilter#_standbyLogoData: stopped waiting for logo data (networkId=%d, logoId=%d)", this._targetNetworkId, logoId);
                         }, 1000 * 60 * 30); // 30 mins
@@ -855,16 +855,16 @@ export class TSFilter extends EventEmitter {
                         }
 
                         // add listener
-                        this._parser.on("dsmcc", this._onDSMCC.bind(this));
+                        this._parser!.on("dsmcc", this._onDSMCC.bind(this));
 
                         // add timer
                         this._logoDataTimer = setTimeout(() => {
-                            delete this._logoDataTimer;
+                            this._logoDataTimer = null;
 
                             for (const essEsPid of this._essEsPids.values()) {
                                 this._parsePids.delete(essEsPid);
                             }
-                            this._parser.removeAllListeners("dsmcc");
+                            this._parser!.removeAllListeners("dsmcc");
 
                             log.info("TSFilter#_standbyLogoData: stopped waiting for logo data (networkId=[4,6,7])");
                         }, 1000 * 60 * 30); // 30 mins
@@ -883,7 +883,7 @@ export class TSFilter extends EventEmitter {
         const serviceId = data.service_id;
         const versionNumber = data.version_number;
 
-        const stateByNet = this._epgState[networkId] || (this._epgState[networkId] = {});
+        const stateByNet = this._epgState![networkId] || (this._epgState![networkId] = {});
         let stateBySrv = stateByNet[serviceId];
 
         if (!stateByNet[serviceId]) {
@@ -960,7 +960,7 @@ export class TSFilter extends EventEmitter {
         targetFlag.version_number = versionNumber;
 
         let ready = true;
-        isReady: for (const nid in this._epgState) {
+        isReady: for (const nid in this._epgState!) {
             for (const sid in this._epgState[nid]) {
                 for (const table of this._epgState[nid][sid].basic.flags.concat(this._epgState[nid][sid].extended.flags)) {
                     for (let i = 0; i < table.flag.length; i++) {
@@ -977,7 +977,7 @@ export class TSFilter extends EventEmitter {
             this._epgReady = true;
             this._clearEpgState();
 
-            for (const service of _.service.findByNetworkId(this._targetNetworkId)) {
+            for (const service of _.service!.findByNetworkId(this._targetNetworkId ?? -1)) {
                 service.epgReady = true;
             }
 
@@ -1002,38 +1002,38 @@ export class TSFilter extends EventEmitter {
         this._closed = true;
 
         // clear timer
-        clearTimeout(this._pmtTimer);
-        clearTimeout(this._provideEventTimeout);
-        clearTimeout(this._logoDataTimer);
+        clearTimeout(this._pmtTimer ?? undefined);
+        clearTimeout(this._provideEventTimeout ?? undefined);
+        clearTimeout(this._logoDataTimer ?? undefined);
 
         // clear buffer
         setImmediate(() => {
-            delete this._packet;
-            delete this._buffer;
-            delete this._patsec;
-            delete this._patCRC;
+            this._packet = null;
+            this._buffer = [];
+            this._patsec = null;
+            this._patCRC = null;
         });
 
         // clear parser instance
-        this._parser.removeAllListeners();
-        this._parser.end();
-        delete this._parser;
+        this._parser!.removeAllListeners();
+        this._parser!.end();
+        this._parser = null;
 
         // clear EPG instance & state
         if (this._epg) {
             this._epg.end();
-            delete this._epg;
-            status.epg[this._targetNetworkId] = false; // update status
+            this._epg = null;
+            status.epg[this._targetNetworkId ?? -1] = false; // update status
 
             if (this._epgReady === true) {
                 const now = Date.now();
-                for (const service of _.service.findByNetworkId(this._targetNetworkId)) {
+                for (const service of _.service!.findByNetworkId(this._targetNetworkId ?? -1)) {
                     service.epgUpdatedAt = now;
                 }
             }
 
             this._clearEpgState();
-            delete this._epgState;
+            this._epgState = null;
         }
 
         // clear output stream
@@ -1042,11 +1042,11 @@ export class TSFilter extends EventEmitter {
                 this._output.end();
             }
             this._output.removeAllListeners();
-            delete this._output;
+            this._output = null;
         }
 
         // clear streamInfo
-        delete this.streamInfo;
+        this.streamInfo = null;
 
         --status.streamCount.tsFilter;
 

@@ -38,11 +38,11 @@ export class ChannelItem {
         this._name = config.name;
         this._type = config.type;
         this._channel = config.channel;
-        this._satellite = config.satellite;
-        this._space = config.space;
-        this._freq = config.freq;
-        this._polarity = config.polarity;
-        this._tsmfRelTs = config.tsmfRelTs;
+        this._satellite = config.satellite!;
+        this._space = config.space!;
+        this._freq = config.freq!;
+        this._polarity = config.polarity!;
+        this._tsmfRelTs = config.tsmfRelTs!;
 
         if (config.serviceId) {
             this.addService(config.serviceId);
@@ -119,7 +119,7 @@ export class ChannelItem {
 
             let services;
             try {
-                services = await _.tuner.getServices(this);
+                services = await _.tuner!.getServices(this);
             } catch (e) {
                 log.warn("ChannelItem#'%s' serviceId=%d check has failed [%s]", this._name, serviceId, e);
 
@@ -137,16 +137,16 @@ export class ChannelItem {
 
             log.debug("ChannelItem#'%s' serviceId=%d: %s", this._name, serviceId, JSON.stringify(service, null, "  "));
 
-            _.service.add(new ServiceItem(this, service.networkId, service.serviceId, service.transportStreamId, service.name, service.type, service.logoId));
+            _.service!.add(new ServiceItem(this, service.networkId, service.serviceId, service.transportStreamId, service.name, service.type, service.logoId));
         });
     }
 
     getServices(): ServiceItem[] {
-        return _.service.findByChannel(this);
+        return _.service!.findByChannel(this);
     }
 
     getStream(user: User, output: Writable): Promise<TSFilter> {
-        return _.tuner.initChannelStream(this, user, output);
+        return _.tuner!.initChannelStream(this, user, output);
     }
 
     serviceScan(add: boolean): void {
@@ -157,7 +157,7 @@ export class ChannelItem {
 
             let services: Service[];
             try {
-                services = await _.tuner.getServices(this);
+                services = await _.tuner!.getServices(this);
             } catch (e) {
                 log.warn("ChannelItem#'%s' service scan has failed [%s]", this._name, e);
 
@@ -168,16 +168,16 @@ export class ChannelItem {
             log.debug("ChannelItem#'%s' services: %s", this._name, JSON.stringify(services, null, "  "));
 
             services.forEach(service => {
-                const item = _.service.get(service.networkId, service.serviceId);
+                const item = _.service!.get(service.networkId, service.serviceId);
                 if (item !== null) {
                     item.name = service.name;
                     item.type = service.type;
                     if (service.logoId > -1) {
                         item.logoId = service.logoId;
                     }
-                    item.remoteControlKeyId = service.remoteControlKeyId;
+                    item.remoteControlKeyId = service.remoteControlKeyId!;
                 } else if (add === true) {
-                    _.service.add(new ServiceItem(this, service.networkId, service.serviceId, service.transportStreamId, service.name, service.type, service.logoId, service.remoteControlKeyId));
+                    _.service!.add(new ServiceItem(this, service.networkId, service.serviceId, service.transportStreamId, service.name, service.type, service.logoId, service.remoteControlKeyId));
                 }
             });
 

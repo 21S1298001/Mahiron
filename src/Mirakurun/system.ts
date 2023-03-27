@@ -18,44 +18,34 @@ import { IPv4, IPv6 } from "ip-num/IPNumber.js";
 import { IPv4CidrRange, IPv6CidrRange } from "ip-num/IPRange.js";
 import { IPv4Prefix, IPv6Prefix } from "ip-num/Prefix.js";
 import { Validator } from "ip-num/Validator.js";
-import { networkInterfaces } from "os";
+import { NetworkInterfaceInfo, networkInterfaces } from "os";
 import { _ } from "./_.js";
 
 export function getIPv4AddressesForListen(): string[] {
-    const addresses = [];
-
     const interfaces = networkInterfaces();
-    Object.keys(interfaces).forEach(k => {
-        interfaces[k]
-            .filter(a => {
-                return a.family === "IPv4" && a.internal === false && isPermittedIPAddress(a.address) === true;
-            })
-            .forEach(a => addresses.push(a.address));
-    });
 
-    return addresses;
+    return Object.values(interfaces)
+        .filter((a): a is NetworkInterfaceInfo[] => a !== undefined)
+        .flat()
+        .filter(a => a.family === "IPv4" && a.internal === false && isPermittedIPAddress(a.address) === true)
+        .map(a => a.address);
 }
 
 export function getIPv6AddressesForListen(): string[] {
-    const addresses = [];
-
     const interfaces = networkInterfaces();
-    Object.keys(interfaces).forEach(k => {
-        interfaces[k]
-            .filter(a => {
-                return a.family === "IPv6" && a.internal === false && isPermittedIPAddress(a.address) === true;
-            })
-            .forEach(a => addresses.push(a.address + "%" + k));
-    });
 
-    return addresses;
+    return Object.values(interfaces)
+        .filter((a): a is NetworkInterfaceInfo[] => a !== undefined)
+        .flat()
+        .filter(a => a.family === "IPv6" && a.internal === false && isPermittedIPAddress(a.address) === true)
+        .map(a => a.address);
 }
 
 export function isPermittedIPAddress(addr: string): boolean {
     const [isIPv4] = Validator.isValidIPv4String(addr);
     if (isIPv4) {
         const ipv4 = new IPv4CidrRange(new IPv4(addr), new IPv4Prefix(BigInt(32)));
-        for (const rangeString of _.config.server.allowIPv4CidrRanges) {
+        for (const rangeString of _.config.server?.allowIPv4CidrRanges!) {
             if (ipv4.inside(IPv4CidrRange.fromCidr(rangeString))) {
                 return true;
             }
@@ -65,7 +55,7 @@ export function isPermittedIPAddress(addr: string): boolean {
     const [isIPv6] = Validator.isValidIPv6String(addr);
     if (isIPv6) {
         const ipv6 = new IPv6CidrRange(new IPv6(addr), new IPv6Prefix(BigInt(128)));
-        for (const rangeString of _.config.server.allowIPv6CidrRanges) {
+        for (const rangeString of _.config.server?.allowIPv6CidrRanges!) {
             if (ipv6.inside(IPv6CidrRange.fromCidr(rangeString))) {
                 return true;
             }

@@ -32,7 +32,7 @@ export class Service {
             throw new Error("Invalid `logoId`");
         }
 
-        return join(LOGO_DATA_DIR_PATH, `${networkId}_${logoId}.png`);
+        return join(LOGO_DATA_DIR_PATH!, `${networkId}_${logoId}.png`);
     }
 
     static async getLogoDataMTime(networkId: number, logoId: number): Promise<number> {
@@ -59,7 +59,7 @@ export class Service {
         }
     }
 
-    static async loadLogoData(networkId: number, logoId: number): Promise<Buffer> {
+    static async loadLogoData(networkId: number, logoId: number): Promise<Buffer | null> {
         if (typeof logoId !== "number" || logoId < 0) {
             return null;
         }
@@ -101,7 +101,7 @@ export class Service {
     }
 
     private _items: ServiceItem[] = [];
-    private _saveTimerId: NodeJS.Timer;
+    private _saveTimerId?: NodeJS.Timer;
 
     constructor() {
         this._load();
@@ -148,7 +148,7 @@ export class Service {
     exists(id: number): boolean;
     exists(networkId: number, serviceId: number): boolean;
     exists(id: number, serviceId?: number) {
-        return this.get(id, serviceId) !== null;
+        return this.get(id, serviceId ?? -1) !== null;
     }
 
     findByChannel(channel: ChannelItem): ServiceItem[] {
@@ -202,7 +202,7 @@ export class Service {
 
         const services = await loadServices(_.configIntegrity.channels);
         for (const service of services) {
-            const channelItem = _.channel.get(service.channel.type, service.channel.channel);
+            const channelItem = _.channel!.get(service.channel.type, service.channel.channel);
 
             if (channelItem === null) {
                 updated = true;

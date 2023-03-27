@@ -133,7 +133,7 @@ interface EventState {
 
 // forked from rndomhack/node-aribts/blob/1e7ef94bba3d6ac26aec764bf24dde2c2852bfcb/lib/epg.js
 export class EPG {
-    private _epg: { [networkId: number]: { [serviceId: number]: { [eventId: number]: EventState } } } = {};
+    private _epg: { [networkId: number]: { [serviceId: number]: { [eventId: number]: EventState } } } | null = null;
 
     write(eit: EIT) {
         if (!this._epg) {
@@ -165,7 +165,7 @@ export class EPG {
 
             if (!service[e.event_id]) {
                 const id = getProgramItemId(networkId, eit.service_id, e.event_id);
-                if (!_.program.exists(id)) {
+                if (!_.program!.exists(id)) {
                     if (UNKNOWN_START_TIME.compare(e.start_time) === 0) {
                         continue;
                     }
@@ -179,7 +179,7 @@ export class EPG {
                         isFree: e.free_CA_mode === 0,
                         _pf: isPF || undefined
                     };
-                    _.program.add(programItem);
+                    _.program!.add(programItem);
                 }
 
                 state = {
@@ -225,7 +225,7 @@ export class EPG {
                     state.version[eit.table_id] = eit.version_number;
 
                     if (UNKNOWN_START_TIME.compare(e.start_time) !== 0) {
-                        _.program.set(state.programId, {
+                        _.program!.set(state.programId, {
                             startAt: getTimeFromMJD(e.start_time),
                             duration: UNKNOWN_DURATION.compare(e.duration) === 0 ? 1 : getTimeFromBCD24(e.duration),
                             isFree: e.free_CA_mode === 0,
@@ -244,7 +244,7 @@ export class EPG {
                         }
                         state.short.version[eit.table_id] = eit.version_number;
 
-                        _.program.set(state.programId, {
+                        _.program!.set(state.programId, {
                             name: new TsChar(d.event_name_char).decode(),
                             description: new TsChar(d.text_char).decode()
                         });
@@ -261,11 +261,11 @@ export class EPG {
                             break;
                         }
 
-                        if (!state.extended._descs[d.descriptor_number]) {
-                            state.extended._descs[d.descriptor_number] = d.items;
+                        if (!state.extended._descs![d.descriptor_number]) {
+                            state.extended._descs![d.descriptor_number] = d.items;
 
                             let comp = true;
-                            for (const descs of state.extended._descs) {
+                            for (const descs of state.extended._descs!) {
                                 if (typeof descs === "undefined") {
                                     comp = false;
                                     break;
@@ -278,7 +278,7 @@ export class EPG {
                             const extended: any = {};
 
                             let current = "";
-                            for (const descs of state.extended._descs) {
+                            for (const descs of state.extended._descs!) {
                                 for (const desc of descs) {
                                     const key = desc.item_description_length === 0 ? current : new TsChar(desc.item_description_char).decode();
                                     current = key;
@@ -289,7 +289,7 @@ export class EPG {
                                 extended[key] = new TsChar(extended[key]).decode();
                             }
 
-                            _.program.set(state.programId, {
+                            _.program!.set(state.programId, {
                                 extended: extended
                             });
 
@@ -306,10 +306,10 @@ export class EPG {
                         }
                         state.component.version[eit.table_id] = eit.version_number;
 
-                        _.program.set(state.programId, {
+                        _.program!.set(state.programId, {
                             video: {
-                                type: <ProgramVideoType>STREAM_CONTENT[d.stream_content] || null,
-                                resolution: <ProgramVideoResolution>COMPONENT_TYPE[d.component_type] || null,
+                                type: <ProgramVideoType>STREAM_CONTENT[d.stream_content as keyof typeof STREAM_CONTENT] || null,
+                                resolution: <ProgramVideoResolution>COMPONENT_TYPE[d.component_type as keyof typeof COMPONENT_TYPE] || null,
 
                                 streamContent: d.stream_content,
                                 componentType: d.component_type
@@ -325,7 +325,7 @@ export class EPG {
                         }
                         state.content.version[eit.table_id] = eit.version_number;
 
-                        _.program.set(state.programId, {
+                        _.program!.set(state.programId, {
                             genres: d.contents.map(getGenre)
                         });
 
@@ -347,11 +347,11 @@ export class EPG {
                             componentType: d.component_type,
                             componentTag: d.component_tag,
                             isMain: d.main_component_flag === 1,
-                            samplingRate: SAMPLING_RATE[d.sampling_rate],
+                            samplingRate: SAMPLING_RATE[d.sampling_rate as keyof typeof SAMPLING_RATE],
                             langs
                         };
 
-                        _.program.set(state.programId, {
+                        _.program!.set(state.programId, {
                             audios: Object.values(state.audio._audios)
                         });
 
@@ -364,7 +364,7 @@ export class EPG {
                         }
                         state.series.version[eit.table_id] = eit.version_number;
 
-                        _.program.set(state.programId, {
+                        _.program!.set(state.programId, {
                             series: {
                                 id: d.series_id,
                                 repeat: d.repeat_label,
@@ -387,7 +387,7 @@ export class EPG {
 
                         state.group._groups[d.group_type] = d.group_type < 4 ? d.events.map(getRelatedProgramItem.bind(d)) : d.other_network_events.map(getRelatedProgramItem.bind(d));
 
-                        _.program.set(state.programId, {
+                        _.program!.set(state.programId, {
                             relatedItems: state.group._groups.flat()
                         });
 
@@ -399,7 +399,7 @@ export class EPG {
 
     end() {
         if (this._epg) {
-            delete this._epg;
+            this._epg = null;
         }
     }
 }
@@ -433,7 +433,7 @@ function getGenre(content: any): ProgramGenre {
 }
 
 function getLangCode(buffer: Buffer): ProgramAudioLanguageCode {
-    for (const code in ISO_639_LANG_CODE) {
+    for (const code of Object.keys(ISO_639_LANG_CODE) as (keyof typeof ISO_639_LANG_CODE)[]) {
         if (ISO_639_LANG_CODE[code].compare(buffer) === 0) {
             return code as ProgramAudioLanguageCode;
         }
@@ -441,7 +441,7 @@ function getLangCode(buffer: Buffer): ProgramAudioLanguageCode {
     return "etc";
 }
 
-function getRelatedProgramItem(event: any): ProgramRelatedItem {
+function getRelatedProgramItem(this: any, event: any): ProgramRelatedItem {
     return {
         type: this.group_type === 1 ? "shared" : this.group_type === 2 || this.group_type === 4 ? "relay" : "movement",
         networkId: event.original_network_id,

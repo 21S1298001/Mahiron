@@ -139,9 +139,9 @@ export class Program {
 
     save(): void {
         clearTimeout(this._emitTimerId);
-        this._emitTimerId = setTimeout(() => this._emit(), 1000);
+        this._emitTimerId = setTimeout(async () => await this._emit(), 1000);
         clearTimeout(this._saveTimerId);
-        this._saveTimerId = setTimeout(() => this._save(), 1000 * 10);
+        this._saveTimerId = setTimeout(async () => await this._save(), 1000 * 10);
     }
 
     private async _load(): Promise<void> {
@@ -203,10 +203,10 @@ export class Program {
         }
     }
 
-    private _save(): void {
+    private async _save(): Promise<void> {
         log.debug("saving programs...");
 
-        savePrograms(Array.from(this._itemMap.values()), _.configIntegrity.channels);
+        await savePrograms(Array.from(this._itemMap.values()), _.configIntegrity.channels);
     }
 
     private _gc(): void {

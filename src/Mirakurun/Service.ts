@@ -192,7 +192,7 @@ export class Service {
 
     save(): void {
         clearTimeout(this._saveTimerId);
-        this._saveTimerId = setTimeout(() => this._save(), 1000 * 3);
+        this._saveTimerId = setTimeout(async () => await this._save(), 1000 * 3);
     }
 
     private async _load(): Promise<void> {
@@ -237,10 +237,10 @@ export class Service {
         }
     }
 
-    private _save(): void {
+    private async _save(): Promise<void> {
         log.debug("saving services...");
 
-        saveServices(
+        await saveServices(
             this._items.map(service => service.export()),
             _.configIntegrity.channels
         );

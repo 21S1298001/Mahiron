@@ -42,7 +42,7 @@ setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mahiron/logo-data");
 import { Channel } from "./Mirakurun/Channel.js";
 import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config.js";
 import { Event } from "./Mirakurun/Event.js";
-import { log } from "./Mirakurun/log.js";
+import { config as logConfig, log } from "./Mirakurun/log.js";
 import { Program } from "./Mirakurun/Program.js";
 import { Server } from "./Mirakurun/Server.js";
 import { Service } from "./Mirakurun/Service.js";
@@ -56,17 +56,19 @@ _.configIntegrity.channels = createHash("sha256").update(JSON.stringify(_.config
 _.config.tuners = await loadTuners();
 
 if (typeof _.config.server.logLevel === "number") {
-    (<any>log).logLevel = _.config.server.logLevel;
+    logConfig.logLevel = _.config.server.logLevel;
 }
 if (typeof _.config.server.maxLogHistory === "number") {
-    (<any>log).maxLogHistory = _.config.server.maxLogHistory;
+    logConfig.maxLogHistory = _.config.server.maxLogHistory;
 }
 
 _.event = new Event();
 _.tuner = new Tuner();
 _.channel = new Channel();
 _.service = new Service();
+await _.service.setup();
 _.program = new Program();
+await _.program.setup();
 _.server = new Server();
 
 if (process.env.SETUP === "true") {

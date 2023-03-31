@@ -34,8 +34,10 @@ export class Program {
     private _emitPrograms = new Map<IProgram, EventType>();
     private _programGCInterval = _.config.server.programGCInterval || 1000 * 60 * 60; // 1 hour
 
-    constructor() {
-        this._load();
+    constructor() {}
+
+    async setup() {
+        await this._load();
 
         setTimeout(this._gc.bind(this), this._programGCInterval);
     }

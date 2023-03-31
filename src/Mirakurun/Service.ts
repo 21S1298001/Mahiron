@@ -103,8 +103,10 @@ export class Service {
     private _items: ServiceItem[] = [];
     private _saveTimerId: NodeJS.Timer;
 
-    constructor() {
-        this._load();
+    constructor() {}
+
+    async setup() {
+        await this._load();
     }
 
     get items(): ServiceItem[] {

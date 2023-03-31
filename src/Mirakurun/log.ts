@@ -25,8 +25,10 @@ export enum LogLevel {
     "DEBUG" = 3
 }
 
-export let logLevel: LogLevel = LogLevel.INFO;
-export let maxLogHistory: number = 1000;
+export const config: { logLevel: LogLevel; maxLogHistory: number } = {
+    logLevel: LogLevel.INFO,
+    maxLogHistory: 1000
+};
 
 let offsetStr: string;
 let offsetMS = 0;
@@ -41,12 +43,12 @@ class LogEvent extends EventEmitter {
     logs: string[] = [];
 
     emit(ev: "data", level: LogLevel, log: string): boolean {
-        if (logLevel < level) {
+        if (config.logLevel < level) {
             return;
         }
 
         this.logs.push(log);
-        if (this.logs.length > maxLogHistory) {
+        if (this.logs.length > config.maxLogHistory) {
             this.logs.shift();
         }
 

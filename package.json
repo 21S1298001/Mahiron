@@ -2,7 +2,7 @@
   "name": "mahiron",
   "preferGlobal": true,
   "description": "Yet another DVR Tuner Server for Japanese TV, forked from Chinachu/Mirakurun.",
-  "version": "4.0.0-alpha.1",
+  "version": "4.0.0-alpha.2",
   "homepage": "https://github.com/21S1298001/Mahiron",
   "license": "Apache-2.0",
   "packageManager": "pnpm@7.29.3",

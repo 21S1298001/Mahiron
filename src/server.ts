@@ -40,15 +40,15 @@ setEnv("PROGRAMS_DB_PATH", "/usr/local/var/db/mahiron/programs.json");
 setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mahiron/logo-data");
 
 import { Channel } from "./Mirakurun/Channel.js";
-import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config.js";
 import { Event } from "./Mirakurun/Event.js";
-import { config as logConfig, log } from "./Mirakurun/log.js";
 import { Program } from "./Mirakurun/Program.js";
 import { Server } from "./Mirakurun/Server.js";
 import { Service } from "./Mirakurun/Service.js";
-import { status } from "./Mirakurun/status.js";
 import { Tuner } from "./Mirakurun/Tuner.js";
 import { _ } from "./Mirakurun/_.js";
+import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config.js";
+import { log, config as logConfig } from "./Mirakurun/log.js";
+import { status } from "./Mirakurun/status.js";
 
 _.config.server = await loadServer();
 _.config.channels = await loadChannels();
@@ -76,7 +76,7 @@ if (process.env.SETUP === "true") {
     process.exit(0);
 }
 
-_.server.init();
+await _.server.init();
 
 function setEnv(name: string, value: string) {
     process.env[name] = process.env[name] || value;

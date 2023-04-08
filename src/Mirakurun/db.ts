@@ -156,7 +156,7 @@ export async function savePrograms(data: Program[], integrity: string): Promise<
 async function load(path: string, integrity: string) {
     log.info("load db `%s` w/ integrity (%s)", path, integrity);
 
-    if (exists(path)) {
+    if (await exists(path)) {
         const json = await readFile(path, { encoding: "utf8" });
         try {
             const array: any[] = JSON.parse(json);

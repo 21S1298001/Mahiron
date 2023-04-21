@@ -17,7 +17,6 @@
 import { ChannelItem } from "./ChannelItem.js";
 import { ChannelType } from "./common.js";
 import { log } from "./log.js";
-import { queue } from "./queue.js";
 import { status } from "./status.js";
 import { _ } from "./_.js";
 
@@ -146,7 +145,7 @@ export class Channel {
     }
 
     private _epgGatherer(): void {
-        queue.add(async () => {
+        _.queue?.add(async () => {
             const networkIds = [...new Set(_.service.items.map(item => item.networkId))];
 
             networkIds.forEach(networkId => {
@@ -157,7 +156,7 @@ export class Channel {
                 }
                 const service = services[0];
 
-                queue.add(async () => {
+                _.queue?.add(async () => {
                     if (service.epgReady === true) {
                         const now = Date.now();
                         if (now - service.epgUpdatedAt < this._epgGatheringInterval) {
@@ -199,7 +198,7 @@ export class Channel {
                 log.debug("Network#%d EPG gathering has queued", networkId);
             });
 
-            queue.add(async () => {
+            _.queue?.add(async () => {
                 setTimeout(this._epgGatherer.bind(this), this._epgGatheringInterval);
             });
         });

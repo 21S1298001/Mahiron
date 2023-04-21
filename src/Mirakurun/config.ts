@@ -44,7 +44,8 @@ const {
     DISABLE_WEB_UI,
     ALLOW_IPV4_CIDR_RANGES,
     ALLOW_IPV6_CIDR_RANGES,
-    RANDOMIZE_TUNERS
+    RANDOMIZE_TUNERS,
+    MAX_CONCURRENT_WORKERS
 } = process.env;
 
 const IS_DOCKER = DOCKER === "YES";
@@ -77,6 +78,7 @@ export interface Server {
     readonly allowIPv4CidrRanges?: string[];
     readonly allowIPv6CidrRanges?: string[];
     readonly randomizeTuners?: boolean;
+    readonly maxConcurrentWorkers?: number;
 }
 
 export interface Tuner {
@@ -221,6 +223,9 @@ export async function loadServer(): Promise<Server> {
 
         if (RANDOMIZE_TUNERS === "true") {
             config.randomizeTuners = true;
+        }
+        if (typeof MAX_CONCURRENT_WORKERS !== "undefined" && /^[0-9]+$/.test(MAX_CONCURRENT_WORKERS)) {
+            config.maxConcurrentWorkers = parseInt(MAX_CONCURRENT_WORKERS, 10);
         }
 
         log.info("load server config (merged w/ env): %s", JSON.stringify(config));

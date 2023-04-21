@@ -39,21 +39,24 @@ setEnv("SERVICES_DB_PATH", "/usr/local/var/db/mahiron/services.json");
 setEnv("PROGRAMS_DB_PATH", "/usr/local/var/db/mahiron/programs.json");
 setEnv("LOGO_DATA_DIR_PATH", "/usr/local/var/db/mahiron/logo-data");
 
+import PromiseQueue from "promise-queue";
 import { Channel } from "./Mirakurun/Channel.js";
+import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config.js";
 import { Event } from "./Mirakurun/Event.js";
+import { config as logConfig, log } from "./Mirakurun/log.js";
 import { Program } from "./Mirakurun/Program.js";
 import { Server } from "./Mirakurun/Server.js";
 import { Service } from "./Mirakurun/Service.js";
+import { status } from "./Mirakurun/status.js";
 import { Tuner } from "./Mirakurun/Tuner.js";
 import { _ } from "./Mirakurun/_.js";
-import { loadChannels, loadServer, loadTuners } from "./Mirakurun/config.js";
-import { log, config as logConfig } from "./Mirakurun/log.js";
-import { status } from "./Mirakurun/status.js";
 
 _.config.server = await loadServer();
 _.config.channels = await loadChannels();
 _.configIntegrity.channels = createHash("sha256").update(JSON.stringify(_.config.channels)).digest("base64");
 _.config.tuners = await loadTuners();
+
+_.queue = new PromiseQueue(_.config.server.maxConcurrentWorkers ?? 1, Infinity);
 
 if (typeof _.config.server.logLevel === "number") {
     logConfig.logLevel = _.config.server.logLevel;

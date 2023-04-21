@@ -19,7 +19,6 @@ import { sleep, updateObject } from "./common.js";
 import { loadPrograms, Program as IProgram, savePrograms } from "./db.js";
 import { Event, EventType } from "./Event.js";
 import { log } from "./log.js";
-import { queue } from "./queue.js";
 import { _ } from "./_.js";
 
 export function getProgramItemId(networkId: number, serviceId: number, eventId: number): number {
@@ -215,7 +214,7 @@ export class Program {
     private _gc(): void {
         log.debug("Program GC has queued");
 
-        queue.add(async () => {
+        _.queue?.add(async () => {
             const shortExp = Date.now() - 1000 * 60 * 60 * 3; // 3 hour
             const longExp = Date.now() - 1000 * 60 * 60 * 24; // 24 hours
             const maximum = Date.now() + 1000 * 60 * 60 * 24 * 9; // 9 days

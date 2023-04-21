@@ -19,7 +19,6 @@ import { ChannelType, User } from "./common.js";
 import { Channel } from "./config.js";
 import { Service } from "./db.js";
 import { log } from "./log.js";
-import { queue } from "./queue.js";
 import { ServiceItem } from "./ServiceItem.js";
 import { TSFilter } from "./TSFilter.js";
 import { _ } from "./_.js";
@@ -114,7 +113,7 @@ export class ChannelItem {
 
         log.debug("ChannelItem#'%s' serviceId=%d check has queued", this._name, serviceId);
 
-        queue.add(async () => {
+        _.queue?.add(async () => {
             log.info("ChannelItem#'%s' serviceId=%d check has started", this._name, serviceId);
 
             let services;
@@ -152,7 +151,7 @@ export class ChannelItem {
     serviceScan(add: boolean): void {
         log.debug("ChannelItem#'%s' service scan has queued", this._name);
 
-        queue.add(async () => {
+        _.queue?.add(async () => {
             log.info("ChannelItem#'%s' service scan has started", this._name);
 
             let services: Service[];

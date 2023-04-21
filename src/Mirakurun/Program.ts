@@ -152,7 +152,8 @@ export class Program {
         const now = Date.now();
         let dropped = false;
 
-        for (const item of await loadPrograms(_.configIntegrity.channels)) {
+        const items = await loadPrograms(_.configIntegrity.channels);
+        for (const item of items) {
             if (item.networkId === undefined) {
                 dropped = true;
                 return;

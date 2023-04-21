@@ -14,6 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+import PromiseQueue from "promise-queue";
 import { Channel } from "./Channel.js";
 import { Channel as IChannel, Server as IServer, Tuner as ITuner } from "./config.js";
 import { Event } from "./Event.js";
@@ -37,6 +38,7 @@ interface Shared {
     service?: Service;
     program?: Program;
     server?: Server;
+    queue?: PromiseQueue;
 }
 
 export const _: Shared = {

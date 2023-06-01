@@ -19,7 +19,20 @@ Buffer.poolSize = 0; // disable memory pool
 import { config } from "dotenv";
 config();
 
+import { exec } from "child_process";
+import { promisify } from "util";
 import { createHash } from "crypto";
+
+if (process.platform === "linux") {
+    const execAsync = promisify(exec);
+
+    execAsync(`renice -n -10 -p ${process.pid}`).catch(e => {
+        console.warn("failed to renice\n" + (e as Error).message);
+    });
+    execAsync(`ionice -c 1 -n 7 -p ${process.pid}`).catch(e => {
+        console.warn("failed to ionice\n" + (e as Error).message);
+    });
+}
 
 process.title = "Mahiron: Server";
 

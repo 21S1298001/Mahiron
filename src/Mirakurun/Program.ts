@@ -15,11 +15,11 @@
    limitations under the License.
 */
 import sift from "sift";
+import { _ } from "./_.js";
 import { sleep, updateObject } from "./common.js";
-import { loadPrograms, Program as IProgram, savePrograms } from "./db.js";
+import { Program as IProgram, loadPrograms, savePrograms } from "./db.js";
 import { Event, EventType } from "./Event.js";
 import { log } from "./log.js";
-import { _ } from "./_.js";
 
 export function getProgramItemId(networkId: number, serviceId: number, eventId: number): number {
     return parseInt(`${networkId}${serviceId.toString(10).padStart(5, "0")}${eventId.toString(10).padStart(5, "0")}`, 10);
@@ -27,8 +27,8 @@ export function getProgramItemId(networkId: number, serviceId: number, eventId: 
 
 export class Program {
     private _itemMap = new Map<number, IProgram>();
-    private _saveTimerId: NodeJS.Timer;
-    private _emitTimerId: NodeJS.Timer;
+    private _saveTimerId: NodeJS.Timeout;
+    private _emitTimerId: NodeJS.Timeout;
     private _emitRunning = false;
     private _emitPrograms = new Map<IProgram, EventType>();
     private _programGCInterval = _.config.server.programGCInterval || 1000 * 60 * 60; // 1 hour

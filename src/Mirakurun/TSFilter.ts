@@ -17,6 +17,7 @@
 import { TsChar, TsCrc32, tsDataModule, TsLogo, TsStreamLite } from "@chinachu/aribts";
 import { EventEmitter } from "eventemitter3";
 import { Writable } from "stream";
+import { _ } from "./_.js";
 import { getTimeFromMJD, StreamInfo } from "./common.js";
 import { EPG } from "./EPG.js";
 import { log } from "./log.js";
@@ -24,7 +25,6 @@ import { getProgramItemId } from "./Program.js";
 import { Service } from "./Service.js";
 import { ServiceItem } from "./ServiceItem.js";
 import { status } from "./status.js";
-import { _ } from "./_.js";
 
 interface TSFilterOptions {
     readonly output?: Writable;
@@ -134,14 +134,14 @@ export class TSFilter extends EventEmitter {
     private _serviceIds = new Set<number>();
     private _parseServiceIds = new Set<number>();
     private _pmtPid = -1;
-    private _pmtTimer: NodeJS.Timer;
+    private _pmtTimer: NodeJS.Timeout;
     private _streamTime: number = null;
     private _essMap = new Map<number, number>(); // <serviceId, pid>
     private _essEsPids = new Set<number>();
     private _dlDataMap = new Map<number, DownloadData>();
-    private _logoDataTimer: NodeJS.Timer;
+    private _logoDataTimer: NodeJS.Timeout;
     private _provideEventLastDetectedAt = -1;
-    private _provideEventTimeout: NodeJS.Timer = null;
+    private _provideEventTimeout: NodeJS.Timeout = null;
 
     /** Number divisible by a multiple of 188 */
     private _maxBufferBytesBeforeReady: number = (() => {
@@ -840,12 +840,15 @@ export class TSFilter extends EventEmitter {
                         this._parser.on("cdt", this._onCDT.bind(this));
 
                         // add timer
-                        this._logoDataTimer = setTimeout(() => {
-                            this._parsePids.delete(0x29); // CDT
-                            this._parser.removeAllListeners("cdt");
+                        this._logoDataTimer = setTimeout(
+                            () => {
+                                this._parsePids.delete(0x29); // CDT
+                                this._parser.removeAllListeners("cdt");
 
-                            log.info("TSFilter#_standbyLogoData: stopped waiting for logo data (networkId=%d, logoId=%d)", this._targetNetworkId, logoId);
-                        }, 1000 * 60 * 30); // 30 mins
+                                log.info("TSFilter#_standbyLogoData: stopped waiting for logo data (networkId=%d, logoId=%d)", this._targetNetworkId, logoId);
+                            },
+                            1000 * 60 * 30
+                        ); // 30 mins
 
                         log.info("TSFilter#_standbyLogoData: waiting for logo data for 30 minutes... (networkId=%d, logoId=%d)", this._targetNetworkId, logoId);
                     } else if (this._enableParseDSMCC) {
@@ -858,16 +861,19 @@ export class TSFilter extends EventEmitter {
                         this._parser.on("dsmcc", this._onDSMCC.bind(this));
 
                         // add timer
-                        this._logoDataTimer = setTimeout(() => {
-                            delete this._logoDataTimer;
+                        this._logoDataTimer = setTimeout(
+                            () => {
+                                delete this._logoDataTimer;
 
-                            for (const essEsPid of this._essEsPids.values()) {
-                                this._parsePids.delete(essEsPid);
-                            }
-                            this._parser.removeAllListeners("dsmcc");
+                                for (const essEsPid of this._essEsPids.values()) {
+                                    this._parsePids.delete(essEsPid);
+                                }
+                                this._parser.removeAllListeners("dsmcc");
 
-                            log.info("TSFilter#_standbyLogoData: stopped waiting for logo data (networkId=[4,6,7])");
-                        }, 1000 * 60 * 30); // 30 mins
+                                log.info("TSFilter#_standbyLogoData: stopped waiting for logo data (networkId=[4,6,7])");
+                            },
+                            1000 * 60 * 30
+                        ); // 30 mins
 
                         log.info("TSFilter#_standbyLogoData: waiting for logo data for 30 minutes... (networkId=[4,6,7])");
                     }

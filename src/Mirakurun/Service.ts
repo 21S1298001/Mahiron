@@ -16,13 +16,13 @@
 */
 import { mkdir, readFile, stat, writeFile } from "fs/promises";
 import { dirname, join } from "path";
+import { _ } from "./_.js";
 import { ChannelItem } from "./ChannelItem.js";
 import { loadServices, saveServices } from "./db.js";
 import { Event } from "./Event.js";
 import { exists } from "./fs.js";
 import { log } from "./log.js";
 import { ServiceItem } from "./ServiceItem.js";
-import { _ } from "./_.js";
 
 const { LOGO_DATA_DIR_PATH } = process.env;
 
@@ -101,7 +101,7 @@ export class Service {
     }
 
     private _items: ServiceItem[] = [];
-    private _saveTimerId: NodeJS.Timer;
+    private _saveTimerId: NodeJS.Timeout;
 
     constructor() {}
 

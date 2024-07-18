@@ -15,6 +15,7 @@
    limitations under the License.
 */
 import { Writable } from "stream";
+import { _ } from "./_.js";
 import { ChannelItem } from "./ChannelItem.js";
 import { ChannelType, sleep, User, UserRequest } from "./common.js";
 import { Program, Service } from "./db.js";
@@ -23,7 +24,6 @@ import { ServiceItem } from "./ServiceItem.js";
 import { TSDecoder } from "./TSDecoder.js";
 import { TSFilter } from "./TSFilter.js";
 import { TunerDevice } from "./TunerDevice.js";
-import { _ } from "./_.js";
 
 export class Tuner {
     private _devices: TunerDevice[] = [];
@@ -111,7 +111,7 @@ export class Tuner {
     }
 
     async getEPG(channel: ChannelItem, time?: number): Promise<void> {
-        let timeout: NodeJS.Timer;
+        let timeout: NodeJS.Timeout;
         if (!time) {
             time = _.config.server.epgRetrievalTime || 1000 * 60 * 10;
         }

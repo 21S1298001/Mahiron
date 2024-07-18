@@ -5,7 +5,6 @@
     "target": "ES2022",
     "lib": [
       "ES2022",
-      "dom"
     ],
     "removeComments": true,
     "module": "NodeNext",

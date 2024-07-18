@@ -63,7 +63,10 @@ export class TunerDevice extends EventEmitter {
     private _exited = false;
     private _closing = false;
 
-    constructor(private _index: number, private _config: Tuner) {
+    constructor(
+        private _index: number,
+        private _config: Tuner
+    ) {
         super();
         this._isRemote = !!this._config.remoteMirakurunHost;
         Event.emit("tuner", "create", this.toJSON());

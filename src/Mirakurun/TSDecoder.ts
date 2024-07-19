@@ -15,9 +15,13 @@
    limitations under the License.
 */
 import { ChildProcess, spawn } from "child_process";
+import psTree from "ps-tree";
 import { PassThrough, Readable, TransformOptions, Writable } from "stream";
+import { promisify } from "util";
 import { log } from "./log.js";
 import { status } from "./status.js";
+
+const psTreeAsync = promisify(psTree);
 
 interface StreamOptions extends TransformOptions {
     readonly output: Writable;
@@ -79,9 +83,9 @@ export class TSDecoder extends Writable {
 
         if (this._isNew === true && this._process) {
             this._isNew = false;
-            this._timeout = setTimeout(() => {
+            this._timeout = setTimeout(async () => {
                 log.warn("TSDecoder#%d process will force killed because no respond...", this._id);
-                this._dead();
+                await this._dead();
             }, 1500);
         }
 
@@ -89,8 +93,8 @@ export class TSDecoder extends Writable {
         callback();
     }
 
-    _final() {
-        this._close();
+    async _final() {
+        await this._close();
     }
 
     private _spawn(): void {
@@ -104,9 +108,9 @@ export class TSDecoder extends Writable {
 
         const proc = (this._process = spawn(this._command));
 
-        proc.once("close", (code, signal) => {
+        proc.once("close", async (code, signal) => {
             log.info("TSDecoder#%d process has closed with exit code=%d by signal `%s` (pid=%d)", this._id, code, signal, proc.pid);
-            this._dead();
+            await this._dead();
         });
 
         proc.stderr.pipe(process.stderr);
@@ -121,7 +125,7 @@ export class TSDecoder extends Writable {
         log.info("TSDecoder#%d process has spawned by command `%s` (pid=%d)", this._id, this._command, proc.pid);
     }
 
-    private _dead(): void {
+    private async _dead(): Promise<void> {
         if (this._closed === true) {
             return;
         }
@@ -129,7 +133,7 @@ export class TSDecoder extends Writable {
         log.error("TSDecoder#%d unexpected dead", this._id);
 
         ++this._deadCount;
-        this._kill();
+        await this._kill();
 
         if (this._deadCount > 3) {
             this._fallback();
@@ -150,9 +154,16 @@ export class TSDecoder extends Writable {
         log.warn("TSDecoder#%d has been fallback into pass-through stream", this._id);
     }
 
-    private _kill(): void {
+    private async _kill(): Promise<void> {
         if (this._process) {
-            this._process.kill("SIGKILL");
+            const children = await psTreeAsync(this._process.pid);
+            for (const child of children) {
+                try {
+                    process.kill(Number(child.PID), "SIGKILL");
+                } catch (e) {
+                    log.warn("TSDecoder#%d failed to kill child process (pid=%d): %s", this._id, child.PID, e);
+                }
+            }
             delete this._process;
         }
 
@@ -167,13 +178,13 @@ export class TSDecoder extends Writable {
         }
     }
 
-    private _close(): void {
+    private async _close(): Promise<void> {
         if (this._closed === true) {
             return;
         }
         this._closed = true;
 
-        this._kill();
+        await this._kill();
 
         if (this._output.writableEnded === false) {
             this._output.end();

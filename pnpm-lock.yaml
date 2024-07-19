@@ -53,6 +53,9 @@ importers:
       promise-queue:
         specifier: 2.2.5
         version: 2.2.5
+      ps-tree:
+        specifier: ^1.2.0
+        version: 1.2.0
       rfdc:
         specifier: 1.4.1
         version: 1.4.1
@@ -93,6 +96,9 @@ importers:
       '@types/promise-queue':
         specifier: 2.2.3
         version: 2.2.3
+      '@types/ps-tree':
+        specifier: ^1.1.6
+        version: 1.1.6
       '@types/react':
         specifier: 18.3.3
         version: 18.3.3
@@ -427,6 +433,9 @@ packages:
 
   '@types/prop-types@15.7.12':
     resolution: {integrity: sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==}
+
+  '@types/ps-tree@1.1.6':
+    resolution: {integrity: sha512-PtrlVaOaI44/3pl3cvnlK+GxOM3re2526TJvPvh7W+keHIXdV4TE0ylpPBAcvFQCbGitaTXwL9u+RF7qtVeazQ==}
 
   '@types/qs@6.9.15':
     resolution: {integrity: sha512-uXHQKES6DQKKCLh441Xv/dwxOq1TVS3JPUMlEqoEglvlhR6Mxnlew/Xq/LRVHpLyk7iK3zODe1qYHIMltO7XGg==}
@@ -2482,6 +2491,8 @@ snapshots:
   '@types/promise-queue@2.2.3': {}
 
   '@types/prop-types@15.7.12': {}
+
+  '@types/ps-tree@1.1.6': {}
 
   '@types/qs@6.9.15': {}
 

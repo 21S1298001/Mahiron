@@ -240,7 +240,7 @@ export class Service {
     }
 
     private async _save(): Promise<void> {
-        log.debug("saving services...");
+        log.debug("saving %d services...", this._items.length);
 
         await saveServices(
             this._items.map(service => service.export()),

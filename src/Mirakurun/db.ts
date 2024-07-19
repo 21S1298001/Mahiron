@@ -168,6 +168,7 @@ async function load(path: string, integrity: string) {
                     return [];
                 }
             }
+            log.info("db `%s` loaded w/ integrity (%s), size (%d)", path, integrity, array.length);
             return array;
         } catch (e) {
             log.error("db `%s` is broken (%s: %s)", path, e.name, e.message);
@@ -180,7 +181,7 @@ async function load(path: string, integrity: string) {
 }
 
 async function save(path: string, data: any[], integrity: string, retrying = false): Promise<void> {
-    log.info("save db `%s` w/ integirty (%s)", path, integrity);
+    log.info("save db `%s` w/ integirty (%s), size (%d)", path, integrity, data.length);
 
     data.unshift({ __integrity__: integrity });
 

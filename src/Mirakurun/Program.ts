@@ -206,7 +206,7 @@ export class Program {
     }
 
     private async _save(): Promise<void> {
-        log.debug("saving programs...");
+        log.debug("saving %d programs...", this._itemMap.size);
 
         await savePrograms(Array.from(this._itemMap.values()), _.configIntegrity.channels);
     }

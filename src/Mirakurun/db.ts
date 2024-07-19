@@ -162,6 +162,7 @@ async function load(path: string, integrity: string) {
             const array: any[] = JSON.parse(json);
             if (array.length > 0 && array[0].__integrity__) {
                 if (integrity === array[0].__integrity__) {
+                    log.info("db `%s` loaded w/ integrity (%s), size (%d)", path, integrity, array.length - 1);
                     return array.slice(1);
                 } else {
                     log.warn("db `%s` integrity check has failed", path);

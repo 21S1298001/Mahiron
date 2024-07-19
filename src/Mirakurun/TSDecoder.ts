@@ -157,6 +157,7 @@ export class TSDecoder extends Writable {
     private async _kill(): Promise<void> {
         if (this._process) {
             const children = await psTreeAsync(this._process.pid);
+            log.debug("TSDecoder#%d killing child processes (pid=%d): %s", this._id, this._process.pid, children.map(child => child.PID).join(", "));
             for (const child of children) {
                 try {
                     process.kill(Number(child.PID), "SIGKILL");

@@ -158,26 +158,48 @@ export class TSDecoder extends Writable {
         if (this._process) {
             const children = [...(await psTreeAsync(this._process.pid))];
 
-            await new Promise<void>(resolve => {
-                const timer = setTimeout(() => {
-                    log.warn("TSDecoder#%d will force killed because SIGTERM timed out...", this._id);
-                    this._process.kill("SIGKILL");
-                    resolve();
-                }, 6000);
-                this._process.once("exit", () => {
-                    clearTimeout(timer);
-                    resolve();
-                });
+            // Kill only the parent process
+            if (children.length === 0) {
+                log.debug("TSDecoder#%d (pid=%d) kill...", this._id, this._process.pid);
 
-                log.debug("TSDecoder#%d killing child processes (pid=%d): %s", this._id, this._process.pid, children.map(child => child.PID).join(", "));
-                for (const child of children) {
-                    try {
-                        process.kill(Number(child.PID), "SIGKILL");
-                    } catch (e) {
-                        log.warn("TSDecoder#%d failed to kill child process (pid=%d): %s", this._id, child.PID, e);
+                await new Promise<void>(resolve => {
+                    const timer = setTimeout(() => {
+                        log.warn("TSDecoder#%d will force killed because SIGTERM timed out...", this._id);
+                        this._process.kill("SIGKILL");
+                    }, 6000);
+                    this._process.once("exit", () => {
+                        clearTimeout(timer);
+                        resolve();
+                    });
+
+                    // regular way
+                    this._process.kill("SIGTERM");
+                });
+            }
+            // Kill all children
+            else {
+                await new Promise<void>(resolve => {
+                    const timer = setTimeout(() => {
+                        log.warn("TSDecoder#%d will force killed because SIGTERM timed out...", this._id);
+                        this._process.kill("SIGKILL");
+                        resolve();
+                    }, 6000);
+                    this._process.once("exit", () => {
+                        clearTimeout(timer);
+                        resolve();
+                    });
+
+                    log.debug("TSDecoder#%d killing child processes (pid=%d): %s", this._id, this._process.pid, children.map(child => child.PID).join(", "));
+                    children.reverse();
+                    for (const child of children) {
+                        try {
+                            process.kill(Number(child.PID), "SIGKILL");
+                        } catch (e) {
+                            log.warn("TSDecoder#%d failed to kill child process (pid=%d): %s", this._id, child.PID, e);
+                        }
                     }
-                }
-            });
+                });
+            }
 
             delete this._process;
         }

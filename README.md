@@ -1,3 +1,21 @@
+# Mahiron is over
+
+Mahironは[Chinachu/Mirakurun](https://github.com/Chinachu/Mirakurun)のフォークとして、継続的な改善を目標として開発を行ってきました。
+
+しかし、開発に割ける時間を継続的に取る事ができず、また大規模なソフトウェアのため機能追加や修正のコストが高く、結果として活発に開発を進める事ができていませんでした。
+
+また、2025年に入りMirakurunの開発が活性化しており、様々な改善が行われています。
+
+そのため、Mahironは一定の役割を果たしたと考え、開発を休止する事にしました。
+
+Mahironで行われた変更は、MirakurunへのPRとして出来る限り還元していきたいと考えています。
+
+MirakurunベースのMahironはここで終了しますが、Mahironの開発を通じて得られた知見は、今後の開発に活かしていきたいと考えています。
+
+短い間ではありましたが、Mahironを使用していただき、また開発に協力していただき、本当にありがとうございました。
+
+-----
+
 # Mahiron
 
 Yet another DVR Tuner Server for Japanese TV, forked from [Chinachu/Mirakurun](https://github.com/Chinachu/Mirakurun).
